@@ -14,6 +14,8 @@ Input: requested `test.mov`, first 81 frames, 480x274 source, 720p short-side ou
 | 3B FP8 hypothesis winner | 3B FP8, SDPA, batch 81, uniform batch, no compile | 81 | 31.2787 | 2.5896 | 20.22 GB |
 | 3B FP8 fast preset | `--blackwell_pro6000_preset`: 3B FP8, SDPA, adaptive batch 81, uniform batch, no compile | 81 | 31.2140 | 2.5950 | 20.22 GB |
 | 3B FP8 VAE Conv3D unsplit preset | 3B FP8, SDPA, batch 81, uniform batch, no compile, `--vae_conv_memory_limit_gb 0` | 81 | 28.2877 | 2.8634 | 40.97 GB |
+| 3B FP8 1080p preset | 3B FP8, SDPA, batch 81, uniform batch, no compile, `--vae_conv_memory_limit_gb 0`, 1890x1080 output | 81 | 80.0533 | 1.0118 | 94.16 GB |
+| 3B FP8 1080p full clip | Same 1080p preset on full `test.mov` | 299 | 241.7233 | 1.2370 | 93.16 GB |
 
 Phase timings:
 
@@ -38,6 +40,8 @@ Artifacts:
 - 3B FP8 full-clip VAE acceleration plan: `benchmark_results/blackwell_3b_fp8_vae_plan_full/`
 - 3B FP8 VAE decode profile and Conv3D memory split validation: `benchmark_results/blackwell_3b_fp8_vae_decode_profile/`
 - 3B FP8 Conv3D-unsplit preset validation: `benchmark_results/blackwell_3b_fp8_preset_convlimit/`
+- 3B FP8 1080p preset validation: `benchmark_results/blackwell_3b_fp8_1080p_preset/`
+- 3B FP8 1080p full clip validation: `benchmark_results/blackwell_3b_fp8_1080p_preset_full/`
 
 Engineering stage status:
 
@@ -61,3 +65,4 @@ Conclusion:
 - VAE-only `torch.compile reduce-overhead` is not a follow-up win for the fast path: it measured 150.9339s / 0.5367 FPS and raised peak reserved VRAM to 36.41 GB.
 - Full-clip VAE acceleration testing found no speed win from FP16 compute, disabling tensor offload, decode tiling, or encode+decode tiling. The best measured VAE path remains the current BF16 eager VAE with CPU tensor offload: 116.1961s / 2.5732 FPS on the full clip.
 - `vae_decode` profiling found that Conv3D memory splitting creates substantial pad/cat/copy overhead. Disabling only that split with `--vae_conv_memory_limit_gb 0` improved the full clip from 116.1693s / 2.5738 FPS to 103.0863s / 2.9005 FPS, with peak reserved VRAM rising from 20.22 GB to 41.84 GB. Temporal causal slicing itself cannot be disabled; it OOMs on the 81-frame 720p batch.
+- The same fast preset can upscale to 1080p output (1890x1080) on the 95GB Blackwell card. Full `test.mov` measured 241.7233s / 1.2370 FPS, but peak reserved VRAM reached 93.16 GB, so this setting is very close to the device limit.

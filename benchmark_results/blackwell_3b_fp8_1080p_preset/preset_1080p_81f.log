@@ -1,0 +1,248 @@
+📊 Initial CUDA memory: 94.42GB free / 94.97GB total
+/usr/local/lib/python3.12/dist-packages/torch/library.py:357: UserWarning: Warning only once for all operators,  other operators may also be overridden.
+  Overriding a previously registered kernel for the same operator and the same dispatch key
+  operator: flash_attn::_flash_attn_backward(Tensor dout, Tensor q, Tensor k, Tensor v, Tensor out, Tensor softmax_lse, Tensor(a6!)? dq, Tensor(a7!)? dk, Tensor(a8!)? dv, float dropout_p, float softmax_scale, bool causal, SymInt window_size_left, SymInt window_size_right, float softcap, Tensor? alibi_slopes, bool deterministic, Tensor? rng_state=None) -> Tensor
+    registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926
+  dispatch key: ADInplaceOrView
+  previous kernel: no debug info
+       new kernel: registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926 (Triggered internally at /opt/pytorch/pytorch/aten/src/ATen/core/dispatch/OperatorEntry.cpp:208.)
+  self.m.impl(
+⚡ SeedVR2 optimizations check: SageAttention ✅ | Flash Attention ✅ | Triton ✅
+🔧 Conv3d workaround active: PyTorch 2.10.0a0, cuDNN 91701 (fixing VAE 3x memory bug)
+ 
+ 
+   ███████╗███████╗███████╗██████╗ ██╗   ██╗██████╗     ██████╗       ███████╗
+   ██╔════╝██╔════╝██╔════╝██╔══██╗██║   ██║██╔══██╗    ╚════██╗      ██╔════╝
+   ███████╗█████╗  █████╗  ██║  ██║██║   ██║██████╔╝     █████╔╝      ███████╗
+   ╚════██║██╔══╝  ██╔══╝  ██║  ██║╚██╗ ██╔╝██╔══██╗    ██╔═══╝       ╚════██║
+   ███████║███████╗███████╗██████╔╝ ╚████╔╝ ██║  ██║    ███████╗  ██╗ ███████║
+   ╚══════╝╚══════╝╚══════╝╚═════╝   ╚═══╝  ╚═╝  ╚═╝    ╚══════╝  ╚═╝ ╚══════╝
+   💻 CLI · v2.5.24                           © ByteDance Seed · NumZ · AInVFX
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+[16:36:02.063] ℹ️ OS: Ubuntu 24.04 | GPU: NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition (95GB)
+[16:36:02.063] ℹ️ Python: 3.12.3 | PyTorch: 2.10.0a0+a36e1d39eb.nv26.01.42222806 | FlashAttn: v2 ✓ | SageAttn: v3,2 ✓ | Triton: ✓
+[16:36:02.063] ℹ️ CUDA: 13.1 | cuDNN: 91701
+[16:36:02.063]  
+[16:36:02.063] 🔧 Arguments:
+[16:36:02.063]    input: /root/seedvr_bench/inputs/test.mov
+[16:36:02.063]    output: benchmark_results/blackwell_3b_fp8_1080p_preset/outputs/preset_1080p_81f.mp4
+[16:36:02.063]    output_format: None
+[16:36:02.063]    video_backend: opencv
+[16:36:02.063]    use_10bit: False
+[16:36:02.063]    model_dir: None
+[16:36:02.063]    dit_model: seedvr2_ema_3b_fp8_e4m3fn.safetensors
+[16:36:02.063]    resolution: 1080
+[16:36:02.063]    max_resolution: 0
+[16:36:02.063]    batch_size: 81
+[16:36:02.063]    uniform_batch_size: True
+[16:36:02.063]    seed: 42
+[16:36:02.063]    skip_first_frames: 0
+[16:36:02.063]    load_cap: 81
+[16:36:02.063]    chunk_size: 0
+[16:36:02.063]    prepend_frames: 0
+[16:36:02.063]    temporal_overlap: 0
+[16:36:02.063]    color_correction: lab
+[16:36:02.063]    input_noise_scale: 0.0
+[16:36:02.063]    latent_noise_scale: 0.0
+[16:36:02.063]    compute_dtype: auto
+[16:36:02.063]    cuda_device: None
+[16:36:02.063]    dit_offload_device: none
+[16:36:02.063]    vae_offload_device: none
+[16:36:02.063]    tensor_offload_device: cpu
+[16:36:02.063]    blocks_to_swap: 0
+[16:36:02.063]    swap_io_components: False
+[16:36:02.063]    vae_encode_tiled: False
+[16:36:02.063]    vae_encode_tile_size: 1024
+[16:36:02.063]    vae_encode_tile_overlap: 128
+[16:36:02.063]    vae_decode_tiled: False
+[16:36:02.063]    vae_decode_tile_size: 1024
+[16:36:02.063]    vae_decode_tile_overlap: 128
+[16:36:02.063]    tile_debug: false
+[16:36:02.063]    vae_causal_slice_size: None
+[16:36:02.063]    vae_conv_memory_limit_gb: 0.0
+[16:36:02.063]    profile_vae_decode_dir: None
+[16:36:02.063]    profile_vae_decode_batches: 1
+[16:36:02.063]    attention_mode: sdpa
+[16:36:02.063]    strict_attention_mode: False
+[16:36:02.063]    blackwell_pro6000_preset: True
+[16:36:02.063]    compile_dit: False
+[16:36:02.063]    compile_vae: False
+[16:36:02.063]    compile_backend: inductor
+[16:36:02.063]    compile_mode: default
+[16:36:02.063]    compile_fullgraph: False
+[16:36:02.063]    compile_dynamic: False
+[16:36:02.063]    compile_dynamo_cache_size_limit: 64
+[16:36:02.063]    compile_dynamo_recompile_limit: 128
+[16:36:02.063]    trt_w4a4_mlp: False
+[16:36:02.063]    trt_w4a4_mlp_block_index: 0
+[16:36:02.063]    trt_w4a4_mlp_qat_steps: 1
+[16:36:02.063]    trt_w4a4_mlp_qat_lr: 1e-08
+[16:36:02.063]    trt_w4a4_mlp_json: None
+[16:36:02.063]    cache_dit: False
+[16:36:02.063]    cache_vae: False
+[16:36:02.063]    debug: True
+[16:36:02.063]    benchmark_json: benchmark_results/blackwell_3b_fp8_1080p_preset/preset_1080p_81f.json
+[16:36:02.063]    benchmark_label: preset_1080p_81f
+[16:36:02.063]    _blackwell_pro6000_max_batch_size: 81
+[16:36:02.063] 🖥️ CUDA_VISIBLE_DEVICES: Not set (all)
+[16:36:02.063] 🖥️ torch.cuda.device_count(): 1
+[16:36:02.063] 🖥️ Using device index 0 inside script (mapped to selected GPU)
+[16:36:02.063] 🖥️ Using devices: ['0']
+[16:36:02.063] 🔧 DiT model found: ./models/SEEDVR2/seedvr2_ema_3b_fp8_e4m3fn.safetensors
+[16:36:02.063] 🔧 DiT model already validated (cache): ./models/SEEDVR2/seedvr2_ema_3b_fp8_e4m3fn.safetensors
+[16:36:02.064] 🔧 VAE model found: ./models/SEEDVR2/ema_vae_fp16.safetensors
+[16:36:02.064] 🔧 VAE model already validated (cache): ./models/SEEDVR2/ema_vae_fp16.safetensors
+[16:36:02.064] 🎬 Processing video: test.mov
+[16:36:02.064] ℹ️   Auto-detected output format: mp4
+[16:36:02.072] ℹ️ Video info: 300 frames, 480x274, 29.97 FPS
+[16:36:02.190] 🔧 Generation context initialized: DiT=cuda:0, VAE=cuda:0, Offload=[Tensor offload=cpu], LOCAL_RANK=0
+[16:36:02.191] 🎯 Unified compute dtype: torch.bfloat16 across entire pipeline for maximum performance
+[16:36:02.191] 🏃 Configuring inference runner...
+[16:36:02.191] 🏃 Creating new runner: DiT=seedvr2_ema_3b_fp8_e4m3fn.safetensors, VAE=ema_vae_fp16.safetensors
+[16:36:02.218] 🚀 Creating DiT model structure on meta device
+[16:36:02.324] 🎨 Creating VAE model structure on meta device
+[16:36:02.390] 🎨 VAE downsample factors configured (spatial: 8x, temporal: 4x)
+[16:36:02.390] 🎨 VAE Conv3D memory limit override: disabled
+[16:36:02.392] 🔄 Moving text_pos_embeds from CPU to CUDA:0 (DiT inference)
+[16:36:02.392] 🔄 Moving text_neg_embeds from CPU to CUDA:0 (DiT inference)
+[16:36:02.392] 🚀 Loaded text embeddings for DiT
+[16:36:02.393] 🔧   Initializing video transformation pipeline for 1080px (shortest edge)
+[16:36:02.482] 🔧   Target dimensions: 1890x1080 (padded to 1904x1088 for processing)
+[16:36:02.487]  
+[16:36:02.487] 🎬 Starting upscaling generation...
+[16:36:02.487] 🎬   Input: 81 frames, 480x274px → Padded: 1904x1088px → Output: 1890x1080px (shortest edge: 1080px)
+[16:36:02.487] 🎬   Batch size: 81 (uniform), Seed: 42, Channels: RGB
+[16:36:02.487]  
+[16:36:02.487]  ━━━━━━━━ Phase 1: VAE encoding ━━━━━━━━
+[16:36:02.487] ♻️ Reusing pre-initialized video transformation pipeline
+[16:36:02.487] 🎨 Materializing VAE weights to CUDA:0: ./models/SEEDVR2/ema_vae_fp16.safetensors
+[16:36:02.558] 🎯 Converting VAE weights to torch.bfloat16 during loading
+[16:36:02.577] 🎨 Materializing VAE: 250 parameters, 478.07MB total
+[16:36:02.582] 🎨 VAE materialized directly from meta with loaded weights
+[16:36:02.582] 🎨 VAE model set to eval mode (gradients disabled)
+[16:36:02.584] 🎨 Configuring VAE causal slicing for temporal processing
+[16:36:02.584] 🎨 Configuring VAE memory limits for causal convolutions
+[16:36:02.585] 🎯 Model precision: VAE=torch.bfloat16, compute=torch.bfloat16
+[16:36:02.586] 🎨 Using seed: 1000042 (VAE uses seed+1000000 for deterministic sampling)
+[16:36:02.586] 🔄 VAE already on CUDA:0, skipping movement
+[16:36:02.587] 📊 After VAE loading for encoding:
+[16:36:02.587] 📊   [VRAM] 0.48GB allocated / 0.50GB reserved / Peak: 0.49GB / 93.67GB free / 94.97GB total
+[16:36:02.587] 📊   [RAM] 1.48GB process / 14.94GB others / 159.52GB free / 175.94GB total
+[16:36:02.587] 📊 Resetting VRAM peak memory statistics
+[16:36:02.588] 🎨 Encoding batch 1/1
+[16:36:02.588] 🔄   Moving video_batch_1 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[16:36:02.614] 📹   Sequence of 81 frames
+[16:36:16.934] ℹ️   Latents shape: torch.Size([21, 136, 238, 16])
+[16:36:16.935] 🔄   Moving latent_1 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[16:36:16.942] ⚡ Phase 1: VAE encoding complete: 14.46s
+[16:36:16.943] ⚡   └─ Encoded batch 1: 14.35s
+[16:36:16.943] ⚡   └─ VAE materialized: 0.10s
+[16:36:16.943] ⚡     └─ VAE weights loaded from file: 0.07s
+[16:36:16.943] ⚡     └─ VAE weights converted to torch.bfloat16: 0.02s
+[16:36:16.944] 📊 After phase 1 (VAE encoding):
+[16:36:16.944] 📊   [VRAM] 0.48GB allocated / 48.03GB reserved / Peak: 38.41GB / 46.13GB free / 94.97GB total
+[16:36:16.944] 📊   [RAM] 1.83GB process / 14.31GB others / 159.80GB free / 175.94GB total
+[16:36:16.944] 📊   Memory changes: RAM +0.35GB
+[16:36:16.944] 📊 Resetting VRAM peak memory statistics
+[16:36:16.944]  
+[16:36:16.944]  ━━━━━━━━ Phase 2: DiT upscaling ━━━━━━━━
+[16:36:16.945] 🚀 Materializing DiT weights to CUDA:0: ./models/SEEDVR2/seedvr2_ema_3b_fp8_e4m3fn.safetensors
+[16:36:17.338] 🚀 Materializing DiT: 635 parameters, 3234.36MB total
+[16:36:17.352] 🚀 DiT materialized directly from meta with loaded weights
+[16:36:17.357] ✅ Initialized 64 non-persistent buffers
+[16:36:17.357] 🔧 Applying DiT compatibility wrapper
+[16:36:17.357] 🎯 Detected NaDiT 3B FP8 - Converting RoPE freqs for FP8 compatibility
+[16:36:17.358] ✅ Converted 32 RoPE frequency buffers from FP8 to torch.bfloat16 for compatibility
+[16:36:17.358] 🔧 Stabilizing RoPE computations for numerical stability
+[16:36:17.360] ✅ Stabilized 64 RoPE modules
+[16:36:17.360] 🔧 Applying sdpa attention mode and torch.bfloat16 compute dtype to model
+[16:36:17.360] ✅ Applied sdpa and compute_dtype=torch.bfloat16 to 32 modules
+[16:36:17.360] 🎯 Model precision: DiT=torch.float8_e4m3fn, VAE=torch.bfloat16, compute=torch.bfloat16
+[16:36:17.360] 🔄 DiT already on CUDA:0, skipping movement
+[16:36:17.361] 📊 After DiT loading for upscaling:
+[16:36:17.361] 📊   [VRAM] 3.68GB allocated / 48.03GB reserved / Peak: 3.68GB / 46.13GB free / 94.97GB total
+[16:36:17.361] 📊   [RAM] 1.83GB process / 14.30GB others / 159.80GB free / 175.94GB total
+[16:36:17.361] 📊   Memory changes: VRAM +3.20GB
+[16:36:17.361] 📊 Resetting VRAM peak memory statistics
+[16:36:17.361] 🎬 Upscaling batch 1/1
+[16:36:17.361] 🚀 Using seed: 42 for deterministic generation
+[16:36:17.362] 🔄   Moving latent_1 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:09<00:00,  9.69s/it]EulerSampler: 100%|██████████| 1/1 [00:09<00:00,  9.69s/it]
+[16:36:27.054] 🔄   Moving upscaled_latent_1 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[16:36:27.062] 🧹 Cleaning up DiT components
+[16:36:27.063] 🔄 Moving DiT from CUDA:0 to CPU (releasing GPU memory)
+[16:36:28.249] 🧹 Starting BlockSwap cleanup
+[16:36:28.249] ✅ BlockSwap cleanup complete
+[16:36:28.252] 🧹 DiT model deleted
+[16:36:28.252] 🧹 Cleaned up text embeddings: texts_pos, texts_neg
+[16:36:28.252] ⚡ Phase 2: DiT upscaling complete: 11.31s
+[16:36:28.252] ⚡   └─ Upscaled batch 1: 9.70s
+[16:36:28.252] ⚡     └─ DiT inference 1: 9.69s
+[16:36:28.252] ⚡   └─ DiT moved to CPU: 1.19s
+[16:36:28.252] ⚡   └─ DiT materialized: 0.42s
+[16:36:28.252] ⚡     └─ DiT weights loaded from file: 0.39s
+[16:36:28.252] ⚡     └─ DiT weights materialized: 0.01s
+[16:36:28.253] 📊 After phase 2 (DiT upscaling):
+[16:36:28.253] 📊   [VRAM] 0.48GB allocated / 48.03GB reserved / Peak: 27.28GB / 46.13GB free / 94.97GB total
+[16:36:28.253] 📊   [RAM] 5.32GB process / 14.47GB others / 156.15GB free / 175.94GB total
+[16:36:28.253] 📊   Memory changes: VRAM -3.20GB, RAM +3.49GB
+[16:36:28.253] 📊 Resetting VRAM peak memory statistics
+[16:36:28.257]  
+[16:36:28.257]  ━━━━━━━━ Phase 3: VAE decoding ━━━━━━━━
+[16:36:28.257] 🔧 Pre-allocating output tensor: 81 frames, 1890x1080px, RGB (0.92GB)
+[16:36:28.257] 🎯 Model precision: VAE=torch.bfloat16, compute=torch.bfloat16
+[16:36:28.257] 🔄 VAE already on CUDA:0, skipping movement
+[16:36:28.258] 📊 After VAE loading for decoding:
+[16:36:28.258] 📊   [VRAM] 0.48GB allocated / 48.03GB reserved / Peak: 0.48GB / 46.13GB free / 94.97GB total
+[16:36:28.258] 📊   [RAM] 5.23GB process / 14.55GB others / 156.15GB free / 175.94GB total
+[16:36:28.258] 📊   Memory changes: RAM -0.09GB
+[16:36:28.258] 📊 Resetting VRAM peak memory statistics
+[16:36:28.258] 🎨 Decoding batch 1/1
+[16:36:28.258] 🔄   Moving upscaled_latent_1 from CPU to CUDA:0 (VAE decoding)
+[16:36:28.260] ℹ️   Latents shape: torch.Size([1, 21, 136, 238, 16])
+[16:37:11.563] 📹   Trimming spatial padding: 1904x1088 → 1890x1080
+[16:37:11.563] 🔄   Moving sample_1 from CUDA:0 to CPU (writing to final_video)
+[16:37:17.719] 📹   Wrote 81 frames to positions 0-81
+[16:37:17.810] 🧹 Cleaning up VAE components
+[16:37:17.811] 🔄 Moving VAE from CUDA:0 to CPU (releasing GPU memory)
+[16:37:17.857] 🧹 VAE model deleted
+[16:37:17.857] ⚡ Phase 3: VAE decoding complete: 49.60s
+[16:37:17.857] ⚡   └─ Decoded batch 1: 49.55s
+[16:37:17.857] ⚡     └─ VAE decode: 43.30s
+[16:37:17.857] ⚡   └─ VAE moved to CPU: 0.05s
+[16:37:17.858] 📊 After phase 3 (VAE decoding):
+[16:37:17.858] 📊   [VRAM] 0.01GB allocated / 94.16GB reserved / Peak: 72.63GB / 0.00GB free / 94.97GB total
+[16:37:17.858] 📊   [RAM] 6.20GB process / 14.93GB others / 154.80GB free / 175.94GB total
+[16:37:17.858] 📊   Memory changes: VRAM -0.47GB, RAM +0.97GB
+[16:37:17.858] 📊 Resetting VRAM peak memory statistics
+[16:37:17.858]  
+[16:37:17.858]  ━━━━━━━━ Phase 4: Post-processing ━━━━━━━━
+[16:37:17.858] 📹 Post-processing batch 1/1
+[16:37:17.858] 🔄   Moving sample_1 from CPU to CUDA:0 (post-processing)
+[16:37:19.015] 🔄   Moving input_video_1 from CPU to CUDA:0 (color correction)
+[16:37:19.318] 📹   Applying LAB perceptual color transfer
+[16:37:19.657] 📹   LAB color transfer completed (luminance_weight=0.8)
+[16:37:19.657] 🔄   Moving sample_1_final from CUDA:0 to CPU (writing processed result to final_video)
+[16:37:20.323] 🎬 Output assembled: 81 frames, Resolution: 1890x1080px, Channels: RGB
+[16:37:20.323] ⚡ Phase 4: Post-processing complete: 2.46s
+[16:37:20.323] ⚡   └─ Post-processed batch 1: 2.46s
+[16:37:20.323] ⚡     └─ Color correction (lab): 0.34s
+[16:37:20.325] 📊 After phase 4 (Post-processing):
+[16:37:20.325] 📊   [VRAM] 0.01GB allocated / 94.16GB reserved / Peak: 16.06GB / 0.00GB free / 94.97GB total
+[16:37:20.325] 📊   [RAM] 6.21GB process / 15.25GB others / 154.48GB free / 175.94GB total
+[16:37:20.325] 📊 Resetting VRAM peak memory statistics
+[16:37:20.978] 📂 Saving 81 frames to video: benchmark_results/blackwell_3b_fp8_1080p_preset/outputs/preset_1080p_81f.mp4 (backend=opencv)
+[16:37:22.116] 📂 Output saved to: benchmark_results/blackwell_3b_fp8_1080p_preset/outputs/preset_1080p_81f.mp4
+[16:37:22.116]  
+[16:37:22.116] ✅ All upscaling processes completed successfully in 80.05s
+[16:37:22.116] ⚡ Average FPS: 1.01 frames/sec
+/root/ComfyUI-SeedVR2_VideoUpscaler/inference_cli.py:384: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "timestamp_utc": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+[16:37:22.167] 📂 Benchmark JSON written to: benchmark_results/blackwell_3b_fp8_1080p_preset/preset_1080p_81f.json
+[16:37:22.168] 🧹 Process 7990 terminating - VRAM will be automatically freed
+[16:37:22.168]  
+[16:37:22.168]  ────────────────────────
+[16:37:22.168] 💬 Questions? Updates? Watch, star & sponsor if you can!
+[16:37:22.168] 🎬 https://www.youtube.com/@AInVFX
+[16:37:22.168] ⭐💝 https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler
