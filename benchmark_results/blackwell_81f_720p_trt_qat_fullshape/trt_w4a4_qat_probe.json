@@ -1,0 +1,196 @@
+{
+  "status": "ok_modelopt_deploy",
+  "timestamp_utc": "2026-05-13T11:50:02Z",
+  "args": {
+    "model_dir": "./models/SEEDVR2",
+    "base_model": "seedvr2_ema_7b_fp16.safetensors",
+    "device": "cuda:0",
+    "dtype": "torch.float16",
+    "block_index": 0,
+    "seq_len": 74655,
+    "qat_steps": 1,
+    "qat_lr": 1e-08,
+    "bench_iters": 5,
+    "warmup_iters": 2,
+    "skip_modelopt_deploy": false,
+    "output_json": "benchmark_results/blackwell_81f_720p_trt_qat_fullshape/trt_w4a4_qat_probe.json",
+    "debug": false
+  },
+  "environment": {
+    "torch": "2.10.0a0+a36e1d39eb.nv26.01.42222806",
+    "cuda": "13.1",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "capability": "12.0",
+    "modelopt": "0.40.0",
+    "torch_tensorrt": "2.10.0a0",
+    "tensorrt": "10.14.1.48"
+  },
+  "subgraph": {
+    "name": "dit.blocks[block_index].mlp.vid",
+    "type": "video_mlp_branch",
+    "boundary": "x[seq_len, hidden_dim] -> y[seq_len, hidden_dim]",
+    "hidden_dim": 3072,
+    "parameters": 75512832
+  },
+  "steps": {
+    "modelopt_nvfp4_export_detection_patch": {
+      "status": "enabled",
+      "reason": "This NVFP4 W4A4 probe must not run ModelOpt 0.40's empty FP8 exporter.",
+      "quantize_weights": "NVFP4QuantExporter only",
+      "onnx_infer_shapes": "disabled",
+      "onnx_optimize": "disabled",
+      "patched_scale_attrs": 1,
+      "restored_original_initializers": 6,
+      "positive_qdq_scales": 0,
+      "bad_initializers_before_save": [],
+      "bad_initializers_after_save": [],
+      "debug_onnx": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_81f_720p_trt_qat_fullshape/trt_w4a4_qat_probe.w4a4.onnx"
+    },
+    "teacher_eager_benchmark": {
+      "iters": 5,
+      "total_ms": 244.0546,
+      "avg_ms": 48.8109
+    },
+    "fp16_torch_tensorrt_compile": {
+      "status": "ok",
+      "seconds": 40.7747
+    },
+    "fp16_trt_benchmark": {
+      "iters": 5,
+      "total_ms": 222.5428,
+      "avg_ms": 44.5086
+    },
+    "fp16_modelopt_deploy_trt": {
+      "status": "ok",
+      "seconds": 86.2233,
+      "latency_ms": 45.8629,
+      "throughput": 21.8034
+    },
+    "modelopt_w4a4_quantize": {
+      "status": "ok",
+      "seconds": 0.0928
+    },
+    "qat_teacher_loss": {
+      "status": "ok",
+      "seconds": 0.769,
+      "losses": [
+        2.1344993114471436
+      ],
+      "optimizer": "SGD"
+    },
+    "w4a4_eager_benchmark": {
+      "iters": 5,
+      "total_ms": 243.4961,
+      "avg_ms": 48.6992
+    },
+    "w4a4_modelopt_deploy_trt": {
+      "status": "ok",
+      "seconds": 46.6944,
+      "latency_ms": 31.9918,
+      "throughput": 31.2564
+    },
+    "w4a4_modelopt_deploy_forward_benchmark": {
+      "iters": 5,
+      "total_ms": 154.6395,
+      "avg_ms": 30.9279
+    },
+    "w4a4_modelopt_deploy_max_abs_error": 71.0,
+    "torch_tensorrt_compile": {
+      "status": "failed",
+      "seconds": 1.0606,
+      "error": {
+        "type": "RuntimeError",
+        "message": "We found a fake tensor in the exported program constant's list. This typically means our tracing system encountered an op that we can't trace through. For the potential source, you can refer to following model attribute: proj_in.input_quantizer.lifted_tensor_0. Please file an issue on github. "
+      },
+      "traceback_tail": [
+        "Traceback (most recent call last):",
+        "  File \"/root/ComfyUI-SeedVR2_VideoUpscaler/scripts/trt_w4a4_qat_probe.py\", line 510, in main",
+        "    trt_model = torch_tensorrt.compile(",
+        "                ^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch_tensorrt/_compile.py\", line 308, in compile",
+        "    exp_program = dynamo_trace(",
+        "                  ^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch_tensorrt/dynamo/_tracer.py\", line 79, in trace",
+        "    exp_program = export(",
+        "                  ^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/__init__.py\", line 311, in export",
+        "    raise e",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/__init__.py\", line 277, in export",
+        "    return _export(",
+        "           ^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1271, in wrapper",
+        "    raise e",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1237, in wrapper",
+        "    ep = fn(*args, **kwargs)",
+        "         ^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/exported_program.py\", line 124, in wrapper",
+        "    return fn(*args, **kwargs)",
+        "           ^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 2380, in _export",
+        "    ep = _export_for_training(",
+        "         ^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1271, in wrapper",
+        "    raise e",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1237, in wrapper",
+        "    ep = fn(*args, **kwargs)",
+        "         ^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/exported_program.py\", line 124, in wrapper",
+        "    return fn(*args, **kwargs)",
+        "           ^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 2214, in _export_for_training",
+        "    raise RuntimeError(error_msg)",
+        "RuntimeError: We found a fake tensor in the exported program constant's list. This typically means our tracing system encountered an op that we can't trace through. For the potential source, you can refer to following model attribute: proj_in.input_quantizer.lifted_tensor_0. Please file an issue on github. "
+      ]
+    },
+    "torchscript_tensorrt_compile": {
+      "status": "failed",
+      "seconds": 0.0006,
+      "error": {
+        "type": "AssertionError",
+        "message": "Step size is not defined for non-integer quantization."
+      },
+      "traceback_tail": [
+        "    raise RuntimeError(error_msg)",
+        "RuntimeError: We found a fake tensor in the exported program constant's list. This typically means our tracing system encountered an op that we can't trace through. For the potential source, you can refer to following model attribute: proj_in.input_quantizer.lifted_tensor_0. Please file an issue on github. ",
+        "",
+        "During handling of the above exception, another exception occurred:",
+        "",
+        "Traceback (most recent call last):",
+        "  File \"/root/ComfyUI-SeedVR2_VideoUpscaler/scripts/trt_w4a4_qat_probe.py\", line 537, in main",
+        "    traced = torch.jit.trace(qat_model, x, strict=False)",
+        "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 1016, in trace",
+        "    traced_func = _trace_impl(",
+        "                  ^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 701, in _trace_impl",
+        "    return trace_module(",
+        "           ^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 1175, in trace_module",
+        "    module = make_module(mod, _module_class, _compilation_unit)",
+        "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 633, in make_module",
+        "    return _module_class(mod, _compilation_unit=_compilation_unit)",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 1325, in __init__",
+        "    tmp_module._modules[name] = make_module(",
+        "                                ^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 633, in make_module",
+        "    return _module_class(mod, _compilation_unit=_compilation_unit)",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 1325, in __init__",
+        "    tmp_module._modules[name] = make_module(",
+        "                                ^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 625, in make_module",
+        "    elif torch._jit_internal.module_has_exports(mod):",
+        "         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/_jit_internal.py\", line 897, in module_has_exports",
+        "    if hasattr(mod, name):",
+        "       ^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/modelopt/torch/quantization/nn/modules/tensor_quantizer.py\", line 277, in step_size",
+        "    assert isinstance(self._num_bits, int), (",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "AssertionError: Step size is not defined for non-integer quantization."
+      ]
+    }
+  }
+}

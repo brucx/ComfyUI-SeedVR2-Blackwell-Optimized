@@ -65,6 +65,15 @@ def main() -> int:
     parser.add_argument("--skip_oob", action="store_true")
     parser.add_argument("--include_modelopt", action="store_true")
     parser.add_argument("--include_trt_qat", action="store_true")
+    parser.add_argument(
+        "--trt_qat_seq_len",
+        type=int,
+        default=74655,
+        help=(
+            "Sequence length for the W4A4/TRT DiT MLP subgraph probe. "
+            "74655 matches the 81-frame 720p benchmark after VAE latent patching."
+        ),
+    )
     args = parser.parse_args()
 
     output_dir = (ROOT / args.output_dir).resolve()
@@ -133,7 +142,7 @@ def main() -> int:
             sys.executable,
             "scripts/trt_w4a4_qat_probe.py",
             "--model_dir", "./models/SEEDVR2",
-            "--seq_len", "4096",
+            "--seq_len", str(args.trt_qat_seq_len),
             "--qat_steps", "1",
             "--qat_lr", "1e-8",
             "--bench_iters", "20",

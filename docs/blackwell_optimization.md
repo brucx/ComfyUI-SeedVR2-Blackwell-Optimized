@@ -61,6 +61,8 @@ The probe:
 
 Current RTX Pro 6000 harness result for `seq_len=4096`: FP16 eager 2.3900ms, FP16 Torch-TensorRT 2.2937ms, FP16 ModelOpt deploy/TRT 2.55839ms, W4A4 eager 2.5223ms, W4A4 ModelOpt deploy/TRT profile 1.71290ms, and W4A4 ModelOpt `DeviceModel` forward 1.6587ms. The one-step QAT teacher loss was 2.156582 with SGD. The W4A4 `trtexec` profile reports 583.256 inferences/s for the isolated MLP subgraph, and the finite TensorRT output had max absolute error 50.75 against the FP16 teacher for the random 4096-token probe batch.
 
+The same path also succeeds at `seq_len=74655`, which is the fixed token length for the requested 81-frame 720p benchmark after VAE latent shape `[21, 90, 158, 16]` and DiT patch size `[1, 2, 2]`. At this real full-shape boundary, FP16 eager averaged 48.8109ms, FP16 Torch-TensorRT averaged 44.5086ms, FP16 ModelOpt deploy/TRT reported 45.8629ms, W4A4 eager averaged 48.6992ms, W4A4 ModelOpt deploy/TRT reported 31.9918ms, and W4A4 ModelOpt `DeviceModel` forward averaged 30.9279ms over 5 iterations. The one-step QAT teacher loss was 2.134499 with SGD, and the finite W4A4 TensorRT output had max absolute error 71.0 against the FP16 teacher for the random full-shape probe batch. See `benchmark_results/blackwell_81f_720p_trt_qat_fullshape/trt_w4a4_qat_probe.json`.
+
 Several ModelOpt 0.40 export workarounds are applied inside the probe:
 
 - disable the empty FP8 ONNX exporter for this NVFP4 W4A4 path, because ModelOpt's FP8 detector also matches NVFP4 quantizer metadata;
@@ -68,11 +70,11 @@ Several ModelOpt 0.40 export workarounds are applied inside the probe:
 - restore original FP16 initializers from a pre-export state backup after NVFP4 post-processing;
 - sanitize NVFP4 ONNX scale tensors to finite positive values before TensorRT parsing, because the default exporter can emit NaN/negative DQ scales for this subgraph.
 
-The v5 artifact records no NaN/Inf initializers before or after ONNX save.
+The v5 and full-shape artifacts record no NaN/Inf initializers before or after ONNX save.
 
 Direct Torch-TensorRT Dynamo export still fails on a fake tensor from `proj_in.input_quantizer.lifted_tensor_0`; the TorchScript frontend also fails because ModelOpt NVFP4 uses non-integer quantization without a `step_size`. The working W4A4 TRT path is therefore ModelOpt ONNX deploy through `trtexec`.
 
-This is not yet a full-pipeline TRT W4A4 engine. The remaining work is replacing the ModelOpt fake-quant activation boundary with a TensorRT-exportable quantize/dequantize representation and routing the DiT block calls through the compiled engine.
+This is a full-shape DiT MLP subgraph result, not a full-pipeline TRT W4A4 engine. The remaining work is replacing the ModelOpt fake-quant activation boundary with a TensorRT-exportable quantize/dequantize representation and routing more of the DiT block calls through compiled engines.
 
 To complete this path, the next implementation step is a model-specific graph partition:
 
