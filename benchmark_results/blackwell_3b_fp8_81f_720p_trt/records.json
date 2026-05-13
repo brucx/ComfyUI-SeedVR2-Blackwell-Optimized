@@ -1,0 +1,426 @@
+[
+  {
+    "label": "trt_w4a4_qat_probe",
+    "command": [
+      "/usr/bin/python3",
+      "scripts/trt_w4a4_qat_probe.py",
+      "--model_dir",
+      "./models/SEEDVR2",
+      "--base_model",
+      "seedvr2_ema_3b_fp16.safetensors",
+      "--seq_len",
+      "74655",
+      "--qat_steps",
+      "1",
+      "--qat_lr",
+      "1e-8",
+      "--bench_iters",
+      "20",
+      "--warmup_iters",
+      "5",
+      "--output_json",
+      "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_qat_probe.json"
+    ],
+    "returncode": 0,
+    "elapsed_sec": 124.8269,
+    "log": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_qat_probe.log",
+    "benchmark_json": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_qat_probe.json",
+    "result": {
+      "status": "ok_modelopt_deploy",
+      "timestamp_utc": "2026-05-13T12:43:42Z",
+      "args": {
+        "model_dir": "./models/SEEDVR2",
+        "base_model": "seedvr2_ema_3b_fp16.safetensors",
+        "device": "cuda:0",
+        "dtype": "torch.float16",
+        "block_index": 0,
+        "seq_len": 74655,
+        "qat_steps": 1,
+        "qat_lr": 1e-08,
+        "bench_iters": 20,
+        "warmup_iters": 5,
+        "skip_modelopt_deploy": false,
+        "output_json": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_qat_probe.json",
+        "debug": false
+      },
+      "environment": {
+        "torch": "2.10.0a0+a36e1d39eb.nv26.01.42222806",
+        "cuda": "13.1",
+        "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+        "capability": "12.0",
+        "modelopt": "0.40.0",
+        "torch_tensorrt": "2.10.0a0",
+        "tensorrt": "10.14.1.48"
+      },
+      "subgraph": {
+        "name": "dit.blocks[block_index].mlp.vid",
+        "type": "video_mlp_branch",
+        "boundary": "x[seq_len, hidden_dim] -> y[seq_len, hidden_dim]",
+        "hidden_dim": 2560,
+        "parameters": 53084160
+      },
+      "steps": {
+        "modelopt_nvfp4_export_detection_patch": {
+          "status": "enabled",
+          "reason": "This NVFP4 W4A4 probe must not run ModelOpt 0.40's empty FP8 exporter.",
+          "quantize_weights": "NVFP4QuantExporter only",
+          "onnx_infer_shapes": "disabled",
+          "onnx_optimize": "disabled",
+          "patched_scale_attrs": 2,
+          "restored_original_initializers": 1,
+          "positive_qdq_scales": 0,
+          "bad_initializers_before_save": [],
+          "bad_initializers_after_save": [],
+          "debug_onnx": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_qat_probe.w4a4.onnx"
+        },
+        "teacher_eager_benchmark": {
+          "iters": 20,
+          "total_ms": 725.3455,
+          "avg_ms": 36.2673
+        },
+        "fp16_torch_tensorrt_compile": {
+          "status": "ok",
+          "seconds": 17.1782
+        },
+        "fp16_trt_benchmark": {
+          "iters": 20,
+          "total_ms": 698.8967,
+          "avg_ms": 34.9448
+        },
+        "fp16_modelopt_deploy_trt": {
+          "status": "ok",
+          "seconds": 56.5832,
+          "latency_ms": 34.9051,
+          "throughput": 28.6478
+        },
+        "modelopt_w4a4_quantize": {
+          "status": "ok",
+          "seconds": 0.0715
+        },
+        "qat_teacher_loss": {
+          "status": "ok",
+          "seconds": 0.6621,
+          "losses": [
+            0.020395614206790924
+          ],
+          "optimizer": "SGD"
+        },
+        "w4a4_eager_benchmark": {
+          "iters": 20,
+          "total_ms": 768.4257,
+          "avg_ms": 38.4213
+        },
+        "w4a4_modelopt_deploy_trt": {
+          "status": "ok",
+          "seconds": 34.9673,
+          "latency_ms": 21.4242,
+          "throughput": 46.6726
+        },
+        "w4a4_modelopt_deploy_forward_benchmark": {
+          "iters": 20,
+          "total_ms": 436.764,
+          "avg_ms": 21.8382
+        },
+        "w4a4_modelopt_deploy_max_abs_error": 2.90625,
+        "torch_tensorrt_compile": {
+          "status": "failed",
+          "seconds": 0.8849,
+          "error": {
+            "type": "RuntimeError",
+            "message": "We found a fake tensor in the exported program constant's list. This typically means our tracing system encountered an op that we can't trace through. For the potential source, you can refer to following model attribute: proj_in_gate.input_quantizer.lifted_tensor_0. Please file an issue on github. "
+          },
+          "traceback_tail": [
+            "Traceback (most recent call last):",
+            "  File \"/root/ComfyUI-SeedVR2_VideoUpscaler/scripts/trt_w4a4_qat_probe.py\", line 510, in main",
+            "    trt_model = torch_tensorrt.compile(",
+            "                ^^^^^^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch_tensorrt/_compile.py\", line 308, in compile",
+            "    exp_program = dynamo_trace(",
+            "                  ^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch_tensorrt/dynamo/_tracer.py\", line 79, in trace",
+            "    exp_program = export(",
+            "                  ^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/__init__.py\", line 311, in export",
+            "    raise e",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/__init__.py\", line 277, in export",
+            "    return _export(",
+            "           ^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1271, in wrapper",
+            "    raise e",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1237, in wrapper",
+            "    ep = fn(*args, **kwargs)",
+            "         ^^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/exported_program.py\", line 124, in wrapper",
+            "    return fn(*args, **kwargs)",
+            "           ^^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 2380, in _export",
+            "    ep = _export_for_training(",
+            "         ^^^^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1271, in wrapper",
+            "    raise e",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1237, in wrapper",
+            "    ep = fn(*args, **kwargs)",
+            "         ^^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/exported_program.py\", line 124, in wrapper",
+            "    return fn(*args, **kwargs)",
+            "           ^^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 2214, in _export_for_training",
+            "    raise RuntimeError(error_msg)",
+            "RuntimeError: We found a fake tensor in the exported program constant's list. This typically means our tracing system encountered an op that we can't trace through. For the potential source, you can refer to following model attribute: proj_in_gate.input_quantizer.lifted_tensor_0. Please file an issue on github. "
+          ]
+        },
+        "torchscript_tensorrt_compile": {
+          "status": "failed",
+          "seconds": 0.0006,
+          "error": {
+            "type": "AssertionError",
+            "message": "Step size is not defined for non-integer quantization."
+          },
+          "traceback_tail": [
+            "    raise RuntimeError(error_msg)",
+            "RuntimeError: We found a fake tensor in the exported program constant's list. This typically means our tracing system encountered an op that we can't trace through. For the potential source, you can refer to following model attribute: proj_in_gate.input_quantizer.lifted_tensor_0. Please file an issue on github. ",
+            "",
+            "During handling of the above exception, another exception occurred:",
+            "",
+            "Traceback (most recent call last):",
+            "  File \"/root/ComfyUI-SeedVR2_VideoUpscaler/scripts/trt_w4a4_qat_probe.py\", line 537, in main",
+            "    traced = torch.jit.trace(qat_model, x, strict=False)",
+            "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 1016, in trace",
+            "    traced_func = _trace_impl(",
+            "                  ^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 701, in _trace_impl",
+            "    return trace_module(",
+            "           ^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 1175, in trace_module",
+            "    module = make_module(mod, _module_class, _compilation_unit)",
+            "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 633, in make_module",
+            "    return _module_class(mod, _compilation_unit=_compilation_unit)",
+            "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 1325, in __init__",
+            "    tmp_module._modules[name] = make_module(",
+            "                                ^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 633, in make_module",
+            "    return _module_class(mod, _compilation_unit=_compilation_unit)",
+            "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 1325, in __init__",
+            "    tmp_module._modules[name] = make_module(",
+            "                                ^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/jit/_trace.py\", line 625, in make_module",
+            "    elif torch._jit_internal.module_has_exports(mod):",
+            "         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/torch/_jit_internal.py\", line 897, in module_has_exports",
+            "    if hasattr(mod, name):",
+            "       ^^^^^^^^^^^^^^^^^^",
+            "  File \"/usr/local/lib/python3.12/dist-packages/modelopt/torch/quantization/nn/modules/tensor_quantizer.py\", line 277, in step_size",
+            "    assert isinstance(self._num_bits, int), (",
+            "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+            "AssertionError: Step size is not defined for non-integer quantization."
+          ]
+        }
+      }
+    }
+  },
+  {
+    "label": "trt_w4a4_integrated_mlp",
+    "command": [
+      "/usr/bin/python3",
+      "inference_cli.py",
+      "/root/seedvr_bench/inputs/test.mov",
+      "--resolution",
+      "720",
+      "--debug",
+      "--load_cap",
+      "81",
+      "--attention_mode",
+      "sageattn_3",
+      "--strict_attention_mode",
+      "--dit_model",
+      "seedvr2_ema_3b_fp8_e4m3fn.safetensors",
+      "--batch_size",
+      "81",
+      "--uniform_batch_size",
+      "--trt_w4a4_mlp",
+      "--trt_w4a4_mlp_block_index",
+      "0",
+      "--trt_w4a4_mlp_qat_steps",
+      "1",
+      "--trt_w4a4_mlp_qat_lr",
+      "1e-8",
+      "--trt_w4a4_mlp_json",
+      "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_integrated_mlp_compile.json",
+      "--benchmark_label",
+      "trt_w4a4_integrated_mlp",
+      "--benchmark_json",
+      "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_integrated_mlp.json",
+      "--output",
+      "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/outputs/trt_w4a4_integrated_mlp.mp4"
+    ],
+    "returncode": 0,
+    "elapsed_sec": 83.4249,
+    "log": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_integrated_mlp.log",
+    "benchmark_json": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_integrated_mlp.json",
+    "result": {
+      "arguments": {
+        "attention_mode": "sageattn_3",
+        "batch_size": 81,
+        "benchmark_label": "trt_w4a4_integrated_mlp",
+        "blackwell_pro6000_preset": false,
+        "blocks_to_swap": 0,
+        "cache_dit": false,
+        "cache_vae": false,
+        "chunk_size": 0,
+        "color_correction": "lab",
+        "compile_backend": "inductor",
+        "compile_dit": false,
+        "compile_dynamic": false,
+        "compile_dynamo_cache_size_limit": 64,
+        "compile_dynamo_recompile_limit": 128,
+        "compile_fullgraph": false,
+        "compile_mode": "default",
+        "compile_vae": false,
+        "cuda_device": null,
+        "debug": true,
+        "dit_model": "seedvr2_ema_3b_fp8_e4m3fn.safetensors",
+        "dit_offload_device": "none",
+        "input": "/root/seedvr_bench/inputs/test.mov",
+        "input_noise_scale": 0.0,
+        "latent_noise_scale": 0.0,
+        "load_cap": 81,
+        "max_resolution": 0,
+        "model_dir": null,
+        "output": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/outputs/trt_w4a4_integrated_mlp.mp4",
+        "output_format": "mp4",
+        "prepend_frames": 0,
+        "resolution": 720,
+        "seed": 42,
+        "skip_first_frames": 0,
+        "strict_attention_mode": true,
+        "swap_io_components": false,
+        "temporal_overlap": 0,
+        "tensor_offload_device": "cpu",
+        "tile_debug": "false",
+        "trt_w4a4_mlp": true,
+        "trt_w4a4_mlp_block_index": 0,
+        "trt_w4a4_mlp_json": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_integrated_mlp_compile.json",
+        "trt_w4a4_mlp_qat_lr": 1e-08,
+        "trt_w4a4_mlp_qat_steps": 1,
+        "uniform_batch_size": true,
+        "use_10bit": false,
+        "vae_decode_tile_overlap": 128,
+        "vae_decode_tile_size": 1024,
+        "vae_decode_tiled": false,
+        "vae_encode_tile_overlap": 128,
+        "vae_encode_tile_size": 1024,
+        "vae_encode_tiled": false,
+        "vae_offload_device": "none",
+        "video_backend": "opencv"
+      },
+      "benchmark": {
+        "average_fps": 1.1025,
+        "frames_processed": 81,
+        "input": "/root/seedvr_bench/inputs/test.mov",
+        "total_time_sec": 73.4719
+      },
+      "environment": {
+        "cuda": "13.1",
+        "cuda_available": true,
+        "cuda_device_count": 1,
+        "cuda_devices": [
+          {
+            "capability": "12.0",
+            "index": 0,
+            "name": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+            "total_memory_gb": 94.97
+          }
+        ],
+        "modelopt": {
+          "available": true,
+          "file": "/usr/local/lib/python3.12/dist-packages/modelopt/__init__.py",
+          "version": "0.40.0"
+        },
+        "nvidia_smi": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, 97887 MiB, 595.71.05",
+        "platform": "Linux-6.8.0-111-generic-x86_64-with-glibc2.39",
+        "python": "3.12.3",
+        "sageattention": {
+          "available": true,
+          "file": "/usr/local/lib/python3.12/dist-packages/sageattention/__init__.py",
+          "version": null
+        },
+        "sageattn3": {
+          "available": true,
+          "file": "/usr/local/lib/python3.12/dist-packages/sageattn3/__init__.py",
+          "version": null
+        },
+        "tensorrt": {
+          "available": true,
+          "file": "/usr/local/lib/python3.12/dist-packages/tensorrt/__init__.py",
+          "version": "10.14.1.48"
+        },
+        "timestamp_utc": "2026-05-13T12:47:01Z",
+        "torch": "2.10.0a0+a36e1d39eb.nv26.01.42222806",
+        "triton": {
+          "available": true,
+          "file": "/usr/local/lib/python3.12/dist-packages/triton/__init__.py",
+          "version": "3.6.0"
+        }
+      },
+      "label": "trt_w4a4_integrated_mlp",
+      "phase_ram_peak_gb": {
+        "phase1": 1.8199806213378906,
+        "phase2": 6.202068328857422,
+        "phase3": 6.693260192871094,
+        "phase4": 6.81988525390625
+      },
+      "phase_vram_peak_alloc_gb": {
+        "phase1": 10.640918692573905,
+        "phase2": 19.360969049856067,
+        "phase3": 23.51352209225297,
+        "phase4": 14.309346810914576
+      },
+      "phase_vram_peak_reserved_gb": {
+        "phase1": 12.71875,
+        "phase2": 21.6875,
+        "phase3": 28.125,
+        "phase4": 28.125
+      },
+      "status": "ok",
+      "timers_sec": {
+        "CompatibleDiT": 0.0025,
+        "_convert_rope_freqs": 0.0013,
+        "_stabilize_rope_computations": 0.001,
+        "buffer_init": 0.005,
+        "color_correction_lab": 0.1256,
+        "config_load": 0.0266,
+        "decode_batch_1": 15.5409,
+        "dit_inference_1": 45.8884,
+        "dit_materialize": 0.4299,
+        "dit_state_apply": 0.014,
+        "dit_structure": 0.1022,
+        "dit_to_cpu": 1.1929,
+        "dit_weights_load": 0.4067,
+        "encode_batch_1": 7.4364,
+        "model_requires_grad": 0.001,
+        "model_structures": 0.1777,
+        "optimized_video_rearrange": 0.0001,
+        "phase1_encoding": 7.5292,
+        "phase2_upscaling": 47.5204,
+        "phase3_decoding": 15.7619,
+        "phase4_postprocessing": 1.2446,
+        "postprocess_batch_1": 1.2443,
+        "runner_video_infer": 0.0,
+        "upscale_batch_1": 45.8907,
+        "vae_decode": 14.4914,
+        "vae_dtype_convert": 0.0149,
+        "vae_materialize": 0.0906,
+        "vae_set_causal_slicing": 0.0004,
+        "vae_set_memory_limit": 0.0003,
+        "vae_state_apply": 0.0046,
+        "vae_structure": 0.0683,
+        "vae_to_cpu": 0.1999,
+        "vae_weights_load": 0.068
+      }
+    }
+  }
+]

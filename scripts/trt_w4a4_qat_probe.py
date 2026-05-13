@@ -39,7 +39,7 @@ from src.utils.debug import Debug  # noqa: E402
 from src.utils.downloads import download_weight  # noqa: E402
 from src.utils.model_registry import DEFAULT_VAE  # noqa: E402
 
-DEFAULT_BASE_DIT = "seedvr2_ema_7b_fp16.safetensors"
+DEFAULT_BASE_DIT = "seedvr2_ema_3b_fp16.safetensors"
 
 
 def _jsonable(value: Any) -> Any:

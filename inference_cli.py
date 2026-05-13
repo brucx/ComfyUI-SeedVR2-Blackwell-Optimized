@@ -144,7 +144,7 @@ from src.utils.debug import Debug
 from src.optimization.memory_manager import clear_memory, get_gpu_backend, is_cuda_available
 debug = Debug(enabled=False)  # Will be enabled via --debug CLI flag
 
-BLACKWELL_PRO6000_DIT = "seedvr2_ema_7b_fp8_e4m3fn_mixed_block35_fp16.safetensors"
+BLACKWELL_PRO6000_DIT = "seedvr2_ema_3b_fp8_e4m3fn.safetensors"
 
 
 # =============================================================================
@@ -1573,7 +1573,7 @@ Examples:
                         help="Fail instead of falling back when the requested attention backend is unavailable")
     perf_group.add_argument("--blackwell_pro6000_preset", action="store_true",
                         help="Apply RTX Pro 6000 Blackwell preset: SageAttention 3, torch.compile max-autotune, "
-                             "7B FP8 mixed block35 model, batch_size=81, and uniform batches")
+                             "3B FP8 model, batch_size=81, and uniform batches")
     perf_group.add_argument("--compile_dit", action="store_true", 
                         help="Enable torch.compile for DiT model (20-40%% speedup, requires PyTorch 2.0+ and Triton)")
     perf_group.add_argument("--compile_vae", action="store_true",

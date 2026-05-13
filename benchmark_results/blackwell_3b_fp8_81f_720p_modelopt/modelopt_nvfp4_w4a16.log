@@ -1,0 +1,533 @@
+📊 Initial CUDA memory: 94.42GB free / 94.97GB total
+/usr/local/lib/python3.12/dist-packages/torch/library.py:357: UserWarning: Warning only once for all operators,  other operators may also be overridden.
+  Overriding a previously registered kernel for the same operator and the same dispatch key
+  operator: flash_attn::_flash_attn_backward(Tensor dout, Tensor q, Tensor k, Tensor v, Tensor out, Tensor softmax_lse, Tensor(a6!)? dq, Tensor(a7!)? dk, Tensor(a8!)? dv, float dropout_p, float softmax_scale, bool causal, SymInt window_size_left, SymInt window_size_right, float softcap, Tensor? alibi_slopes, bool deterministic, Tensor? rng_state=None) -> Tensor
+    registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926
+  dispatch key: ADInplaceOrView
+  previous kernel: no debug info
+       new kernel: registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926 (Triggered internally at /opt/pytorch/pytorch/aten/src/ATen/core/dispatch/OperatorEntry.cpp:208.)
+  self.m.impl(
+⚡ SeedVR2 optimizations check: SageAttention ✅ | Flash Attention ✅ | Triton ✅
+🔧 Conv3d workaround active: PyTorch 2.10.0a0, cuDNN 91701 (fixing VAE 3x memory bug)
+ 
+ 
+   ███████╗███████╗███████╗██████╗ ██╗   ██╗██████╗     ██████╗       ███████╗
+   ██╔════╝██╔════╝██╔════╝██╔══██╗██║   ██║██╔══██╗    ╚════██╗      ██╔════╝
+   ███████╗█████╗  █████╗  ██║  ██║██║   ██║██████╔╝     █████╔╝      ███████╗
+   ╚════██║██╔══╝  ██╔══╝  ██║  ██║╚██╗ ██╔╝██╔══██╗    ██╔═══╝       ╚════██║
+   ███████║███████╗███████╗██████╔╝ ╚████╔╝ ██║  ██║    ███████╗  ██╗ ███████║
+   ╚══════╝╚══════╝╚══════╝╚═════╝   ╚═══╝  ╚═╝  ╚═╝    ╚══════╝  ╚═╝ ╚══════╝
+   💻 CLI · v2.5.24                           © ByteDance Seed · NumZ · AInVFX
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+[12:39:39.361] ℹ️ OS: Ubuntu 24.04 | GPU: NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition (95GB)
+[12:39:39.361] ℹ️ Python: 3.12.3 | PyTorch: 2.10.0a0+a36e1d39eb.nv26.01.42222806 | FlashAttn: v2 ✓ | SageAttn: v3,2 ✓ | Triton: ✓
+[12:39:39.361] ℹ️ CUDA: 13.1 | cuDNN: 91701
+[12:39:39.361]  
+[12:39:39.361] 🔧 Arguments:
+[12:39:39.361]    input: /root/seedvr_bench/inputs/test.mov
+[12:39:39.361]    output: /root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_modelopt/outputs/modelopt_nvfp4_w4a16.mp4
+[12:39:39.361]    output_format: None
+[12:39:39.361]    video_backend: opencv
+[12:39:39.361]    use_10bit: False
+[12:39:39.361]    model_dir: None
+[12:39:39.361]    dit_model: seedvr2_ema_3b_nvfp4_w4a16.modelopt.pt
+[12:39:39.361]    resolution: 720
+[12:39:39.361]    max_resolution: 0
+[12:39:39.361]    batch_size: 81
+[12:39:39.361]    uniform_batch_size: True
+[12:39:39.361]    seed: 42
+[12:39:39.361]    skip_first_frames: 0
+[12:39:39.361]    load_cap: 81
+[12:39:39.361]    chunk_size: 0
+[12:39:39.361]    prepend_frames: 0
+[12:39:39.361]    temporal_overlap: 0
+[12:39:39.361]    color_correction: lab
+[12:39:39.361]    input_noise_scale: 0.0
+[12:39:39.361]    latent_noise_scale: 0.0
+[12:39:39.361]    cuda_device: None
+[12:39:39.361]    dit_offload_device: none
+[12:39:39.361]    vae_offload_device: none
+[12:39:39.361]    tensor_offload_device: cpu
+[12:39:39.361]    blocks_to_swap: 0
+[12:39:39.361]    swap_io_components: False
+[12:39:39.361]    vae_encode_tiled: False
+[12:39:39.361]    vae_encode_tile_size: 1024
+[12:39:39.361]    vae_encode_tile_overlap: 128
+[12:39:39.361]    vae_decode_tiled: False
+[12:39:39.361]    vae_decode_tile_size: 1024
+[12:39:39.361]    vae_decode_tile_overlap: 128
+[12:39:39.361]    tile_debug: false
+[12:39:39.361]    attention_mode: sageattn_3
+[12:39:39.361]    strict_attention_mode: True
+[12:39:39.362]    blackwell_pro6000_preset: False
+[12:39:39.362]    compile_dit: True
+[12:39:39.362]    compile_vae: True
+[12:39:39.362]    compile_backend: inductor
+[12:39:39.362]    compile_mode: max-autotune
+[12:39:39.362]    compile_fullgraph: False
+[12:39:39.362]    compile_dynamic: False
+[12:39:39.362]    compile_dynamo_cache_size_limit: 64
+[12:39:39.362]    compile_dynamo_recompile_limit: 128
+[12:39:39.362]    trt_w4a4_mlp: False
+[12:39:39.362]    trt_w4a4_mlp_block_index: 0
+[12:39:39.362]    trt_w4a4_mlp_qat_steps: 1
+[12:39:39.362]    trt_w4a4_mlp_qat_lr: 1e-08
+[12:39:39.362]    trt_w4a4_mlp_json: None
+[12:39:39.362]    cache_dit: False
+[12:39:39.362]    cache_vae: False
+[12:39:39.362]    debug: True
+[12:39:39.362]    benchmark_json: /root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_modelopt/modelopt_nvfp4_w4a16.json
+[12:39:39.362]    benchmark_label: modelopt_nvfp4_w4a16
+[12:39:39.362] 🖥️ CUDA_VISIBLE_DEVICES: Not set (all)
+[12:39:39.362] 🖥️ torch.cuda.device_count(): 1
+[12:39:39.362] 🖥️ Using device index 0 inside script (mapped to selected GPU)
+[12:39:39.362] 🖥️ Using devices: ['0']
+[12:39:39.362] ⚠️ [WARNING] seedvr2_ema_3b_nvfp4_w4a16.modelopt.pt not in registry, skipping validation
+[12:39:39.362] 🔧 VAE model found: ./models/SEEDVR2/ema_vae_fp16.safetensors
+[12:39:39.362] 🔧 VAE model already validated (cache): ./models/SEEDVR2/ema_vae_fp16.safetensors
+[12:39:39.362] 🎬 Processing video: test.mov
+[12:39:39.362] ℹ️   Auto-detected output format: mp4
+[12:39:39.371] ℹ️ Video info: 300 frames, 480x274, 29.97 FPS
+[12:39:39.483] 🔧 Generation context initialized: DiT=cuda:0, VAE=cuda:0, Offload=[Tensor offload=cpu], LOCAL_RANK=0
+[12:39:39.483] 🎯 Unified compute dtype: torch.bfloat16 across entire pipeline for maximum performance
+[12:39:39.484] 🏃 Configuring inference runner...
+[12:39:39.484] 🏃 Creating new runner: DiT=seedvr2_ema_3b_nvfp4_w4a16.modelopt.pt, VAE=ema_vae_fp16.safetensors
+[12:39:39.511] 🚀 Creating DiT model structure on meta device
+[12:39:39.622] 🎨 Creating VAE model structure on meta device
+[12:39:39.692] 🎨 VAE downsample factors configured (spatial: 8x, temporal: 4x)
+[12:39:39.695] 🔄 Moving text_pos_embeds from CPU to CUDA:0 (DiT inference)
+[12:39:39.695] 🔄 Moving text_neg_embeds from CPU to CUDA:0 (DiT inference)
+[12:39:39.695] 🚀 Loaded text embeddings for DiT
+[12:39:39.695] 🔧   Initializing video transformation pipeline for 720px (shortest edge)
+[12:39:39.727] 🔧   Target dimensions: 1260x720 (padded to 1264x720 for processing)
+[12:39:39.728]  
+[12:39:39.728] 🎬 Starting upscaling generation...
+[12:39:39.728] 🎬   Input: 81 frames, 480x274px → Padded: 1264x720px → Output: 1260x720px (shortest edge: 720px)
+[12:39:39.728] 🎬   Batch size: 81 (uniform), Seed: 42, Channels: RGB
+[12:39:39.728]  
+[12:39:39.728]  ━━━━━━━━ Phase 1: VAE encoding ━━━━━━━━
+[12:39:39.728] ♻️ Reusing pre-initialized video transformation pipeline
+[12:39:39.728] 🎨 Materializing VAE weights to CUDA:0: ./models/SEEDVR2/ema_vae_fp16.safetensors
+[12:39:39.800] 🎯 Converting VAE weights to torch.bfloat16 during loading
+[12:39:39.819] 🎨 Materializing VAE: 250 parameters, 478.07MB total
+[12:39:39.824] 🎨 VAE materialized directly from meta with loaded weights
+[12:39:39.825] 🎨 VAE model set to eval mode (gradients disabled)
+[12:39:39.826] 🎨 Configuring VAE causal slicing for temporal processing
+[12:39:39.826] 🎨 Configuring VAE memory limits for causal convolutions
+[12:39:39.826] 🔧 Configuring torch.compile for VAE submodules...
+[12:39:39.826] 🔧   Backend: inductor | Mode: max-autotune | Fullgraph: False | Dynamic: False
+[12:39:39.827] 🔧   Dynamo cache_size_limit: 64 | recompile_limit: 128
+[12:39:39.827] ✅   torch._dynamo configured successfully
+[12:39:40.494] ✅   VAE encoder found and added to compilation queue
+[12:39:40.497] ✅   VAE decoder found and added to compilation queue
+[12:39:40.497] ℹ️   Actual compilation will happen on first batch (expect initial delay, then speedup)
+[12:39:40.497] 🎯 Model precision: VAE=torch.bfloat16, compute=torch.bfloat16
+[12:39:40.498] 🎨 Using seed: 1000042 (VAE uses seed+1000000 for deterministic sampling)
+[12:39:40.498] 🔄 VAE already on CUDA:0, skipping movement
+[12:39:40.499] 📊 After VAE loading for encoding:
+[12:39:40.499] 📊   [VRAM] 0.49GB allocated / 0.53GB reserved / Peak: 0.51GB / 93.71GB free / 94.97GB total
+[12:39:40.499] 📊   [RAM] 1.49GB process / 7.06GB others / 167.38GB free / 175.94GB total
+[12:39:40.499] 📊 Resetting VRAM peak memory statistics
+[12:39:40.499] 🎨 Encoding batch 1/1
+[12:39:40.500] 🔄   Moving video_batch_1 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[12:39:40.521] 📹   Sequence of 81 frames
+[12:40:37.377] ℹ️   Latents shape: torch.Size([21, 90, 158, 16])
+[12:40:37.377] 🔄   Moving latent_1 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[12:40:37.381] ⚡ Phase 1: VAE encoding complete: 57.65s
+[12:40:37.381] ⚡   └─ Encoded batch 1: 56.88s
+[12:40:37.381] ⚡   └─ VAE materialized: 0.77s
+[12:40:37.381] ⚡     └─ VAE submodules compiled: encoder, decoder: 0.67s
+[12:40:37.381] ⚡     └─ VAE weights loaded from file: 0.07s
+[12:40:37.381] ⚡     └─ VAE weights converted to torch.bfloat16: 0.02s
+[12:40:37.382] 📊 After phase 1 (VAE encoding):
+[12:40:37.382] 📊   [VRAM] 0.48GB allocated / 17.34GB reserved / Peak: 11.52GB / 76.82GB free / 94.97GB total
+[12:40:37.382] 📊   [RAM] 2.28GB process / 7.42GB others / 166.23GB free / 175.94GB total
+[12:40:37.382] 📊   Memory changes: RAM +0.79GB
+[12:40:37.382] 📊 Resetting VRAM peak memory statistics
+[12:40:37.382]  
+[12:40:37.383]  ━━━━━━━━ Phase 2: DiT upscaling ━━━━━━━━
+[12:40:37.383] 🚀 Materializing DiT weights to CUDA:0: ./models/SEEDVR2/seedvr2_ema_3b_nvfp4_w4a16.modelopt.pt
+/usr/local/lib/python3.12/dist-packages/modelopt/torch/__init__.py:36: UserWarning: transformers version 5.8.1 is not tested with nvidia-modelopt and may cause issues. Please install recommended version with `pip install nvidia-modelopt[hf]` if working with HF models.
+  _warnings.warn(
+Inserted 648 quantizers
+[12:40:46.102] 🔧 Applying DiT compatibility wrapper
+[12:40:46.102] 🔧 Stabilizing RoPE computations for numerical stability
+[12:40:46.103] ✅ Stabilized 64 RoPE modules
+[12:40:46.103] 🔧 Applying sageattn_3 attention mode and torch.bfloat16 compute dtype to model
+[12:40:46.104] ✅ Applied sageattn_3 and compute_dtype=torch.bfloat16 to 32 modules
+[12:40:46.104] 🔧 Configuring torch.compile for DiT...
+[12:40:46.104] 🔧   Backend: inductor | Mode: max-autotune | Fullgraph: False | Dynamic: False
+[12:40:46.104] 🔧   Dynamo cache_size_limit: 64 | recompile_limit: 128
+[12:40:46.104] ✅   torch._dynamo configured successfully
+[12:40:46.108] ℹ️   Actual compilation will happen on first batch (expect initial delay, then speedup)
+[12:40:46.108] 🎯 Model precision: DiT=torch.float32, VAE=torch.bfloat16, compute=torch.bfloat16
+[12:40:46.108] 🔄 DiT already on CUDA:0, skipping movement
+[12:40:46.109] 📊 After DiT loading for upscaling:
+[12:40:46.109] 📊   [VRAM] 13.21GB allocated / 21.63GB reserved / Peak: 13.21GB / 72.53GB free / 94.97GB total
+[12:40:46.109] 📊   [RAM] 2.87GB process / 7.30GB others / 165.76GB free / 175.94GB total
+[12:40:46.109] 📊   Memory changes: VRAM +12.73GB, RAM +0.59GB
+[12:40:46.109] 📊 Resetting VRAM peak memory statistics
+[12:40:46.109] 🎬 Upscaling batch 1/1
+[12:40:46.109] 🚀 Using seed: 42 for deterministic generation
+[12:40:46.109] 🔄   Moving latent_1 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s][12:40:46.245] ❌ [ERROR] Error in Phase 2 (Upscaling): AttributeError: '_FoldedCallback' object has no attribute '_callbacks'
+
+from user code:
+   File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/optimization/compatibility.py", line 931, in forward
+    return self.dit_model(*args, **kwargs)
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/models/dit_3b/nadit.py", line 211, in forward
+    txt = self.txt_in(txt)
+  File "/usr/local/lib/python3.12/dist-packages/modelopt/torch/quantization/nn/modules/quant_module.py", line 161, in forward
+    return super().forward(input, *args, **kwargs)
+  File "/usr/local/lib/python3.12/dist-packages/modelopt/torch/quantization/nn/modules/quant_module.py", line 113, in forward
+    output = super().forward(input, *args, **kwargs)
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/linear.py", line 134, in forward
+    return F.linear(input, self.weight, self.bias)
+  File "/usr/local/lib/python3.12/dist-packages/modelopt/torch/opt/dynamic.py", line 778, in __getattr__
+    return manager.get_da_cb(name)(self, value)
+
+Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+
+[12:40:46.245] 🧹 Cleaning up DiT components
+[12:40:46.249] 🔄 Moving DiT from CUDA:0 to CPU (releasing GPU memory)
+[12:40:50.855] 🧹 Starting BlockSwap cleanup
+[12:40:50.855] ✅ BlockSwap cleanup complete
+[12:40:50.861] 🧹 DiT model deleted
+[12:40:50.861] 🧹 Cleaned up text embeddings: texts_pos, texts_neg
+[12:40:50.861] ❌ [ERROR] Error during processing: AttributeError: '_FoldedCallback' object has no attribute '_callbacks'
+
+from user code:
+   File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/optimization/compatibility.py", line 931, in forward
+    return self.dit_model(*args, **kwargs)
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/models/dit_3b/nadit.py", line 211, in forward
+    txt = self.txt_in(txt)
+  File "/usr/local/lib/python3.12/dist-packages/modelopt/torch/quantization/nn/modules/quant_module.py", line 161, in forward
+    return super().forward(input, *args, **kwargs)
+  File "/usr/local/lib/python3.12/dist-packages/modelopt/torch/quantization/nn/modules/quant_module.py", line 113, in forward
+    output = super().forward(input, *args, **kwargs)
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/linear.py", line 134, in forward
+    return F.linear(input, self.weight, self.bias)
+  File "/usr/local/lib/python3.12/dist-packages/modelopt/torch/opt/dynamic.py", line 778, in __getattr__
+    return manager.get_da_cb(name)(self, value)
+
+Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+
+Traceback (most recent call last):
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/inference_cli.py", line 1825, in main
+    frames = process_single_file(args.input, args, device_list, args.output,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/inference_cli.py", line 653, in process_single_file
+    for result in _stream_video_chunks(
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/inference_cli.py", line 812, in _stream_video_chunks
+    result = _process_frames_core(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/inference_cli.py", line 1103, in _process_frames_core
+    ctx = upscale_all_batches(
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/core/generation_phases.py", line 739, in upscale_all_batches
+    upscaled_latents = runner.inference(
+                       ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/core/infer.py", line 358, in inference
+    latents = self.sampler.sample(
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/common/diffusion/samplers/euler.py", line 61, in sample
+    pred = f(SamplerModelArgs(x, t, i))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/core/infer.py", line 360, in <lambda>
+    f=lambda args: classifier_free_guidance_dispatcher(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/common/diffusion/utils.py", line 76, in classifier_free_guidance_dispatcher
+    return pos()
+           ^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/core/infer.py", line 361, in <lambda>
+    pos=lambda: self.dit(
+                ^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/eval_frame.py", line 441, in __call__
+    return super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/eval_frame.py", line 926, in compile_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 2194, in __call__
+    result = self._torchdynamo_orig_backend(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 1937, in __call__
+    result = self._inner_convert(
+             ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 706, in __call__
+    result = _compile(
+             ^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 1807, in _compile
+    raise InternalTorchDynamoError(
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 1744, in _compile
+    guarded_code, tracer_output = compile_inner(code, one_graph, hooks)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_utils_internal.py", line 97, in wrapper_function
+    return function(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 1425, in compile_inner
+    return _compile_inner(code, one_graph, hooks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 1459, in _compile_inner
+    dynamo_output = compile_frame(
+                    ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 1341, in compile_frame
+    bytecode, tracer_output = transform_code_object(code, transform)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/bytecode_transformation.py", line 1600, in transform_code_object
+    tracer_output = transformations(instructions, code_options)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 1313, in transform
+    tracer_output = trace_frame(
+                    ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 328, in _fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 837, in trace_frame
+    run_tracer()
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/convert_frame.py", line 818, in run_tracer
+    tracer.run()
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1639, in run
+    while self.step():
+          ^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1319, in step
+    self.dispatch_table[inst.opcode](self, inst)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 858, in wrapper
+    return inner_fn(self, inst)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 2561, in CALL_FUNCTION_EX
+    self.call_function(fn, argsvars.items, kwargsvars)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1225, in call_function
+    self.push(fn.call_function(self, args, kwargs))  # type: ignore[arg-type]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/lazy.py", line 218, in realize_and_forward
+    return getattr(self.realize(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/nn_module.py", line 1148, in call_function
+    return variables.UserFunctionVariable(fn, source=source).call_function(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/functions.py", line 678, in call_function
+    return super().call_function(tx, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/functions.py", line 394, in call_function
+    return tx.inline_user_function_return(self, [*self.self_args(), *args], kwargs)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1247, in inline_user_function_return
+    return InliningInstructionTranslator.inline_call(self, fn, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 4723, in inline_call
+    return tracer.inline_call_()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 4940, in inline_call_
+    self.run()
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1639, in run
+    while self.step():
+          ^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1319, in step
+    self.dispatch_table[inst.opcode](self, inst)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 858, in wrapper
+    return inner_fn(self, inst)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 3817, in CALL
+    self._call(inst)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 3811, in _call
+    self.call_function(fn, args, kwargs)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1225, in call_function
+    self.push(fn.call_function(self, args, kwargs))  # type: ignore[arg-type]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/lazy.py", line 218, in realize_and_forward
+    return getattr(self.realize(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/nn_module.py", line 1148, in call_function
+    return variables.UserFunctionVariable(fn, source=source).call_function(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/functions.py", line 678, in call_function
+    return super().call_function(tx, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/functions.py", line 394, in call_function
+    return tx.inline_user_function_return(self, [*self.self_args(), *args], kwargs)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1247, in inline_user_function_return
+    return InliningInstructionTranslator.inline_call(self, fn, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 4723, in inline_call
+    return tracer.inline_call_()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 4940, in inline_call_
+    self.run()
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1639, in run
+    while self.step():
+          ^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1319, in step
+    self.dispatch_table[inst.opcode](self, inst)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 858, in wrapper
+    return inner_fn(self, inst)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 2561, in CALL_FUNCTION_EX
+    self.call_function(fn, argsvars.items, kwargsvars)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1225, in call_function
+    self.push(fn.call_function(self, args, kwargs))  # type: ignore[arg-type]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/misc.py", line 1151, in call_function
+    return self.obj.call_method(tx, self.name, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/misc.py", line 280, in call_method
+    return fn_vt.call_function(tx, [self.objvar] + args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/lazy.py", line 218, in realize_and_forward
+    return getattr(self.realize(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/functions.py", line 678, in call_function
+    return super().call_function(tx, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/functions.py", line 394, in call_function
+    return tx.inline_user_function_return(self, [*self.self_args(), *args], kwargs)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1247, in inline_user_function_return
+    return InliningInstructionTranslator.inline_call(self, fn, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 4723, in inline_call
+    return tracer.inline_call_()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 4940, in inline_call_
+    self.run()
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1639, in run
+    while self.step():
+          ^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1319, in step
+    self.dispatch_table[inst.opcode](self, inst)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 858, in wrapper
+    return inner_fn(self, inst)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 2561, in CALL_FUNCTION_EX
+    self.call_function(fn, argsvars.items, kwargsvars)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1225, in call_function
+    self.push(fn.call_function(self, args, kwargs))  # type: ignore[arg-type]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/misc.py", line 1151, in call_function
+    return self.obj.call_method(tx, self.name, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/misc.py", line 280, in call_method
+    return fn_vt.call_function(tx, [self.objvar] + args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/lazy.py", line 218, in realize_and_forward
+    return getattr(self.realize(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/functions.py", line 678, in call_function
+    return super().call_function(tx, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/functions.py", line 394, in call_function
+    return tx.inline_user_function_return(self, [*self.self_args(), *args], kwargs)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1247, in inline_user_function_return
+    return InliningInstructionTranslator.inline_call(self, fn, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 4723, in inline_call
+    return tracer.inline_call_()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 4940, in inline_call_
+    self.run()
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1639, in run
+    while self.step():
+          ^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1319, in step
+    self.dispatch_table[inst.opcode](self, inst)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 2628, in LOAD_ATTR
+    self._load_attr(inst.argval)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 2615, in _load_attr
+    result = BuiltinVariable(getattr).call_function(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/builtin.py", line 1436, in call_function
+    return handler(tx, args, kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/builtin.py", line 1236, in builtin_dispatch
+    rv = fn(tx, args, kwargs)
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/builtin.py", line 1093, in call_self_handler
+    return self_handler(tx, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/builtin.py", line 2665, in call_getattr
+    return obj.var_getattr(tx, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/nn_module.py", line 1312, in var_getattr
+    return super().var_getattr(tx, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/user_defined.py", line 1492, in var_getattr
+    ).call_function(tx, [ConstantVariable.create(name)], {})
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/functions.py", line 1437, in call_function
+    return super().call_function(tx, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/functions.py", line 678, in call_function
+    return super().call_function(tx, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/variables/functions.py", line 394, in call_function
+    return tx.inline_user_function_return(self, [*self.self_args(), *args], kwargs)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1247, in inline_user_function_return
+    return InliningInstructionTranslator.inline_call(self, fn, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 4723, in inline_call
+    return tracer.inline_call_()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 4940, in inline_call_
+    self.run()
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1639, in run
+    while self.step():
+          ^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1319, in step
+    self.dispatch_table[inst.opcode](self, inst)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 858, in wrapper
+    return inner_fn(self, inst)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 3817, in CALL
+    self._call(inst)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 3811, in _call
+    self.call_function(fn, args, kwargs)
+  File "/usr/local/lib/python3.12/dist-packages/torch/_dynamo/symbolic_convert.py", line 1223, in call_function
+    if inner_fn and callable(inner_fn) and is_forbidden(inner_fn):
+       ^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/modelopt/torch/opt/dynamic.py", line 82, in __len__
+    return len(self._callbacks)
+               ^^^^^^^^^^^^^^^
+torch._dynamo.exc.InternalTorchDynamoError: AttributeError: '_FoldedCallback' object has no attribute '_callbacks'
+
+from user code:
+   File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/optimization/compatibility.py", line 931, in forward
+    return self.dit_model(*args, **kwargs)
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/models/dit_3b/nadit.py", line 211, in forward
+    txt = self.txt_in(txt)
+  File "/usr/local/lib/python3.12/dist-packages/modelopt/torch/quantization/nn/modules/quant_module.py", line 161, in forward
+    return super().forward(input, *args, **kwargs)
+  File "/usr/local/lib/python3.12/dist-packages/modelopt/torch/quantization/nn/modules/quant_module.py", line 113, in forward
+    output = super().forward(input, *args, **kwargs)
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/linear.py", line 134, in forward
+    return F.linear(input, self.weight, self.bias)
+  File "/usr/local/lib/python3.12/dist-packages/modelopt/torch/opt/dynamic.py", line 778, in __getattr__
+    return manager.get_da_cb(name)(self, value)
+
+Set TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS="+dynamo"
+
+[12:40:50.867] 🧹 Process 42275 terminating - VRAM will be automatically freed
+[12:40:50.867]  
+[12:40:50.867]  ────────────────────────
+[12:40:50.867] 💬 Questions? Updates? Watch, star & sponsor if you can!
+[12:40:50.868] 🎬 https://www.youtube.com/@AInVFX
+[12:40:50.868] ⭐💝 https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler
+EulerSampler:   0%|          | 0/1 [00:04<?, ?it/s]

@@ -30,7 +30,7 @@ from src.utils.debug import Debug  # noqa: E402
 from src.utils.downloads import download_weight  # noqa: E402
 from src.utils.model_registry import DEFAULT_VAE  # noqa: E402
 
-MODEL_OPT_PTQ_BASE_DIT = "seedvr2_ema_7b_fp16.safetensors"
+MODEL_OPT_PTQ_BASE_DIT = "seedvr2_ema_3b_fp16.safetensors"
 
 
 def build_w4a16_cfg():
@@ -48,7 +48,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model_dir", default="./models/SEEDVR2")
     parser.add_argument("--base_model", default=MODEL_OPT_PTQ_BASE_DIT)
-    parser.add_argument("--output_model", default="seedvr2_ema_7b_nvfp4_w4a16.modelopt.pt")
+    parser.add_argument("--output_model", default="seedvr2_ema_3b_nvfp4_w4a16.modelopt.pt")
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--attention_mode", default="sageattn_3")
     parser.add_argument("--debug", action="store_true")

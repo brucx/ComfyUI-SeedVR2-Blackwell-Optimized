@@ -1,0 +1,92 @@
+📊 Initial CUDA memory: 94.42GB free / 94.97GB total
+/usr/local/lib/python3.12/dist-packages/torch/library.py:357: UserWarning: Warning only once for all operators,  other operators may also be overridden.
+  Overriding a previously registered kernel for the same operator and the same dispatch key
+  operator: flash_attn::_flash_attn_backward(Tensor dout, Tensor q, Tensor k, Tensor v, Tensor out, Tensor softmax_lse, Tensor(a6!)? dq, Tensor(a7!)? dk, Tensor(a8!)? dv, float dropout_p, float softmax_scale, bool causal, SymInt window_size_left, SymInt window_size_right, float softcap, Tensor? alibi_slopes, bool deterministic, Tensor? rng_state=None) -> Tensor
+    registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926
+  dispatch key: ADInplaceOrView
+  previous kernel: no debug info
+       new kernel: registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926 (Triggered internally at /opt/pytorch/pytorch/aten/src/ATen/core/dispatch/OperatorEntry.cpp:208.)
+  self.m.impl(
+⚡ SeedVR2 optimizations check: SageAttention ✅ | Flash Attention ✅ | Triton ✅
+🔧 Conv3d workaround active: PyTorch 2.10.0a0, cuDNN 91701 (fixing VAE 3x memory bug)
+/root/ComfyUI-SeedVR2_VideoUpscaler/scripts/trt_w4a4_qat_probe.py:321: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "timestamp_utc": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+/usr/local/lib/python3.12/dist-packages/modelopt/torch/__init__.py:36: UserWarning: transformers version 5.8.1 is not tested with nvidia-modelopt and may cause issues. Please install recommended version with `pip install nvidia-modelopt[hf]` if working with HF models.
+  _warnings.warn(
+CUDA 13 is not currently supported for TRT-LLM plugins. Please install pytorch with CUDA 12.x support
+[12:43:43.632] 🏃 Creating new runner: DiT=seedvr2_ema_3b_fp16.safetensors, VAE=ema_vae_fp16.safetensors
+[12:43:43.654] 🚀 Creating DiT model structure on meta device
+[12:43:43.770] 🎨 Creating VAE model structure on meta device
+[12:43:43.842] 🚀 Materializing DiT weights to CUDA:0: ./models/SEEDVR2/seedvr2_ema_3b_fp16.safetensors
+[modelopt][_deploy] - INFO - Compilation Settings: CompilationSettings(enabled_precisions={<dtype.f16: 6>}, workspace_size=0, min_block_size=1, torch_executed_ops=set(), pass_through_build_failures=False, max_aux_streams=None, version_compatible=False, optimization_level=None, use_python_runtime=False, truncate_double=False, use_fast_partitioner=True, enable_experimental_decompositions=False, device=Device(type=DeviceType.GPU, gpu_id=0), require_full_compilation=False, disable_tf32=False, assume_dynamic_shape_support=False, sparse_weights=False, engine_capability=<EngineCapability.STANDARD: 1>, num_avg_timing_iters=1, dla_sram_size=1048576, dla_local_dram_size=1073741824, dla_global_dram_size=536870912, dryrun=False, hardware_compatible=False, timing_cache_path='/tmp/torch_tensorrt_engine_cache/timing_cache.bin', lazy_engine_init=False, cache_built_engines=False, reuse_cached_engines=False, use_explicit_typing=False, use_fp32_acc=False, refit_identical_engine_weights=False, strip_engine_weights=False, immutable_weights=True, enable_weight_streaming=False, enable_cross_compile_for_windows=False, tiling_optimization_level='none', l2_limit_for_tiling=-1, use_distributed_mode_trace=False, offload_module_to_cpu=False)
+
+[modelopt][_deploy] - WARNING - /usr/lib/python3.12/copyreg.py:99: FutureWarning: `isinstance(treespec, LeafSpec)` is deprecated, use `isinstance(treespec, TreeSpec) and treespec.is_leaf()` instead.
+  return cls.__new__(cls, *args)
+
+[modelopt][_deploy] - INFO - Partitioning the graph via the fast partitioner
+[modelopt][_deploy] - INFO - [MemUsageChange] Init CUDA: CPU +0, GPU +0, now: CPU 1518, GPU 2775 (MiB)
+[modelopt][_deploy] - INFO - Converted node x [x] (Inputs: () | Outputs: (x: (74655, 2560)@torch.float16))
+[modelopt][_deploy] - INFO - Converted node proj_in_gate_weight [proj_in_gate.weight] (Inputs: () | Outputs: (proj_in_gate_weight: (6912, 2560)@torch.float16))
+[modelopt][_deploy] - INFO - Converted node proj_in_gate/linear [aten.linear.default] (Inputs: (x: (74655, 2560)@torch.float16, proj_in_gate_weight: (6912, 2560)@torch.float16) | Outputs: (linear: (74655, 6912)@torch.float16))
+[modelopt][_deploy] - INFO - Converted node /sigmoid [aten.sigmoid.default] (Inputs: (linear: (74655, 6912)@torch.float16) | Outputs: (sigmoid: (74655, 6912)@torch.float16))
+[modelopt][_deploy] - INFO - skip broadcast for /mul
+[modelopt][_deploy] - INFO - Converted node /mul [aten.mul.Tensor] (Inputs: (linear: (74655, 6912)@torch.float16, sigmoid: (74655, 6912)@torch.float16) | Outputs: (mul: (74655, 6912)@torch.float16))
+[modelopt][_deploy] - INFO - Converted node proj_in_weight [proj_in.weight] (Inputs: () | Outputs: (proj_in_weight: (6912, 2560)@torch.float16))
+[modelopt][_deploy] - INFO - Converted node proj_in/linear_1 [aten.linear.default] (Inputs: (x: (74655, 2560)@torch.float16, proj_in_weight: (6912, 2560)@torch.float16) | Outputs: (linear_1: (74655, 6912)@torch.float16))
+[modelopt][_deploy] - INFO - skip broadcast for /mul_1
+[modelopt][_deploy] - INFO - Converted node /mul_1 [aten.mul.Tensor] (Inputs: (mul: (74655, 6912)@torch.float16, linear_1: (74655, 6912)@torch.float16) | Outputs: (mul_1: (74655, 6912)@torch.float16))
+[modelopt][_deploy] - INFO - Converted node proj_out_weight [proj_out.weight] (Inputs: () | Outputs: (proj_out_weight: (2560, 6912)@torch.float16))
+[modelopt][_deploy] - INFO - Converted node proj_out/linear_2 [aten.linear.default] (Inputs: (mul_1: (74655, 6912)@torch.float16, proj_out_weight: (2560, 6912)@torch.float16) | Outputs: (linear_2: (74655, 2560)@torch.float16))
+[modelopt][_deploy] - INFO - Converted node output [output] (Inputs: (linear_2: (74655, 2560)@torch.float16) | Outputs: (output: ))
+[modelopt][_deploy] - INFO - TRT INetwork construction elapsed time: 0:00:00.043881
+[modelopt][_deploy] - INFO - Not found cached TRT engines. Start building engine.
+[modelopt][_deploy] - INFO - [MemUsageChange] Init builder kernel library: CPU +284, GPU +2, now: CPU 2108, GPU 2779 (MiB)
+[modelopt][_deploy] - INFO - Global timing cache in use. Profiling results in this builder pass will be stored.
+[modelopt][_deploy] - INFO - Compiler backend is used during engine build.
+[modelopt][_deploy] - INFO - Detected 1 inputs and 1 output network tensors.
+[modelopt][_deploy] - INFO - Total Host Persistent Memory: 80 bytes
+[modelopt][_deploy] - INFO - Total Device Persistent Memory: 0 bytes
+[modelopt][_deploy] - INFO - Max Scratch Memory: 3096094208 bytes
+[modelopt][_deploy] - INFO - [BlockAssignment] Started assigning block shifts. This will take 1 steps to complete.
+[modelopt][_deploy] - INFO - [BlockAssignment] Algorithm ShiftNTopDown took 0.030449ms to assign 1 blocks to 1 nodes requiring 3096094208 bytes.
+[modelopt][_deploy] - INFO - Total Activation Memory: 3096094208 bytes
+[modelopt][_deploy] - INFO - Total Weights Memory: 106168576 bytes
+[modelopt][_deploy] - INFO - Compiler backend is used during engine execution.
+[modelopt][_deploy] - INFO - Engine generation completed in 13.4127 seconds.
+[modelopt][_deploy] - INFO - [MemUsageStats] Peak memory usage of TRT CPU/GPU memory allocators: CPU 0 MiB, GPU 3939 MiB
+[modelopt][_deploy] - INFO - Build TRT engine elapsed time: 0:00:13.772582
+[modelopt][_deploy] - INFO - Serialized 1922 bytes of code generator cache.
+[modelopt][_deploy] - INFO - Serialized 5896698 bytes of compilation cache.
+[modelopt][_deploy] - INFO - Serialized 0 timing cache entries
+[05/13/2026-12:44:04] [TRT] [W] WARNING The logger passed into createInferRuntime differs from one already registered for an existing builder, runtime, or refitter. So the current new logger is ignored, and TensorRT will use the existing one which is returned by nvinfer1::getLogger() instead.
+Writing ONNX model to directory: /tmp/tmpi2uiafy7/onnx
+[modelopt][_deploy] - INFO - trtexec --onnx=/tmp/tmpi2uiafy7/onnx/SwiGLUMLP.onnx --stronglyTyped --saveEngine=/tmp/modelopt_build/trt_artifacts/SwiGLUMLP.engine --builderOptimizationLevel=4 --skipInference --timingCacheFile=/tmp/modelopt_build/trt_artifacts/timing.cache
+[modelopt][_deploy] - INFO - Engine saved to /tmp/modelopt_build/trt_artifacts/39a2125c-SwiGLUMLP.engine
+[modelopt][_deploy] - INFO - Execution time for build_engine: 16.3714s
+[modelopt][_deploy] - INFO - trtexec --loadEngine=/tmp/tmp3rzmeciu/39a2125c-model.engine --warmUp=500 --avgRuns=500 --iterations=500 --noDataTransfers --useCudaGraph --useSpinWait --dumpProfile --separateProfileRun --exportProfile=/tmp/modelopt_build/trt_artifacts/39a2125c-profile.json --profilingVerbosity=detailed --exportLayerInfo=/tmp/modelopt_build/trt_artifacts/39a2125c-layerInfo.json
+[modelopt][_deploy] - INFO - Profile saved to /tmp/modelopt_build/trt_artifacts/39a2125c-profile.json
+[modelopt][_deploy] - INFO - LayerInfo saved to /tmp/modelopt_build/trt_artifacts/39a2125c-layerInfo.json
+[modelopt][_deploy] - INFO - Execution time for profile_engine: 38.7882s
+Inserted 9 quantizers
+[modelopt][_deploy] - WARNING - /usr/local/lib/python3.12/dist-packages/modelopt/torch/quantization/nn/modules/tensor_quantizer.py:878: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  if inputs.numel() == 0:
+
+[modelopt][_deploy] - WARNING - /usr/local/lib/python3.12/dist-packages/modelopt/torch/quantization/nn/modules/tensor_quantizer.py:706: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  assert amax.numel() == 1, (
+
+[W513 12:45:02.402775041 shape_type_inference.cpp:1994] Warning: The shape inference of trt::TRT_FP4QDQ type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function. (function UpdateReliable)
+[W513 12:45:02.404649083 shape_type_inference.cpp:1994] Warning: The shape inference of trt::TRT_FP4QDQ type is missing, so it may result in wrong shape inference for the exported graph. Please consider adding it in symbolic function. (function UpdateReliable)
+[modelopt][onnx] - INFO - Computing scales for NVFP4 quantization
+[modelopt][onnx] - INFO - Compressing weights for NVFP4 quantization
+[modelopt][onnx] - INFO - Post-processing NVFP4 quantization
+[modelopt][onnx] - INFO - Removed 2 initializers
+[05/13/2026-12:45:05] [TRT] [W] WARNING The logger passed into createInferRuntime differs from one already registered for an existing builder, runtime, or refitter. So the current new logger is ignored, and TensorRT will use the existing one which is returned by nvinfer1::getLogger() instead.
+Writing ONNX model to directory: /tmp/tmpnfoofg75/onnx
+[modelopt][_deploy] - INFO - trtexec --onnx=/tmp/tmpnfoofg75/onnx/SwiGLUMLP.onnx --stronglyTyped --saveEngine=/tmp/modelopt_build/trt_artifacts/SwiGLUMLP.engine --builderOptimizationLevel=4 --skipInference --timingCacheFile=/tmp/modelopt_build/trt_artifacts/timing.cache
+[modelopt][_deploy] - INFO - Engine saved to /tmp/modelopt_build/trt_artifacts/6ae9e63f-SwiGLUMLP.engine
+[modelopt][_deploy] - INFO - Execution time for build_engine: 5.9023s
+[modelopt][_deploy] - INFO - trtexec --loadEngine=/tmp/tmpz7g8fcfe/6ae9e63f-model.engine --warmUp=500 --avgRuns=500 --iterations=500 --noDataTransfers --useCudaGraph --useSpinWait --dumpProfile --separateProfileRun --exportProfile=/tmp/modelopt_build/trt_artifacts/6ae9e63f-profile.json --profilingVerbosity=detailed --exportLayerInfo=/tmp/modelopt_build/trt_artifacts/6ae9e63f-layerInfo.json
+[modelopt][_deploy] - INFO - Profile saved to /tmp/modelopt_build/trt_artifacts/6ae9e63f-profile.json
+[modelopt][_deploy] - INFO - LayerInfo saved to /tmp/modelopt_build/trt_artifacts/6ae9e63f-layerInfo.json
+[modelopt][_deploy] - INFO - Execution time for profile_engine: 25.2066s
+/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_qat_probe.json

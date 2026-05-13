@@ -1,0 +1,55 @@
+{
+  "status": "ok_integrated",
+  "timestamp_utc": "2026-05-13T12:45:56Z",
+  "subgraph": {
+    "name": "dit.blocks[0].mlp.vid",
+    "type": "integrated_video_mlp_branch",
+    "boundary": "x[seq_len, hidden_dim] -> y[seq_len, hidden_dim]",
+    "input_shape": [
+      74655,
+      2560
+    ],
+    "compile_shape": [
+      74655,
+      2560
+    ],
+    "input_dtype": "torch.bfloat16",
+    "compile_dtype": "torch.float16",
+    "parameters": 53084160
+  },
+  "steps": {
+    "modelopt_nvfp4_export_detection_patch": {
+      "status": "enabled",
+      "reason": "This NVFP4 W4A4 probe must not run ModelOpt 0.40's empty FP8 exporter.",
+      "quantize_weights": "NVFP4QuantExporter only",
+      "onnx_infer_shapes": "disabled",
+      "onnx_optimize": "disabled",
+      "patched_scale_attrs": 2,
+      "restored_original_initializers": 1,
+      "positive_qdq_scales": 0,
+      "bad_initializers_before_save": [],
+      "bad_initializers_after_save": [],
+      "debug_onnx": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_81f_720p_trt/trt_w4a4_integrated_mlp_compile.w4a4.onnx"
+    },
+    "modelopt_w4a4_quantize": {
+      "status": "ok",
+      "seconds": 0.0809
+    },
+    "qat_teacher_loss": {
+      "status": "ok",
+      "seconds": 0.1691,
+      "losses": [
+        0.0019480087794363499
+      ],
+      "optimizer": "SGD"
+    },
+    "w4a4_modelopt_deploy_trt": {
+      "status": "ok",
+      "seconds": 39.0688,
+      "latency_ms": 20.3718,
+      "throughput": 49.0835
+    },
+    "w4a4_modelopt_deploy_max_abs_error": 1.0
+  },
+  "seconds_total": 39.383
+}

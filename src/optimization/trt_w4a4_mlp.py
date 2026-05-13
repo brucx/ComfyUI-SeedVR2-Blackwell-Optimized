@@ -124,7 +124,7 @@ class TRTW4A4MLPWrapper(nn.Module):
         with torch.no_grad():
             target = self.original(x_compile).detach()
 
-        qat_model = copy.deepcopy(self.original).train()
+        qat_model = copy.deepcopy(self.original).to(dtype=torch.float16).train()
 
         def calib_loop(model):
             model(x_compile)

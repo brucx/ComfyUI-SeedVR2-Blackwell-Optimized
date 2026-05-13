@@ -15,6 +15,9 @@ from urllib.request import urlretrieve
 
 TEST_URL = "https://alist.a1d.ai/d/r2/test/test.mov?sign=ygCN1Wsn9M83U_sFRxq2E7YRRXdMhFbyJWKn-BCPK8E=:0"
 ROOT = Path(__file__).resolve().parents[1]
+DIT_3B_FP8 = "seedvr2_ema_3b_fp8_e4m3fn.safetensors"
+DIT_3B_FP16 = "seedvr2_ema_3b_fp16.safetensors"
+MODEL_OPT_3B = "seedvr2_ema_3b_nvfp4_w4a16.modelopt.pt"
 
 
 def run_case(label: str, cmd: list[str], out_dir: Path) -> dict:
@@ -104,7 +107,7 @@ def main() -> int:
         ], output_dir))
 
     if args.include_modelopt:
-        modelopt_model = ROOT / "models" / "SEEDVR2" / "seedvr2_ema_7b_nvfp4_w4a16.modelopt.pt"
+        modelopt_model = ROOT / "models" / "SEEDVR2" / MODEL_OPT_3B
         if not modelopt_model.exists():
             subprocess.run([sys.executable, "scripts/modelopt_nvfp4_ptq.py"], cwd=ROOT, check=False)
         if modelopt_model.exists():
@@ -143,6 +146,7 @@ def main() -> int:
             sys.executable,
             "scripts/trt_w4a4_qat_probe.py",
             "--model_dir", "./models/SEEDVR2",
+            "--base_model", DIT_3B_FP16,
             "--seq_len", str(args.trt_qat_seq_len),
             "--qat_steps", "1",
             "--qat_lr", "1e-8",
@@ -155,7 +159,7 @@ def main() -> int:
         records.append(run_case("trt_w4a4_integrated_mlp", base_cli + [
             "--attention_mode", "sageattn_3",
             "--strict_attention_mode",
-            "--dit_model", "seedvr2_ema_7b_fp16.safetensors",
+            "--dit_model", DIT_3B_FP8,
             "--batch_size", "81",
             "--uniform_batch_size",
             "--trt_w4a4_mlp",
