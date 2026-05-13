@@ -126,6 +126,7 @@ def main() -> int:
     parser.add_argument("--qat_lr", type=float, default=1e-8)
     parser.add_argument("--bench_iters", type=int, default=20)
     parser.add_argument("--warmup_iters", type=int, default=5)
+    parser.add_argument("--skip_modelopt_deploy", action="store_true")
     parser.add_argument("--output_json", default="benchmark_results/trt_w4a4_qat/trt_w4a4_qat_probe.json")
     parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
@@ -204,6 +205,36 @@ def main() -> int:
                 "traceback_tail": traceback.format_exc().splitlines()[-40:],
             }
 
+        if not args.skip_modelopt_deploy:
+            try:
+                import modelopt.torch._deploy as deploy
+
+                started = time.time()
+                deploy_teacher = deploy.compile(
+                    teacher,
+                    x,
+                    {
+                        "runtime": "TRT",
+                        "accelerator": "GPU",
+                        "precision": "stronglyTyped",
+                        "onnx_opset": "20",
+                    },
+                )
+                latency_ms, details = deploy_teacher.profile()
+                result["steps"]["fp16_modelopt_deploy_trt"] = {
+                    "status": "ok",
+                    "seconds": round(time.time() - started, 4),
+                    "latency_ms": latency_ms,
+                    "throughput": details.get("performance_summary", {}).get("Throughput"),
+                }
+            except Exception as deploy_exc:
+                result["steps"]["fp16_modelopt_deploy_trt"] = {
+                    "status": "failed",
+                    "seconds": round(time.time() - started, 4) if "started" in locals() else 0,
+                    "error": _jsonable(deploy_exc),
+                    "traceback_tail": traceback.format_exc().splitlines()[-40:],
+                }
+
         qat_model = copy.deepcopy(teacher).train()
 
         def calib_loop(model):
@@ -240,6 +271,34 @@ def main() -> int:
         result["steps"]["w4a4_eager_benchmark"] = _cuda_bench(
             qat_model, x, args.warmup_iters, args.bench_iters
         )
+
+        if not args.skip_modelopt_deploy:
+            started = time.time()
+            try:
+                deploy_qat = deploy.compile(
+                    qat_model,
+                    x,
+                    {
+                        "runtime": "TRT",
+                        "accelerator": "GPU",
+                        "precision": "stronglyTyped",
+                        "onnx_opset": "20",
+                    },
+                )
+                latency_ms, details = deploy_qat.profile()
+                result["steps"]["w4a4_modelopt_deploy_trt"] = {
+                    "status": "ok",
+                    "seconds": round(time.time() - started, 4),
+                    "latency_ms": latency_ms,
+                    "throughput": details.get("performance_summary", {}).get("Throughput"),
+                }
+            except Exception as deploy_exc:
+                result["steps"]["w4a4_modelopt_deploy_trt"] = {
+                    "status": "failed",
+                    "seconds": round(time.time() - started, 4),
+                    "error": _jsonable(deploy_exc),
+                    "traceback_tail": traceback.format_exc().splitlines()[-40:],
+                }
 
         started = time.time()
         try:

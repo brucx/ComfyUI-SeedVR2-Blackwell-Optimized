@@ -37,7 +37,8 @@ Engineering stage status:
 Extreme stage status:
 
 - Added `scripts/trt_w4a4_qat_probe.py` to isolate a real weighted DiT subgraph: `dit.blocks[0].mlp.vid`, with boundary `x[seq_len, 3072] -> y[seq_len, 3072]` and 75,512,832 parameters.
-- On `seq_len=4096`, FP16 Torch-TensorRT compilation of that subgraph succeeds: eager FP16 averaged 2.3871ms, TRT FP16 averaged 2.2786ms over 20 iterations; see `benchmark_results/blackwell_81f_720p_trt_qat_harness_v2/trt_w4a4_qat_probe.json`.
-- ModelOpt NVFP4 W4A4 fake-quant insertion succeeds on the same subgraph, and one teacher-loss QAT step runs with loss 2.184703; W4A4 eager averaged 2.1829ms over 20 iterations.
-- W4A4 Torch-TensorRT compilation is still not complete: the Dynamo frontend fails on ModelOpt activation quantizer fake tensor `proj_in.input_quantizer.lifted_tensor_0`, and the TorchScript frontend fails because NVFP4 non-integer quantization has no `step_size`. Both failures are recorded in `benchmark_results/blackwell_81f_720p_trt_qat_harness_v2/trt_w4a4_qat_probe.json`.
+- On `seq_len=4096`, FP16 Torch-TensorRT compilation of that subgraph succeeds: eager FP16 averaged 2.3867ms, TRT FP16 averaged 2.2793ms over 20 iterations; see `benchmark_results/blackwell_81f_720p_trt_qat_harness_v3/trt_w4a4_qat_probe.json`.
+- ModelOpt deploy also builds and profiles an FP16 TensorRT engine through ONNX/trtexec: 2.55646ms reported latency for the same subgraph.
+- ModelOpt NVFP4 W4A4 fake-quant insertion succeeds on the same subgraph, and one teacher-loss QAT step runs with loss 2.153753; W4A4 eager averaged 2.1921ms over 20 iterations.
+- W4A4 TRT compilation is still not complete: the ModelOpt deploy path reaches NVFP4 ONNX scale computation and weight compression, then fails while saving the post-processed ONNX graph with `NoneType.graph`; the Torch-TensorRT Dynamo frontend fails on ModelOpt activation quantizer fake tensor `proj_in.input_quantizer.lifted_tensor_0`; the TorchScript frontend fails because NVFP4 non-integer quantization has no `step_size`. These failures are recorded in `benchmark_results/blackwell_81f_720p_trt_qat_harness_v3/trt_w4a4_qat_probe.json`.
 - This is a concrete subgraph/QAT probe, not an integrated full-pipeline TRT W4A4 engine.
