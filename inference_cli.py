@@ -1055,6 +1055,11 @@ def _process_frames_core(
         torch_compile_args_dit=torch_compile_args_dit,
         torch_compile_args_vae=torch_compile_args_vae
     )
+    runner._trt_w4a4_mlp_enabled = args.trt_w4a4_mlp
+    runner._trt_w4a4_mlp_block_index = args.trt_w4a4_mlp_block_index
+    runner._trt_w4a4_mlp_qat_steps = args.trt_w4a4_mlp_qat_steps
+    runner._trt_w4a4_mlp_qat_lr = args.trt_w4a4_mlp_qat_lr
+    runner._trt_w4a4_mlp_json = args.trt_w4a4_mlp_json
     
     ctx['cache_context'] = cache_context
     if runner_cache is not None:
@@ -1586,6 +1591,17 @@ Examples:
                         help="Max cached compiled versions per function. Increase when using many different input shapes. Higher uses more memory (default: 64)")
     perf_group.add_argument("--compile_dynamo_recompile_limit", type=int, default=128,
                         help="Max recompilation attempts before fallback to eager mode. Safety limit to prevent compilation loops (default: 128)")
+    perf_group.add_argument("--trt_w4a4_mlp", action="store_true",
+                        help="Route one DiT video MLP branch through an integrated fixed-shape W4A4 TensorRT subgraph. "
+                             "This compiles on first real forward and is intended for Blackwell benchmark runs.")
+    perf_group.add_argument("--trt_w4a4_mlp_block_index", type=int, default=0,
+                        help="DiT block index for --trt_w4a4_mlp (default: 0)")
+    perf_group.add_argument("--trt_w4a4_mlp_qat_steps", type=int, default=1,
+                        help="Teacher-loss QAT steps for --trt_w4a4_mlp (default: 1)")
+    perf_group.add_argument("--trt_w4a4_mlp_qat_lr", type=float, default=1e-8,
+                        help="QAT learning rate for --trt_w4a4_mlp (default: 1e-8)")
+    perf_group.add_argument("--trt_w4a4_mlp_json", type=str, default=None,
+                        help="Write integrated W4A4 TensorRT MLP compile metadata to this JSON path")
     
     # Model Caching (for batch processing)
     cache_group = parser.add_argument_group('Model caching (batch processing)')

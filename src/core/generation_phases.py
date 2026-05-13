@@ -57,6 +57,7 @@ from ..optimization.performance import (
     optimized_single_video_rearrange, 
     optimized_sample_to_image_format
 )
+from ..optimization.trt_w4a4_mlp import install_trt_w4a4_mlp_wrapper
 from ..utils.color_fix import (
     lab_color_transfer,
     wavelet_adaptive_color_correction,
@@ -656,6 +657,15 @@ def upscale_all_batches(
         # Move DiT to GPU for upscaling (no-op if already there)
         manage_model_device(model=runner.dit, target_device=ctx['dit_device'], 
                             model_name="DiT", debug=debug, runner=runner)
+        if getattr(runner, '_trt_w4a4_mlp_enabled', False):
+            install_trt_w4a4_mlp_wrapper(
+                runner,
+                block_index=getattr(runner, '_trt_w4a4_mlp_block_index', 0),
+                qat_steps=getattr(runner, '_trt_w4a4_mlp_qat_steps', 1),
+                qat_lr=getattr(runner, '_trt_w4a4_mlp_qat_lr', 1e-8),
+                output_json=getattr(runner, '_trt_w4a4_mlp_json', None),
+                debug=debug,
+            )
 
         debug.log_memory_state("After DiT loading for upscaling", detailed_tensors=False)
 

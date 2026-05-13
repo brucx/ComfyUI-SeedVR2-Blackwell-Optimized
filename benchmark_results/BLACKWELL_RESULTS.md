@@ -10,6 +10,7 @@ Input: `test.mov` from the requested URL, first 81 frames, 480x274 source, 720p 
 | Blackwell preset cold | 7B FP8 mixed block35, SageAttention 3, `torch.compile max-autotune`, batch 81 | 81 | 501.3785 | 0.1616 | 47.41 GB |
 | Blackwell preset warm | Same as above, with Inductor cache reused | 81 | 178.3763 | 0.4541 | 39.97 GB |
 | ModelOpt NVFP4 fallback | 7B FP16 base -> NVFP4 W4A16 `.modelopt.pt`, SageAttention 3, DiT eager, VAE `torch.compile max-autotune`, batch 81 | 81 | 158.6656 | 0.5105 | 66.44 GB |
+| Integrated W4A4 TRT MLP | 7B FP16, SageAttention 3, batch 81, first DiT video MLP routed through W4A4 TensorRT `DeviceModel` | 81 | 85.8600 | 0.9434 | 35.44 GB |
 
 Phase timings:
 
@@ -19,6 +20,7 @@ Phase timings:
 | Blackwell preset cold | 68.8646s | 247.2887s | 182.5027s | 1.2432s |
 | Blackwell preset warm | 62.6533s | 55.8378s | 57.1879s | 1.2237s |
 | ModelOpt NVFP4 fallback | 60.7157s | 34.7902s | 60.8164s | 1.2458s |
+| Integrated W4A4 TRT MLP | 7.3964s | 60.5726s | 15.6004s | 1.2242s |
 
 Compatibility fixes made during benchmarking:
 
@@ -42,6 +44,7 @@ Extreme stage status:
 - ModelOpt NVFP4 W4A4 fake-quant insertion succeeds on the same subgraph, and one teacher-loss QAT step runs with SGD and loss 2.156582; W4A4 eager averaged 2.5223ms over 20 iterations.
 - W4A4 ModelOpt deploy now exports a finite NVFP4 ONNX graph, builds/profiles a TensorRT engine through `trtexec`, and runs `DeviceModel` forward: 1.71290ms reported `trtexec` latency, 583.256 inferences/s, and 1.6587ms average CUDA-event forward time over 20 iterations. The finite W4A4 TRT output had max absolute error 50.75 against the FP16 teacher for this random 4096-token probe batch.
 - The same probe also succeeds at the real 81-frame 720p token length, `seq_len=74655`, derived from encoded latent shape `[21, 90, 158, 16]` and DiT patch size `[1, 2, 2]`. At this fixed full-shape boundary, FP16 eager averaged 48.8109ms, FP16 Torch-TensorRT averaged 44.5086ms, FP16 ModelOpt deploy/TRT reported 45.8629ms, W4A4 eager averaged 48.6992ms, W4A4 ModelOpt deploy/TRT reported 31.9918ms, and W4A4 `DeviceModel` forward averaged 30.9279ms over 5 iterations. One-step QAT loss was 2.134499 with SGD, and finite W4A4 TRT output had max absolute error 71.0 against the FP16 teacher for the random full-shape probe batch. See `benchmark_results/blackwell_81f_720p_trt_qat_fullshape/trt_w4a4_qat_probe.json`.
+- Added an integrated fixed-shape path that wraps `dit.blocks[0].mlp.vid` and routes the live first-block MLP activation through the W4A4 TensorRT `DeviceModel` during actual inference. The 81-frame run succeeded with 85.86s total time, 0.9434 FPS, 35.44GB peak reserved VRAM, 45.2335s integrated compile time, W4A4 TRT profile latency 30.5263ms, one-step QAT loss 0.005460, and max absolute error 0.75 against the live FP16 teacher activation. See `benchmark_results/blackwell_81f_720p_trt_integrated_mlp/`.
 - The W4A4 export path requires local ModelOpt 0.40 workarounds in the probe: bypass the empty FP8 exporter that also matches NVFP4 quantizers, disable ONNX shape inference/optimization for this path, restore original FP16 initializers from a pre-export state backup, and sanitize NVFP4 scale tensors before TensorRT parsing. The v5 artifact records no NaN/Inf initializers before or after ONNX save.
 - Torch-TensorRT Dynamo and TorchScript frontends still fail directly on the ModelOpt fake-quantized module (`proj_in.input_quantizer.lifted_tensor_0` fake tensor and NVFP4 non-integer `step_size`), so the working W4A4 TRT path is ModelOpt ONNX deploy through `trtexec`.
-- This is a concrete full-shape subgraph/QAT/TRT probe, not an integrated full-pipeline TRT W4A4 engine.
+- This is an integrated W4A4 TensorRT route for one fixed-shape DiT MLP subgraph, not a full-DiT TensorRT engine.

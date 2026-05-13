@@ -65,6 +65,7 @@ def main() -> int:
     parser.add_argument("--skip_oob", action="store_true")
     parser.add_argument("--include_modelopt", action="store_true")
     parser.add_argument("--include_trt_qat", action="store_true")
+    parser.add_argument("--include_trt_integrated", action="store_true")
     parser.add_argument(
         "--trt_qat_seq_len",
         type=int,
@@ -148,6 +149,23 @@ def main() -> int:
             "--bench_iters", "20",
             "--warmup_iters", "5",
             "--output_json", str(output_dir / "trt_w4a4_qat_probe.json"),
+        ], output_dir))
+
+    if args.include_trt_integrated:
+        records.append(run_case("trt_w4a4_integrated_mlp", base_cli + [
+            "--attention_mode", "sageattn_3",
+            "--strict_attention_mode",
+            "--dit_model", "seedvr2_ema_7b_fp16.safetensors",
+            "--batch_size", "81",
+            "--uniform_batch_size",
+            "--trt_w4a4_mlp",
+            "--trt_w4a4_mlp_block_index", "0",
+            "--trt_w4a4_mlp_qat_steps", "1",
+            "--trt_w4a4_mlp_qat_lr", "1e-8",
+            "--trt_w4a4_mlp_json", str(output_dir / "trt_w4a4_integrated_mlp_compile.json"),
+            "--benchmark_label", "trt_w4a4_integrated_mlp",
+            "--benchmark_json", str(output_dir / "trt_w4a4_integrated_mlp.json"),
+            "--output", str(output_dir / "outputs" / "trt_w4a4_integrated_mlp.mp4"),
         ], output_dir))
 
     (output_dir / "records.json").write_text(json.dumps(records, indent=2), encoding="utf-8")

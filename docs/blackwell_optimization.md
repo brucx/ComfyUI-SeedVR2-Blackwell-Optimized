@@ -63,6 +63,8 @@ Current RTX Pro 6000 harness result for `seq_len=4096`: FP16 eager 2.3900ms, FP1
 
 The same path also succeeds at `seq_len=74655`, which is the fixed token length for the requested 81-frame 720p benchmark after VAE latent shape `[21, 90, 158, 16]` and DiT patch size `[1, 2, 2]`. At this real full-shape boundary, FP16 eager averaged 48.8109ms, FP16 Torch-TensorRT averaged 44.5086ms, FP16 ModelOpt deploy/TRT reported 45.8629ms, W4A4 eager averaged 48.6992ms, W4A4 ModelOpt deploy/TRT reported 31.9918ms, and W4A4 ModelOpt `DeviceModel` forward averaged 30.9279ms over 5 iterations. The one-step QAT teacher loss was 2.134499 with SGD, and the finite W4A4 TensorRT output had max absolute error 71.0 against the FP16 teacher for the random full-shape probe batch. See `benchmark_results/blackwell_81f_720p_trt_qat_fullshape/trt_w4a4_qat_probe.json`.
 
+The integrated inference path is enabled with `--trt_w4a4_mlp`. It wraps `dit.blocks[0].mlp.vid`, uses the first live activation tensor to run one teacher-loss QAT step, compiles a fixed-shape W4A4 TensorRT `DeviceModel`, and returns that TensorRT output to the active DiT block. The 81-frame benchmark using 7B FP16, SageAttention 3, batch 81, and the integrated MLP route completed successfully in 85.86s at 0.9434 FPS. Its W4A4 TRT profile latency was 30.5263ms for `x[74655, 3072]`, integrated compile time was 45.2335s, QAT loss was 0.005460, and max absolute error was 0.75 against the live teacher activation. See `benchmark_results/blackwell_81f_720p_trt_integrated_mlp/`.
+
 Several ModelOpt 0.40 export workarounds are applied inside the probe:
 
 - disable the empty FP8 ONNX exporter for this NVFP4 W4A4 path, because ModelOpt's FP8 detector also matches NVFP4 quantizer metadata;
@@ -74,7 +76,7 @@ The v5 and full-shape artifacts record no NaN/Inf initializers before or after O
 
 Direct Torch-TensorRT Dynamo export still fails on a fake tensor from `proj_in.input_quantizer.lifted_tensor_0`; the TorchScript frontend also fails because ModelOpt NVFP4 uses non-integer quantization without a `step_size`. The working W4A4 TRT path is therefore ModelOpt ONNX deploy through `trtexec`.
 
-This is a full-shape DiT MLP subgraph result, not a full-pipeline TRT W4A4 engine. The remaining work is replacing the ModelOpt fake-quant activation boundary with a TensorRT-exportable quantize/dequantize representation and routing more of the DiT block calls through compiled engines.
+This is an integrated W4A4 TensorRT route for one fixed-shape DiT MLP subgraph, not a full-DiT TensorRT engine. The remaining work is scaling the same graph partitioning pattern to more DiT block components.
 
 To complete this path, the next implementation step is a model-specific graph partition:
 
