@@ -129,12 +129,17 @@ def main() -> int:
             records.append({"label": "modelopt_nvfp4_w4a16", "returncode": 99, "elapsed_sec": 0, "log": "modelopt checkpoint was not created"})
 
     if args.include_trt_qat:
-        records.append({
-            "label": "trt_subgraph_w4a4_qat",
-            "returncode": 98,
-            "elapsed_sec": 0,
-            "log": "TRT subgraph + W4A4 QAT requires model-specific graph partitioning and training recipe; see docs/blackwell_optimization.md",
-        })
+        records.append(run_case("trt_w4a4_qat_probe", [
+            sys.executable,
+            "scripts/trt_w4a4_qat_probe.py",
+            "--model_dir", "./models/SEEDVR2",
+            "--seq_len", "4096",
+            "--qat_steps", "1",
+            "--qat_lr", "1e-8",
+            "--bench_iters", "20",
+            "--warmup_iters", "5",
+            "--output_json", str(output_dir / "trt_w4a4_qat_probe.json"),
+        ], output_dir))
 
     (output_dir / "records.json").write_text(json.dumps(records, indent=2), encoding="utf-8")
     write_summary(records, output_dir / "summary.md")

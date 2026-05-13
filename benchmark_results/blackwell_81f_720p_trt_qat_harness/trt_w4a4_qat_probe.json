@@ -1,0 +1,113 @@
+{
+  "status": "trt_compile_failed",
+  "timestamp_utc": "2026-05-13T10:48:02Z",
+  "args": {
+    "model_dir": "./models/SEEDVR2",
+    "base_model": "seedvr2_ema_7b_fp16.safetensors",
+    "device": "cuda:0",
+    "dtype": "torch.float16",
+    "block_index": 0,
+    "seq_len": 4096,
+    "qat_steps": 1,
+    "qat_lr": 1e-08,
+    "bench_iters": 20,
+    "warmup_iters": 5,
+    "output_json": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_81f_720p_trt_qat_harness/trt_w4a4_qat_probe.json",
+    "debug": false
+  },
+  "environment": {
+    "torch": "2.10.0a0+a36e1d39eb.nv26.01.42222806",
+    "cuda": "13.1",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+    "capability": "12.0",
+    "modelopt": "0.40.0",
+    "torch_tensorrt": "2.10.0a0",
+    "tensorrt": "10.14.1.48"
+  },
+  "subgraph": {
+    "name": "dit.blocks[block_index].mlp.vid",
+    "type": "video_mlp_branch",
+    "boundary": "x[seq_len, hidden_dim] -> y[seq_len, hidden_dim]",
+    "hidden_dim": 3072,
+    "parameters": 75512832
+  },
+  "steps": {
+    "teacher_eager_benchmark": {
+      "iters": 20,
+      "total_ms": 47.6956,
+      "avg_ms": 2.3848
+    },
+    "fp16_torch_tensorrt_compile": {
+      "status": "ok",
+      "seconds": 4.2201
+    },
+    "fp16_trt_benchmark": {
+      "iters": 20,
+      "total_ms": 45.5762,
+      "avg_ms": 2.2788
+    },
+    "modelopt_w4a4_quantize": {
+      "status": "ok",
+      "seconds": 0.0502
+    },
+    "qat_teacher_loss": {
+      "status": "ok",
+      "seconds": 0.6345,
+      "losses": [
+        2.1241490840911865
+      ]
+    },
+    "w4a4_eager_benchmark": {
+      "iters": 20,
+      "total_ms": 43.8071,
+      "avg_ms": 2.1904
+    },
+    "torch_tensorrt_compile": {
+      "status": "failed",
+      "seconds": 0.0718,
+      "error": {
+        "type": "RuntimeError",
+        "message": "We found a fake tensor in the exported program constant's list. This typically means our tracing system encountered an op that we can't trace through. For the potential source, you can refer to following model attribute: proj_in.input_quantizer.lifted_tensor_0. Please file an issue on github. "
+      },
+      "traceback_tail": [
+        "Traceback (most recent call last):",
+        "  File \"/root/ComfyUI-SeedVR2_VideoUpscaler/scripts/trt_w4a4_qat_probe.py\", line 246, in main",
+        "    trt_model = torch_tensorrt.compile(",
+        "                ^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch_tensorrt/_compile.py\", line 308, in compile",
+        "    exp_program = dynamo_trace(",
+        "                  ^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch_tensorrt/dynamo/_tracer.py\", line 79, in trace",
+        "    exp_program = export(",
+        "                  ^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/__init__.py\", line 311, in export",
+        "    raise e",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/__init__.py\", line 277, in export",
+        "    return _export(",
+        "           ^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1271, in wrapper",
+        "    raise e",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1237, in wrapper",
+        "    ep = fn(*args, **kwargs)",
+        "         ^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/exported_program.py\", line 124, in wrapper",
+        "    return fn(*args, **kwargs)",
+        "           ^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 2380, in _export",
+        "    ep = _export_for_training(",
+        "         ^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1271, in wrapper",
+        "    raise e",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 1237, in wrapper",
+        "    ep = fn(*args, **kwargs)",
+        "         ^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/exported_program.py\", line 124, in wrapper",
+        "    return fn(*args, **kwargs)",
+        "           ^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/local/lib/python3.12/dist-packages/torch/export/_trace.py\", line 2214, in _export_for_training",
+        "    raise RuntimeError(error_msg)",
+        "RuntimeError: We found a fake tensor in the exported program constant's list. This typically means our tracing system encountered an op that we can't trace through. For the potential source, you can refer to following model attribute: proj_in.input_quantizer.lifted_tensor_0. Please file an issue on github. "
+      ]
+    }
+  }
+}

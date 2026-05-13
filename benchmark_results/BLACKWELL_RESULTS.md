@@ -33,4 +33,11 @@ Engineering stage status:
 - The already-FP8 mixed block35 checkpoint cannot be used as the PTQ source because ModelOpt's max calibration calls `torch.max` on FP8 weights, and PyTorch reports `max_all_cuda` is not implemented for `Float8_e4m3fn`.
 - `torch.compile` on the ModelOpt-quantized DiT currently fails in TorchDynamo inside ModelOpt's dynamic callback wrapper; see `benchmark_results/blackwell_81f_720p_modelopt/modelopt_nvfp4_w4a16.log`.
 - The measured engineering fallback keeps the ModelOpt DiT eager and compiles only the VAE; DiT inference for the single 81-frame batch was 6.8964s, while VAE encode/decode dominated runtime.
-- TRT subgraph + W4A4 QAT is documented as not completed because this repository lacks a stable exported DiT subgraph boundary and QAT training recipe.
+
+Extreme stage status:
+
+- Added `scripts/trt_w4a4_qat_probe.py` to isolate a real weighted DiT subgraph: `dit.blocks[0].mlp.vid`, with boundary `x[seq_len, 3072] -> y[seq_len, 3072]` and 75,512,832 parameters.
+- On `seq_len=4096`, FP16 Torch-TensorRT compilation of that subgraph succeeds: eager FP16 averaged 2.3848ms, TRT FP16 averaged 2.2788ms over 20 iterations; see `benchmark_results/blackwell_81f_720p_trt_qat_harness/trt_w4a4_qat_probe.json`.
+- ModelOpt NVFP4 W4A4 fake-quant insertion succeeds on the same subgraph, and one teacher-loss QAT step runs with loss 2.124149; W4A4 eager averaged 2.1904ms over 20 iterations.
+- W4A4 Torch-TensorRT compilation is still not complete: Torch export fails on ModelOpt activation quantizer fake tensor `proj_in.input_quantizer.lifted_tensor_0`. The failure is recorded in `benchmark_results/blackwell_81f_720p_trt_qat_harness/trt_w4a4_qat_probe.json`.
+- This is a concrete subgraph/QAT probe, not an integrated full-pipeline TRT W4A4 engine.

@@ -45,7 +45,21 @@ The compiled ModelOpt DiT path currently fails in TorchDynamo inside ModelOpt's 
 
 ## TRT subgraph + W4A4 QAT status
 
-TensorRT and ModelOpt are available in the target container, but the repository does not expose a static DiT subgraph boundary or a training/teacher-loss recipe for W4A4 QAT. The benchmark harness records this as an explicit incomplete experimental case instead of silently claiming a proxy result.
+TensorRT and ModelOpt are available in the target container. This branch adds `scripts/trt_w4a4_qat_probe.py` as a concrete first extreme-stage probe against a real weighted DiT subgraph: `dit.blocks[0].mlp.vid`.
+
+The probe:
+
+- loads real 7B FP16 DiT weights,
+- extracts the first block's video MLP branch with boundary `x[seq_len, 3072] -> y[seq_len, 3072]`,
+- compiles that subgraph with FP16 Torch-TensorRT,
+- inserts ModelOpt NVFP4 W4A4 fake quantizers,
+- runs a short teacher-loss QAT loop,
+- benchmarks eager FP16, TRT FP16, and W4A4 eager,
+- records the W4A4 TensorRT export failure if Torch export cannot lower ModelOpt activation quantizers.
+
+Current RTX Pro 6000 harness result for `seq_len=4096`: FP16 eager 2.3848ms, FP16 TRT 2.2788ms, W4A4 eager 2.1904ms. W4A4 TRT export fails because Torch export sees a fake tensor from `proj_in.input_quantizer.lifted_tensor_0`.
+
+This is not yet a full-pipeline TRT W4A4 engine. The remaining work is replacing the ModelOpt fake-quant activation boundary with a TensorRT-exportable quantize/dequantize representation and routing the DiT block calls through the compiled engine.
 
 To complete this path, the next implementation step is a model-specific graph partition:
 
