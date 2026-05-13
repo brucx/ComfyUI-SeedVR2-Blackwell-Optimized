@@ -34,6 +34,7 @@ Artifacts:
 - 3B FP8 fast preset validation: `benchmark_results/blackwell_3b_fp8_preset_fast/`
 - 3B FP8 300-frame SDPA batch sweep: `benchmark_results/blackwell_3b_fp8_batch_sweep_300f/`
 - 3B FP8 VAE compile probe: `benchmark_results/blackwell_3b_fp8_vae_probe/`
+- 3B FP8 full-clip VAE acceleration plan: `benchmark_results/blackwell_3b_fp8_vae_plan_full/`
 
 Engineering stage status:
 
@@ -55,3 +56,4 @@ Conclusion:
 - `--blackwell_pro6000_preset` now maps to the measured fast path: 3B FP8, SDPA, no compile, adaptive 4n+1 batch sizing capped at 81, and uniform batches. The validation run measured 31.2140s / 2.5950 FPS.
 - A longer 300-frame SDPA sweep confirms the 81 cap: batch 81 measured 117.0327s / 2.5548 FPS, while batch 149 regressed to 158.9516s / 1.8811 FPS.
 - VAE-only `torch.compile reduce-overhead` is not a follow-up win for the fast path: it measured 150.9339s / 0.5367 FPS and raised peak reserved VRAM to 36.41 GB.
+- Full-clip VAE acceleration testing found no speed win from FP16 compute, disabling tensor offload, decode tiling, or encode+decode tiling. The best measured VAE path remains the current BF16 eager VAE with CPU tensor offload: 116.1961s / 2.5732 FPS on the full clip.

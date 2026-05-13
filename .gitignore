@@ -26,3 +26,4 @@ TILE_VAE*
 .DS_Store
 benchmark_results/**/*.onnx
 benchmark_results/**/*.engine
+benchmark_results/**/*.mp4

@@ -24,6 +24,8 @@ A 300-frame SDPA sweep also supports the cap: batch 81 measured 117.0327s / 2.55
 
 VAE-only `torch.compile reduce-overhead` was tested as a follow-up because VAE encode/decode dominate the fast preset runtime. It regressed to 150.9339s / 0.5367 FPS and raised peak reserved VRAM to 36.41 GB, so the fast preset intentionally keeps VAE eager.
 
+A full-clip VAE knob sweep also found no speed win from FP16 compute, disabling tensor offload, decode tiling, or encode+decode tiling. The current BF16 eager VAE path remains fastest at 116.1961s / 2.5732 FPS. Tiling is still useful as a memory knob: decode tiling reduced peak reserved VRAM from 20.22 GB to 17.44 GB, but slowed end-to-end time to 119.8899s.
+
 ## Benchmark harness
 
 Use:

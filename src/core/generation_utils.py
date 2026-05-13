@@ -318,6 +318,7 @@ def setup_generation_context(
     dit_offload_device: Optional[Union[str, torch.device]] = None,
     vae_offload_device: Optional[Union[str, torch.device]] = None,
     tensor_offload_device: Optional[Union[str, torch.device]] = None,
+    compute_dtype: Optional[torch.dtype] = None,
     debug: Optional['Debug'] = None
 ) -> Dict[str, Any]:
     """
@@ -332,6 +333,7 @@ def setup_generation_context(
         dit_offload_device: Device to offload DiT to when not in use (optional)
         vae_offload_device: Device to offload VAE to when not in use (optional)
         tensor_offload_device: Device to offload intermediate tensors to (optional)
+        compute_dtype: Pipeline compute dtype override. Defaults to automatic bf16/fp16 selection.
         debug: Debug instance for logging
         
     Returns:
@@ -377,7 +379,7 @@ def setup_generation_context(
         'dit_offload_device': dit_offload_device,
         'vae_offload_device': vae_offload_device,
         'tensor_offload_device': tensor_offload_device,
-        'compute_dtype': COMPUTE_DTYPE,
+        'compute_dtype': compute_dtype or COMPUTE_DTYPE,
         'interrupt_fn': interrupt_fn,
         'video_transform': None,
         'text_embeds': None,

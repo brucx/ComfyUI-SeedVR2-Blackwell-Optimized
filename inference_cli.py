@@ -277,6 +277,16 @@ def _parse_offload_device(offload_arg: str, platform_type: str = None, cache_ena
     return _device_id_to_name(offload_arg, platform_type)
 
 
+def _parse_compute_dtype(compute_dtype_arg: str) -> Optional[torch.dtype]:
+    if compute_dtype_arg == "auto":
+        return None
+    if compute_dtype_arg == "bf16":
+        return torch.bfloat16
+    if compute_dtype_arg == "fp16":
+        return torch.float16
+    raise ValueError(f"Unsupported compute dtype: {compute_dtype_arg}")
+
+
 def _apply_blackwell_pro6000_preset(args: argparse.Namespace) -> None:
     """
     Apply the measured RTX Pro 6000 Blackwell 3B FP8 high-throughput preset.
@@ -1013,6 +1023,7 @@ def _process_frames_core(
     dit_offload = _parse_offload_device(args.dit_offload_device, platform_type, cache_dit)
     vae_offload = _parse_offload_device(args.vae_offload_device, platform_type, cache_vae)
     tensor_offload = _parse_offload_device(args.tensor_offload_device, platform_type, False)
+    compute_dtype = _parse_compute_dtype(args.compute_dtype)
     
     # Setup or reuse generation context
     if runner_cache is not None and 'ctx' in runner_cache:
@@ -1030,6 +1041,7 @@ def _process_frames_core(
             dit_offload_device=dit_offload,
             vae_offload_device=vae_offload,
             tensor_offload_device=tensor_offload,
+            compute_dtype=compute_dtype,
             debug=debug
         )
         if runner_cache is not None:
@@ -1559,6 +1571,9 @@ Examples:
                         help="Input noise injection scale (0.0-1.0). Adds variation to input images (default: 0.0)")
     quality_group.add_argument("--latent_noise_scale", type=float, default=0.0,
                         help="Latent noise injection scale (0.0-1.0). Adds variation to latent space (default: 0.0)")
+    quality_group.add_argument("--compute_dtype", type=str, default="auto", choices=["auto", "bf16", "fp16"],
+                        help="Pipeline compute dtype. 'auto' selects bf16 when supported, otherwise fp16. "
+                             "Use fp16/bf16 to benchmark VAE and DiT dtype tradeoffs (default: auto)")
     
     # Device Management
     device_group = parser.add_argument_group('Device management')
