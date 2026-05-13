@@ -86,6 +86,78 @@ def build_qat_cfg():
     return cfg
 
 
+def _patch_modelopt_nvfp4_export_detection(result: dict[str, Any], out_path: Path) -> None:
+    """Avoid routing NVFP4 W4A4 ONNX export through ModelOpt's FP8 exporter.
+
+    ModelOpt 0.40 identifies NVFP4 modules as FP4 by their scale_bits=(4, 3),
+    but its FP8 detector only excludes MXFP8 and can also match NVFP4 modules
+    because their quantizer num_bits are (4, 3). That makes deploy.compile run
+    the NVFP4 exporter and then the FP8 exporter on the same ONNX graph.
+    """
+    import modelopt.torch._deploy.utils.torch_onnx as torch_onnx
+    import modelopt.onnx.export.nvfp4_exporter as nvfp4_exporter
+    from modelopt.onnx.export.nvfp4_exporter import NVFP4QuantExporter
+
+    original_cast_fp8 = nvfp4_exporter._cast_fp8
+
+    def make_qdq_scales_positive(onnx_model):
+        import numpy as np
+        from onnx import numpy_helper
+
+        graph = onnx_model.graph
+        scale_names = {
+            node.input[1]
+            for node in graph.node
+            if node.op_type in {"QuantizeLinear", "DequantizeLinear"} and len(node.input) > 1
+        }
+        patched = 0
+        initializer_by_name = {initializer.name: initializer for initializer in graph.initializer}
+        for scale_name in scale_names:
+            initializer = initializer_by_name.get(scale_name)
+            if initializer is None:
+                continue
+            scale = numpy_helper.to_array(initializer)
+            if scale.dtype.kind not in {"f", "c"}:
+                continue
+            positive = np.nan_to_num(np.abs(scale), nan=1.0, posinf=448.0, neginf=1.0)
+            positive = np.maximum(positive, np.finfo(positive.dtype).tiny)
+            if np.any(scale != positive):
+                initializer.CopyFrom(numpy_helper.from_array(positive, initializer.name))
+                patched += 1
+        return onnx_model, patched
+
+    torch_onnx.is_fp8_quantized = lambda model: False
+
+    def cast_positive_fp8(array):
+        import numpy as np
+
+        positive = np.nan_to_num(np.abs(array), nan=1.0, posinf=448.0, neginf=1.0)
+        return original_cast_fp8(positive)
+
+    nvfp4_exporter._cast_fp8 = cast_positive_fp8
+
+    def quantize_weights_nvfp4_only(model: torch.nn.Module, onnx_model):
+        del model
+        exported = NVFP4QuantExporter.process_model(onnx_model)
+        if exported is None:
+            raise RuntimeError("NVFP4QuantExporter returned None")
+        exported, patched_scales = make_qdq_scales_positive(exported)
+        result["steps"]["modelopt_nvfp4_export_detection_patch"]["positive_qdq_scales"] = patched_scales
+        debug_onnx_path = out_path.with_suffix(".w4a4.onnx")
+        import onnx
+
+        onnx.save(exported, debug_onnx_path)
+        result["steps"]["modelopt_nvfp4_export_detection_patch"]["debug_onnx"] = str(debug_onnx_path)
+        return exported
+
+    torch_onnx.quantize_weights = quantize_weights_nvfp4_only
+    result["steps"]["modelopt_nvfp4_export_detection_patch"] = {
+        "status": "enabled",
+        "reason": "This NVFP4 W4A4 probe must not run ModelOpt 0.40's empty FP8 exporter.",
+        "quantize_weights": "NVFP4QuantExporter only",
+    }
+
+
 def load_mlp_subgraph(args, debug: Debug) -> torch.nn.Module:
     if not download_weight(dit_model=args.base_model, vae_model=DEFAULT_VAE, model_dir=args.model_dir, debug=debug):
         raise RuntimeError("failed to download base weights")
@@ -165,6 +237,7 @@ def main() -> int:
             "torch_tensorrt": getattr(torch_tensorrt, "__version__", None),
             "tensorrt": getattr(trt, "__version__", None),
         }
+        _patch_modelopt_nvfp4_export_detection(result, out_path)
 
         debug = Debug(enabled=args.debug)
         teacher = load_mlp_subgraph(args, debug)
@@ -274,6 +347,7 @@ def main() -> int:
 
         if not args.skip_modelopt_deploy:
             started = time.time()
+            w4a4_modelopt_deploy_ok = False
             try:
                 deploy_qat = deploy.compile(
                     qat_model,
@@ -292,6 +366,8 @@ def main() -> int:
                     "latency_ms": latency_ms,
                     "throughput": details.get("performance_summary", {}).get("Throughput"),
                 }
+                w4a4_modelopt_deploy_ok = True
+                result["status"] = "ok_modelopt_deploy"
             except Exception as deploy_exc:
                 result["steps"]["w4a4_modelopt_deploy_trt"] = {
                     "status": "failed",
@@ -299,6 +375,8 @@ def main() -> int:
                     "error": _jsonable(deploy_exc),
                     "traceback_tail": traceback.format_exc().splitlines()[-40:],
                 }
+        else:
+            w4a4_modelopt_deploy_ok = False
 
         started = time.time()
         try:
@@ -351,7 +429,8 @@ def main() -> int:
                     "error": _jsonable(ts_exc),
                     "traceback_tail": traceback.format_exc().splitlines()[-40:],
                 }
-                result["status"] = "trt_compile_failed"
+                if not w4a4_modelopt_deploy_ok:
+                    result["status"] = "trt_compile_failed"
 
     except Exception as exc:
         result["status"] = "failed"
@@ -360,7 +439,7 @@ def main() -> int:
 
     out_path.write_text(json.dumps(result, indent=2, default=_jsonable) + "\n", encoding="utf-8")
     print(out_path)
-    return 0 if result["status"] == "ok" else 1
+    return 0 if str(result["status"]).startswith("ok") else 1
 
 
 if __name__ == "__main__":

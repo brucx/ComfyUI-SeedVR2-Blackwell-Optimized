@@ -37,8 +37,10 @@ Engineering stage status:
 Extreme stage status:
 
 - Added `scripts/trt_w4a4_qat_probe.py` to isolate a real weighted DiT subgraph: `dit.blocks[0].mlp.vid`, with boundary `x[seq_len, 3072] -> y[seq_len, 3072]` and 75,512,832 parameters.
-- On `seq_len=4096`, FP16 Torch-TensorRT compilation of that subgraph succeeds: eager FP16 averaged 2.3867ms, TRT FP16 averaged 2.2793ms over 20 iterations; see `benchmark_results/blackwell_81f_720p_trt_qat_harness_v3/trt_w4a4_qat_probe.json`.
-- ModelOpt deploy also builds and profiles an FP16 TensorRT engine through ONNX/trtexec: 2.55646ms reported latency for the same subgraph.
-- ModelOpt NVFP4 W4A4 fake-quant insertion succeeds on the same subgraph, and one teacher-loss QAT step runs with loss 2.153753; W4A4 eager averaged 2.1921ms over 20 iterations.
-- W4A4 TRT compilation is still not complete: the ModelOpt deploy path reaches NVFP4 ONNX scale computation and weight compression, then fails while saving the post-processed ONNX graph with `NoneType.graph`; the Torch-TensorRT Dynamo frontend fails on ModelOpt activation quantizer fake tensor `proj_in.input_quantizer.lifted_tensor_0`; the TorchScript frontend fails because NVFP4 non-integer quantization has no `step_size`. These failures are recorded in `benchmark_results/blackwell_81f_720p_trt_qat_harness_v3/trt_w4a4_qat_probe.json`.
-- This is a concrete subgraph/QAT probe, not an integrated full-pipeline TRT W4A4 engine.
+- On `seq_len=4096`, FP16 Torch-TensorRT compilation of that subgraph succeeds: eager FP16 averaged 2.3945ms, TRT FP16 averaged 2.2885ms over 20 iterations; see `benchmark_results/blackwell_81f_720p_trt_qat_harness_v4/trt_w4a4_qat_probe.json`.
+- ModelOpt deploy also builds and profiles an FP16 TensorRT engine through ONNX/trtexec: 2.55824ms reported latency for the same subgraph.
+- ModelOpt NVFP4 W4A4 fake-quant insertion succeeds on the same subgraph, and one teacher-loss QAT step runs with loss 2.118263; W4A4 eager averaged 2.1847ms over 20 iterations.
+- W4A4 ModelOpt deploy now exports the NVFP4 ONNX and builds/profiles a TensorRT engine through `trtexec`: 1.47226ms reported latency and 678.529 inferences/s for the same 4096-token MLP subgraph.
+- The W4A4 export path requires two local ModelOpt 0.40 workarounds in the probe: bypass the empty FP8 exporter that also matches NVFP4 quantizers, and sanitize NVFP4 ONNX scale tensors with finite positive values before TensorRT parsing.
+- Torch-TensorRT Dynamo and TorchScript frontends still fail directly on the ModelOpt fake-quantized module (`proj_in.input_quantizer.lifted_tensor_0` fake tensor and NVFP4 non-integer `step_size`), so the working W4A4 TRT path is ModelOpt ONNX deploy through `trtexec`.
+- This is a concrete subgraph/QAT/TRT probe, not an integrated full-pipeline TRT W4A4 engine.

@@ -56,9 +56,17 @@ The probe:
 - inserts ModelOpt NVFP4 W4A4 fake quantizers,
 - runs a short teacher-loss QAT loop,
 - benchmarks eager FP16, TRT FP16, and W4A4 eager,
-- records the W4A4 TensorRT export failure if Torch export cannot lower ModelOpt activation quantizers.
+- builds and profiles the W4A4 TensorRT path through ModelOpt ONNX deploy and `trtexec`,
+- records the direct Torch-TensorRT frontend failures if Torch export cannot lower ModelOpt activation quantizers.
 
-Current RTX Pro 6000 harness result for `seq_len=4096`: FP16 eager 2.3867ms, FP16 Torch-TensorRT 2.2793ms, FP16 ModelOpt deploy/TRT 2.55646ms, W4A4 eager 2.1921ms. W4A4 TRT export fails in the ModelOpt deploy path after NVFP4 ONNX scale computation and weight compression with `NoneType.graph`; the Torch-TensorRT Dynamo frontend sees a fake tensor from `proj_in.input_quantizer.lifted_tensor_0`; the TorchScript frontend also fails because ModelOpt NVFP4 uses non-integer quantization without a `step_size`.
+Current RTX Pro 6000 harness result for `seq_len=4096`: FP16 eager 2.3945ms, FP16 Torch-TensorRT 2.2885ms, FP16 ModelOpt deploy/TRT 2.55824ms, W4A4 eager 2.1847ms, and W4A4 ModelOpt deploy/TRT 1.47226ms. The one-step QAT teacher loss was 2.118263. The W4A4 `trtexec` profile reports 678.529 inferences/s for the isolated MLP subgraph.
+
+Two ModelOpt 0.40 export workarounds are applied inside the probe:
+
+- disable the empty FP8 ONNX exporter for this NVFP4 W4A4 path, because ModelOpt's FP8 detector also matches NVFP4 quantizer metadata;
+- sanitize NVFP4 ONNX scale tensors to finite positive values before TensorRT parsing, because the default exporter can emit NaN/negative DQ scales for this subgraph.
+
+Direct Torch-TensorRT Dynamo export still fails on a fake tensor from `proj_in.input_quantizer.lifted_tensor_0`; the TorchScript frontend also fails because ModelOpt NVFP4 uses non-integer quantization without a `step_size`. The working W4A4 TRT path is therefore ModelOpt ONNX deploy through `trtexec`.
 
 This is not yet a full-pipeline TRT W4A4 engine. The remaining work is replacing the ModelOpt fake-quant activation boundary with a TensorRT-exportable quantize/dequantize representation and routing the DiT block calls through the compiled engine.
 
