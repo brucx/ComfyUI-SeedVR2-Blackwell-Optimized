@@ -13,6 +13,7 @@ Input: requested `test.mov`, first 81 frames, 480x274 source, 720p short-side ou
 | 3B integrated W4A4 TRT MLP | 3B FP8, SageAttention 3, batch 81, first DiT video MLP routed through W4A4 TensorRT `DeviceModel` | 81 | 73.4719 | 1.1025 | 28.13 GB |
 | 3B FP8 hypothesis winner | 3B FP8, SDPA, batch 81, uniform batch, no compile | 81 | 31.2787 | 2.5896 | 20.22 GB |
 | 3B FP8 fast preset | `--blackwell_pro6000_preset`: 3B FP8, SDPA, adaptive batch 81, uniform batch, no compile | 81 | 31.2140 | 2.5950 | 20.22 GB |
+| 3B FP8 VAE Conv3D unsplit preset | 3B FP8, SDPA, batch 81, uniform batch, no compile, `--vae_conv_memory_limit_gb 0` | 81 | 28.2877 | 2.8634 | 40.97 GB |
 
 Phase timings:
 
@@ -35,6 +36,8 @@ Artifacts:
 - 3B FP8 300-frame SDPA batch sweep: `benchmark_results/blackwell_3b_fp8_batch_sweep_300f/`
 - 3B FP8 VAE compile probe: `benchmark_results/blackwell_3b_fp8_vae_probe/`
 - 3B FP8 full-clip VAE acceleration plan: `benchmark_results/blackwell_3b_fp8_vae_plan_full/`
+- 3B FP8 VAE decode profile and Conv3D memory split validation: `benchmark_results/blackwell_3b_fp8_vae_decode_profile/`
+- 3B FP8 Conv3D-unsplit preset validation: `benchmark_results/blackwell_3b_fp8_preset_convlimit/`
 
 Engineering stage status:
 
@@ -53,7 +56,8 @@ Conclusion:
 - Under the requested 3B FP8 comparison, the fastest measured end-to-end path for this short 81-frame clip is now the simple SDPA batch-size optimization: batch 81 with uniform batching, no SageAttention, and no compile. In the focused hypothesis run it measured 31.2787s / 2.5896 FPS, 1.096x faster than the same-run batch 5 reference.
 - The previous integrated W4A4 TRT MLP route improves substantially over the 3B OOB warm compile path (166.3370s / 0.4870 FPS) and the 3B ModelOpt fallback (129.7714s / 0.6242 FPS), but it does not beat the lean 3B FP8 SDPA path.
 - Focused hypothesis testing found that SageAttention 3, DiT-only `torch.compile`, and disabling tensor offload do not improve the 3B FP8 short-clip path. Details are in `docs/blackwell_3b_fp8_hypotheses.md`.
-- `--blackwell_pro6000_preset` now maps to the measured fast path: 3B FP8, SDPA, no compile, adaptive 4n+1 batch sizing capped at 81, and uniform batches. The validation run measured 31.2140s / 2.5950 FPS.
+- `--blackwell_pro6000_preset` now maps to the measured fast path: 3B FP8, SDPA, no compile, adaptive 4n+1 batch sizing capped at 81, uniform batches, and VAE Conv3D memory splitting disabled. The validation run measured 28.2877s / 2.8634 FPS.
 - A longer 300-frame SDPA sweep confirms the 81 cap: batch 81 measured 117.0327s / 2.5548 FPS, while batch 149 regressed to 158.9516s / 1.8811 FPS.
 - VAE-only `torch.compile reduce-overhead` is not a follow-up win for the fast path: it measured 150.9339s / 0.5367 FPS and raised peak reserved VRAM to 36.41 GB.
 - Full-clip VAE acceleration testing found no speed win from FP16 compute, disabling tensor offload, decode tiling, or encode+decode tiling. The best measured VAE path remains the current BF16 eager VAE with CPU tensor offload: 116.1961s / 2.5732 FPS on the full clip.
+- `vae_decode` profiling found that Conv3D memory splitting creates substantial pad/cat/copy overhead. Disabling only that split with `--vae_conv_memory_limit_gb 0` improved the full clip from 116.1693s / 2.5738 FPS to 103.0863s / 2.9005 FPS, with peak reserved VRAM rising from 20.22 GB to 41.84 GB. Temporal causal slicing itself cannot be disabled; it OOMs on the 81-frame 720p batch.

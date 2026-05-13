@@ -17,14 +17,17 @@ The preset now applies the fastest measured 3B FP8 path from the focused hypothe
 - `seedvr2_ema_3b_fp8_e4m3fn.safetensors`
 - adaptive 4n+1 batch sizing capped at `batch_size=81`
 - `uniform_batch_size=True`
+- VAE Conv3D memory splitting disabled with `vae_conv_memory_limit_gb=0`
 
-For the 81-frame 720p benchmark, this resolves to `batch_size=81 --uniform_batch_size` and measured 31.2140s / 2.5950 FPS in `benchmark_results/blackwell_3b_fp8_preset_fast/`. The previous SageAttention 3 + `torch.compile max-autotune` preset was slower on this short 3B FP8 workload, so it remains available only through explicit flags.
+For the 81-frame 720p benchmark, this resolves to `batch_size=81 --uniform_batch_size --vae_conv_memory_limit_gb 0` and measured 28.2877s / 2.8634 FPS in `benchmark_results/blackwell_3b_fp8_preset_convlimit/`. The full clip measured 103.0863s / 2.9005 FPS in `benchmark_results/blackwell_3b_fp8_vae_decode_profile/full_convlimit_off/`. The previous SageAttention 3 + `torch.compile max-autotune` preset was slower on this 3B FP8 workload, so it remains available only through explicit flags.
 
 A 300-frame SDPA sweep also supports the cap: batch 81 measured 117.0327s / 2.5548 FPS, while batch 149 regressed to 158.9516s / 1.8811 FPS.
 
 VAE-only `torch.compile reduce-overhead` was tested as a follow-up because VAE encode/decode dominate the fast preset runtime. It regressed to 150.9339s / 0.5367 FPS and raised peak reserved VRAM to 36.41 GB, so the fast preset intentionally keeps VAE eager.
 
 A full-clip VAE knob sweep also found no speed win from FP16 compute, disabling tensor offload, decode tiling, or encode+decode tiling. The current BF16 eager VAE path remains fastest at 116.1961s / 2.5732 FPS. Tiling is still useful as a memory knob: decode tiling reduced peak reserved VRAM from 20.22 GB to 17.44 GB, but slowed end-to-end time to 119.8899s.
+
+Profiling `vae_decode` found the actionable VAE bottleneck: Conv3D memory splitting creates pad/cat/copy overhead and many small kernel launches. Disabling only Conv3D memory splitting with `--vae_conv_memory_limit_gb 0` improves full-clip throughput to 103.0863s / 2.9005 FPS, with peak reserved VRAM rising to 41.84 GB. Temporal causal slicing itself must stay enabled; disabling it OOMs at this resolution and batch size. Details are in `docs/blackwell_3b_fp8_vae_decode_profile.md`.
 
 ## Benchmark harness
 

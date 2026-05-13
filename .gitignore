@@ -27,3 +27,5 @@ TILE_VAE*
 benchmark_results/**/*.onnx
 benchmark_results/**/*.engine
 benchmark_results/**/*.mp4
+benchmark_results/**/profile_*/vae_decode_batch_[0-9].json
+benchmark_results/**/profile_*/vae_decode_batch_[0-9][0-9].json

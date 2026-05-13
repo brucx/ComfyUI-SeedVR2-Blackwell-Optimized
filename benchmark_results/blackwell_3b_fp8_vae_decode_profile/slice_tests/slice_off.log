@@ -1,0 +1,285 @@
+📊 Initial CUDA memory: 94.42GB free / 94.97GB total
+/usr/local/lib/python3.12/dist-packages/torch/library.py:357: UserWarning: Warning only once for all operators,  other operators may also be overridden.
+  Overriding a previously registered kernel for the same operator and the same dispatch key
+  operator: flash_attn::_flash_attn_backward(Tensor dout, Tensor q, Tensor k, Tensor v, Tensor out, Tensor softmax_lse, Tensor(a6!)? dq, Tensor(a7!)? dk, Tensor(a8!)? dv, float dropout_p, float softmax_scale, bool causal, SymInt window_size_left, SymInt window_size_right, float softcap, Tensor? alibi_slopes, bool deterministic, Tensor? rng_state=None) -> Tensor
+    registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926
+  dispatch key: ADInplaceOrView
+  previous kernel: no debug info
+       new kernel: registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926 (Triggered internally at /opt/pytorch/pytorch/aten/src/ATen/core/dispatch/OperatorEntry.cpp:208.)
+  self.m.impl(
+⚡ SeedVR2 optimizations check: SageAttention ✅ | Flash Attention ✅ | Triton ✅
+🔧 Conv3d workaround active: PyTorch 2.10.0a0, cuDNN 91701 (fixing VAE 3x memory bug)
+ 
+ 
+   ███████╗███████╗███████╗██████╗ ██╗   ██╗██████╗     ██████╗       ███████╗
+   ██╔════╝██╔════╝██╔════╝██╔══██╗██║   ██║██╔══██╗    ╚════██╗      ██╔════╝
+   ███████╗█████╗  █████╗  ██║  ██║██║   ██║██████╔╝     █████╔╝      ███████╗
+   ╚════██║██╔══╝  ██╔══╝  ██║  ██║╚██╗ ██╔╝██╔══██╗    ██╔═══╝       ╚════██║
+   ███████║███████╗███████╗██████╔╝ ╚████╔╝ ██║  ██║    ███████╗  ██╗ ███████║
+   ╚══════╝╚══════╝╚══════╝╚═════╝   ╚═══╝  ╚═╝  ╚═╝    ╚══════╝  ╚═╝ ╚══════╝
+   💻 CLI · v2.5.24                           © ByteDance Seed · NumZ · AInVFX
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+[14:24:28.905] ℹ️ OS: Ubuntu 24.04 | GPU: NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition (95GB)
+[14:24:28.905] ℹ️ Python: 3.12.3 | PyTorch: 2.10.0a0+a36e1d39eb.nv26.01.42222806 | FlashAttn: v2 ✓ | SageAttn: v3,2 ✓ | Triton: ✓
+[14:24:28.905] ℹ️ CUDA: 13.1 | cuDNN: 91701
+[14:24:28.905]  
+[14:24:28.905] 🔧 Arguments:
+[14:24:28.905]    input: /root/seedvr_bench/inputs/test.mov
+[14:24:28.905]    output: benchmark_results/blackwell_3b_fp8_vae_decode_profile/slice_tests/outputs/slice_off.mp4
+[14:24:28.905]    output_format: None
+[14:24:28.905]    video_backend: opencv
+[14:24:28.905]    use_10bit: False
+[14:24:28.905]    model_dir: None
+[14:24:28.905]    dit_model: seedvr2_ema_3b_fp8_e4m3fn.safetensors
+[14:24:28.905]    resolution: 720
+[14:24:28.905]    max_resolution: 0
+[14:24:28.905]    batch_size: 81
+[14:24:28.905]    uniform_batch_size: True
+[14:24:28.905]    seed: 42
+[14:24:28.905]    skip_first_frames: 0
+[14:24:28.905]    load_cap: 81
+[14:24:28.905]    chunk_size: 0
+[14:24:28.905]    prepend_frames: 0
+[14:24:28.905]    temporal_overlap: 0
+[14:24:28.905]    color_correction: lab
+[14:24:28.905]    input_noise_scale: 0.0
+[14:24:28.905]    latent_noise_scale: 0.0
+[14:24:28.905]    compute_dtype: auto
+[14:24:28.905]    cuda_device: None
+[14:24:28.905]    dit_offload_device: none
+[14:24:28.905]    vae_offload_device: none
+[14:24:28.905]    tensor_offload_device: cpu
+[14:24:28.905]    blocks_to_swap: 0
+[14:24:28.905]    swap_io_components: False
+[14:24:28.905]    vae_encode_tiled: False
+[14:24:28.905]    vae_encode_tile_size: 1024
+[14:24:28.905]    vae_encode_tile_overlap: 128
+[14:24:28.905]    vae_decode_tiled: False
+[14:24:28.905]    vae_decode_tile_size: 1024
+[14:24:28.905]    vae_decode_tile_overlap: 128
+[14:24:28.905]    tile_debug: false
+[14:24:28.905]    vae_causal_slice_size: 0
+[14:24:28.905]    vae_conv_memory_limit_gb: None
+[14:24:28.905]    profile_vae_decode_dir: None
+[14:24:28.905]    profile_vae_decode_batches: 1
+[14:24:28.905]    attention_mode: sdpa
+[14:24:28.905]    strict_attention_mode: False
+[14:24:28.905]    blackwell_pro6000_preset: True
+[14:24:28.905]    compile_dit: False
+[14:24:28.905]    compile_vae: False
+[14:24:28.905]    compile_backend: inductor
+[14:24:28.905]    compile_mode: default
+[14:24:28.905]    compile_fullgraph: False
+[14:24:28.905]    compile_dynamic: False
+[14:24:28.905]    compile_dynamo_cache_size_limit: 64
+[14:24:28.905]    compile_dynamo_recompile_limit: 128
+[14:24:28.905]    trt_w4a4_mlp: False
+[14:24:28.905]    trt_w4a4_mlp_block_index: 0
+[14:24:28.905]    trt_w4a4_mlp_qat_steps: 1
+[14:24:28.905]    trt_w4a4_mlp_qat_lr: 1e-08
+[14:24:28.905]    trt_w4a4_mlp_json: None
+[14:24:28.905]    cache_dit: False
+[14:24:28.905]    cache_vae: False
+[14:24:28.905]    debug: True
+[14:24:28.905]    benchmark_json: benchmark_results/blackwell_3b_fp8_vae_decode_profile/slice_tests/slice_off.json
+[14:24:28.905]    benchmark_label: slice_off
+[14:24:28.905]    _blackwell_pro6000_max_batch_size: 81
+[14:24:28.905] 🖥️ CUDA_VISIBLE_DEVICES: Not set (all)
+[14:24:28.905] 🖥️ torch.cuda.device_count(): 1
+[14:24:28.905] 🖥️ Using device index 0 inside script (mapped to selected GPU)
+[14:24:28.905] 🖥️ Using devices: ['0']
+[14:24:28.905] 🔧 DiT model found: ./models/SEEDVR2/seedvr2_ema_3b_fp8_e4m3fn.safetensors
+[14:24:28.906] 🔧 DiT model already validated (cache): ./models/SEEDVR2/seedvr2_ema_3b_fp8_e4m3fn.safetensors
+[14:24:28.906] 🔧 VAE model found: ./models/SEEDVR2/ema_vae_fp16.safetensors
+[14:24:28.906] 🔧 VAE model already validated (cache): ./models/SEEDVR2/ema_vae_fp16.safetensors
+[14:24:28.906] 🎬 Processing video: test.mov
+[14:24:28.906] ℹ️   Auto-detected output format: mp4
+[14:24:28.915] ℹ️ Video info: 300 frames, 480x274, 29.97 FPS
+[14:24:29.033] 🔧 Generation context initialized: DiT=cuda:0, VAE=cuda:0, Offload=[Tensor offload=cpu], LOCAL_RANK=0
+[14:24:29.033] 🎯 Unified compute dtype: torch.bfloat16 across entire pipeline for maximum performance
+[14:24:29.033] 🏃 Configuring inference runner...
+[14:24:29.033] 🏃 Creating new runner: DiT=seedvr2_ema_3b_fp8_e4m3fn.safetensors, VAE=ema_vae_fp16.safetensors
+[14:24:29.062] 🚀 Creating DiT model structure on meta device
+[14:24:29.169] 🎨 Creating VAE model structure on meta device
+[14:24:29.240] 🎨 VAE downsample factors configured (spatial: 8x, temporal: 4x)
+[14:24:29.240] 🎨 VAE causal temporal slicing override: disabled
+[14:24:29.242] 🔄 Moving text_pos_embeds from CPU to CUDA:0 (DiT inference)
+[14:24:29.243] 🔄 Moving text_neg_embeds from CPU to CUDA:0 (DiT inference)
+[14:24:29.243] 🚀 Loaded text embeddings for DiT
+[14:24:29.243] 🔧   Initializing video transformation pipeline for 720px (shortest edge)
+[14:24:29.395] 🔧   Target dimensions: 1260x720 (padded to 1264x720 for processing)
+[14:24:29.397]  
+[14:24:29.397] 🎬 Starting upscaling generation...
+[14:24:29.397] 🎬   Input: 81 frames, 480x274px → Padded: 1264x720px → Output: 1260x720px (shortest edge: 720px)
+[14:24:29.397] 🎬   Batch size: 81 (uniform), Seed: 42, Channels: RGB
+[14:24:29.397]  
+[14:24:29.397]  ━━━━━━━━ Phase 1: VAE encoding ━━━━━━━━
+[14:24:29.397] ♻️ Reusing pre-initialized video transformation pipeline
+[14:24:29.397] 🎨 Materializing VAE weights to CUDA:0: ./models/SEEDVR2/ema_vae_fp16.safetensors
+[14:24:29.468] 🎯 Converting VAE weights to torch.bfloat16 during loading
+[14:24:29.488] 🎨 Materializing VAE: 250 parameters, 478.07MB total
+[14:24:29.493] 🎨 VAE materialized directly from meta with loaded weights
+[14:24:29.493] 🎨 VAE model set to eval mode (gradients disabled)
+[14:24:29.494] 🎨 Configuring VAE causal slicing for temporal processing
+[14:24:29.495] 🎨 Configuring VAE memory limits for causal convolutions
+[14:24:29.496] 🎯 Model precision: VAE=torch.bfloat16, compute=torch.bfloat16
+[14:24:29.497] 🎨 Using seed: 1000042 (VAE uses seed+1000000 for deterministic sampling)
+[14:24:29.497] 🔄 VAE already on CUDA:0, skipping movement
+[14:24:29.498] 📊 After VAE loading for encoding:
+[14:24:29.498] 📊   [VRAM] 0.48GB allocated / 0.50GB reserved / Peak: 0.49GB / 93.67GB free / 94.97GB total
+[14:24:29.498] 📊   [RAM] 1.48GB process / 54.76GB others / 119.70GB free / 175.94GB total
+[14:24:29.498] 📊 Resetting VRAM peak memory statistics
+[14:24:29.498] 🎨 Encoding batch 1/1
+[14:24:29.498] 🔄   Moving video_batch_1 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[14:24:29.528] 📹   Sequence of 81 frames
+[14:24:31.598] ⚠️ [WARNING] OOM during GroupNorm.concat_chunks: Allocation on device 0 would exceed allowed memory. (out of memory)
+Currently allocated     : 53.67 GiB
+Requested               : 17.58 GiB
+Device limit            : 94.97 GiB
+Free (according to CUDA): 8.25 MiB
+PyTorch limit (set by user-supplied memory fraction)
+                        : 17179869184.00 GiB
+[14:24:31.598] ℹ️ Clearing memory and retrying
+[14:24:31.598] 🧹 Clearing memory caches (deep)...
+[14:24:32.722] 📊 After memory clearing:
+[14:24:32.722] 📊   [VRAM] 53.67GB allocated / 53.78GB reserved / Peak: 72.58GB / 40.38GB free / 94.97GB total
+[14:24:32.722] 📊   [RAM] 1.76GB process / 54.68GB others / 119.49GB free / 175.94GB total
+[14:24:32.722] 📊   Memory changes: VRAM +53.20GB, RAM +0.28GB
+[14:24:32.722] 📊 Resetting VRAM peak memory statistics
+[14:24:32.754] ✅ Retry successful for GroupNorm.concat_chunks
+[14:24:32.949] ⚠️ [WARNING] OOM during InflatedCausalConv3d.concat_splits: Allocation on device 0 would exceed allowed memory. (out of memory)
+Currently allocated     : 72.58 GiB
+Requested               : 17.58 GiB
+Device limit            : 94.97 GiB
+Free (according to CUDA): 8.25 MiB
+PyTorch limit (set by user-supplied memory fraction)
+                        : 17179869184.00 GiB
+[14:24:32.949] ℹ️ Clearing memory and retrying
+[14:24:32.949] 🧹 Clearing memory caches (deep)...
+[14:24:34.079] 📊 After memory clearing:
+[14:24:34.079] 📊   [VRAM] 72.58GB allocated / 72.81GB reserved / Peak: 75.92GB / 21.35GB free / 94.97GB total
+[14:24:34.079] 📊   [RAM] 1.77GB process / 54.68GB others / 119.49GB free / 175.94GB total
+[14:24:34.079] 📊   Memory changes: VRAM +18.91GB
+[14:24:34.079] 📊 Resetting VRAM peak memory statistics
+[14:24:34.116] ✅ Retry successful for InflatedCausalConv3d.concat_splits
+[14:24:34.120] ⚠️ [WARNING] OOM during GroupNorm.concat_chunks: Allocation on device 0 would exceed allowed memory. (out of memory)
+Currently allocated     : 71.25 GiB
+Requested               : 17.58 GiB
+Device limit            : 94.97 GiB
+Free (according to CUDA): 8.25 MiB
+PyTorch limit (set by user-supplied memory fraction)
+                        : 17179869184.00 GiB
+[14:24:34.120] ℹ️ Clearing memory and retrying
+[14:24:34.120] 🧹 Clearing memory caches (deep)...
+[14:24:35.032] 📊 After memory clearing:
+[14:24:35.032] 📊   [VRAM] 71.25GB allocated / 71.41GB reserved / Peak: 90.16GB / 22.76GB free / 94.97GB total
+[14:24:35.032] 📊   [RAM] 1.77GB process / 54.68GB others / 119.49GB free / 175.94GB total
+[14:24:35.032] 📊   Memory changes: VRAM -1.33GB
+[14:24:35.032] 📊 Resetting VRAM peak memory statistics
+[14:24:35.064] ✅ Retry successful for GroupNorm.concat_chunks
+[14:24:35.250] ⚠️ [WARNING] OOM during InflatedCausalConv3d.concat_splits: Allocation on device 0 would exceed allowed memory. (out of memory)
+Currently allocated     : 72.58 GiB
+Requested               : 17.58 GiB
+Device limit            : 94.97 GiB
+Free (according to CUDA): 8.25 MiB
+PyTorch limit (set by user-supplied memory fraction)
+                        : 17179869184.00 GiB
+[14:24:35.250] ℹ️ Clearing memory and retrying
+[14:24:35.250] 🧹 Clearing memory caches (deep)...
+[14:24:36.428] 📊 After memory clearing:
+[14:24:36.429] 📊   [VRAM] 72.58GB allocated / 72.81GB reserved / Peak: 88.82GB / 21.35GB free / 94.97GB total
+[14:24:36.429] 📊   [RAM] 1.77GB process / 54.68GB others / 119.49GB free / 175.94GB total
+[14:24:36.429] 📊   Memory changes: VRAM +1.33GB
+[14:24:36.429] 📊 Resetting VRAM peak memory statistics
+[14:24:36.464] ✅ Retry successful for InflatedCausalConv3d.concat_splits
+[14:24:36.468] ❌ [ERROR] Error in Phase 1 (Encoding): Allocation on device 0 would exceed allowed memory. (out of memory)
+Currently allocated     : 71.25 GiB
+Requested               : 17.58 GiB
+Device limit            : 94.97 GiB
+Free (according to CUDA): 8.25 MiB
+PyTorch limit (set by user-supplied memory fraction)
+                        : 17179869184.00 GiB
+[14:24:36.468] ❌ [ERROR] Error during processing: Allocation on device 0 would exceed allowed memory. (out of memory)
+Currently allocated     : 71.25 GiB
+Requested               : 17.58 GiB
+Device limit            : 94.97 GiB
+Free (according to CUDA): 8.25 MiB
+PyTorch limit (set by user-supplied memory fraction)
+                        : 17179869184.00 GiB
+Traceback (most recent call last):
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/inference_cli.py", line 1915, in main
+    frames = process_single_file(args.input, args, device_list, args.output,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/inference_cli.py", line 725, in process_single_file
+    for result in _stream_video_chunks(
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/inference_cli.py", line 884, in _stream_video_chunks
+    result = _process_frames_core(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/inference_cli.py", line 1167, in _process_frames_core
+    ctx = encode_all_batches(
+          ^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/core/generation_phases.py", line 546, in encode_all_batches
+    cond_latents = runner.vae_encode([transformed_video])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/core/infer.py", line 179, in vae_encode
+    latent = self.vae.encode(sample, tiled=self.encode_tiled, tile_size=self.encode_tile_size,
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/models/video_vae_v3/modules/attn_video_vae.py", line 1685, in encode
+    p = super().encode(x, return_dict=return_dict, tiled=tiled, tile_size=tile_size,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/diffusers/utils/accelerate_utils.py", line 46, in wrapper
+    return method(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/models/video_vae_v3/modules/attn_video_vae.py", line 1188, in encode
+    h = self.slicing_encode(x)
+        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/models/video_vae_v3/modules/attn_video_vae.py", line 1276, in slicing_encode
+    return self._encode(x)
+           ^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/models/video_vae_v3/modules/attn_video_vae.py", line 1218, in _encode
+    h = self.encoder(_x, memory_state=memory_state)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/models/video_vae_v3/modules/attn_video_vae.py", line 844, in forward
+    sample = down_block(sample, memory_state=memory_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/models/video_vae_v3/modules/attn_video_vae.py", line 452, in forward
+    hidden_states = resnet(hidden_states, temb=None, memory_state=memory_state)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/ComfyUI-SeedVR2_VideoUpscaler/src/models/video_vae_v3/modules/attn_video_vae.py", line 360, in forward
+    output_tensor = (input_tensor + hidden_states) / self.output_scale_factor
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+torch.OutOfMemoryError: Allocation on device 0 would exceed allowed memory. (out of memory)
+Currently allocated     : 71.25 GiB
+Requested               : 17.58 GiB
+Device limit            : 94.97 GiB
+Free (according to CUDA): 8.25 MiB
+PyTorch limit (set by user-supplied memory fraction)
+                        : 17179869184.00 GiB
+[14:24:36.471] 🧹 Process 4579 terminating - VRAM will be automatically freed
+[14:24:36.471]  
+[14:24:36.471]  ────────────────────────
+[14:24:36.471] 💬 Questions? Updates? Watch, star & sponsor if you can!
+[14:24:36.471] 🎬 https://www.youtube.com/@AInVFX
+[14:24:36.471] ⭐💝 https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler

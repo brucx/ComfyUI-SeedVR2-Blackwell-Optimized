@@ -287,6 +287,35 @@ def _parse_compute_dtype(compute_dtype_arg: str) -> Optional[torch.dtype]:
     raise ValueError(f"Unsupported compute dtype: {compute_dtype_arg}")
 
 
+def _apply_vae_internal_overrides(runner: Any, args: argparse.Namespace, debug: Debug) -> None:
+    """
+    Apply explicit VAE internals overrides before the VAE is materialized.
+    """
+    if args.vae_causal_slice_size is not None:
+        if args.vae_causal_slice_size <= 0:
+            runner.config.vae.slicing.split_size = None
+            debug.log("VAE causal temporal slicing override: disabled", category="vae", force=True)
+        else:
+            runner.config.vae.slicing.split_size = args.vae_causal_slice_size
+            debug.log(
+                f"VAE causal temporal slicing override: split_size={args.vae_causal_slice_size}",
+                category="vae",
+                force=True,
+            )
+
+    if args.vae_conv_memory_limit_gb is not None:
+        if args.vae_conv_memory_limit_gb <= 0:
+            runner.config.vae.memory_limit.conv_max_mem = None
+            debug.log("VAE Conv3D memory limit override: disabled", category="vae", force=True)
+        else:
+            runner.config.vae.memory_limit.conv_max_mem = args.vae_conv_memory_limit_gb
+            debug.log(
+                f"VAE Conv3D memory limit override: {args.vae_conv_memory_limit_gb:.3f} GB",
+                category="vae",
+                force=True,
+            )
+
+
 def _apply_blackwell_pro6000_preset(args: argparse.Namespace) -> None:
     """
     Apply the measured RTX Pro 6000 Blackwell 3B FP8 high-throughput preset.
@@ -298,6 +327,7 @@ def _apply_blackwell_pro6000_preset(args: argparse.Namespace) -> None:
     args.dit_model = BLACKWELL_PRO6000_DIT
     args.batch_size = BLACKWELL_PRO6000_MAX_BATCH_SIZE
     args.uniform_batch_size = True
+    args.vae_conv_memory_limit_gb = 0.0
     args._blackwell_pro6000_max_batch_size = BLACKWELL_PRO6000_MAX_BATCH_SIZE
 
 
@@ -1107,8 +1137,11 @@ def _process_frames_core(
     runner._trt_w4a4_mlp_qat_steps = args.trt_w4a4_mlp_qat_steps
     runner._trt_w4a4_mlp_qat_lr = args.trt_w4a4_mlp_qat_lr
     runner._trt_w4a4_mlp_json = args.trt_w4a4_mlp_json
+    _apply_vae_internal_overrides(runner, args, debug)
     
     ctx['cache_context'] = cache_context
+    ctx['profile_vae_decode_dir'] = args.profile_vae_decode_dir
+    ctx['profile_vae_decode_batches'] = args.profile_vae_decode_batches
     if runner_cache is not None:
         runner_cache['runner'] = runner
     
@@ -1613,6 +1646,14 @@ Examples:
                         help="VAE decode tile overlap in pixels (default: 128). Reduces visible seams between tiles. Only used if --vae_decode_tiled is set")
     vae_group.add_argument("--tile_debug", type=str, default="false", choices=["false", "encode", "decode"],
                         help="Visualize tiles: 'false' (default), 'encode', or 'decode'")
+    vae_group.add_argument("--vae_causal_slice_size", type=int, default=None,
+                        help="Override VAE temporal causal slicing split_size. Use 0 to disable temporal slicing.")
+    vae_group.add_argument("--vae_conv_memory_limit_gb", type=float, default=None,
+                        help="Override VAE InflatedCausalConv3d memory limit in GB. Use 0 to disable Conv3D splitting.")
+    vae_group.add_argument("--profile_vae_decode_dir", type=str, default=None,
+                        help="Write torch.profiler artifacts for the first VAE decode batches to this directory")
+    vae_group.add_argument("--profile_vae_decode_batches", type=int, default=1,
+                        help="Number of VAE decode batches to profile when --profile_vae_decode_dir is set (default: 1)")
     
     # Performance
     perf_group = parser.add_argument_group('Performance optimization')

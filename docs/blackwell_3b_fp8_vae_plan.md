@@ -39,4 +39,4 @@ None of the low-risk VAE knobs improves full-clip inference speed. The current f
 
 The only measured VAE tradeoff worth keeping is tiling for memory reduction. Decode tiling lowers peak reserved VRAM from 20.22 GB to 17.44 GB, but costs about 3.2% end-to-end speed. It should remain an opt-in memory knob, not a performance default.
 
-The next VAE acceleration path should be internal profiling of `vae_decode`, especially Conv3D/causal slicing kernels. Whole-module dtype, tiling, tensor placement, and `torch.compile` did not produce a speed win.
+The follow-up internal `vae_decode` profile found a speed win outside this low-risk knob sweep: disabling Conv3D memory splitting with `--vae_conv_memory_limit_gb 0`. See `docs/blackwell_3b_fp8_vae_decode_profile.md`.

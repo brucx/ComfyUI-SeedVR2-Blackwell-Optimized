@@ -24,6 +24,7 @@ Key Features:
 """
 
 import os
+import json
 import torch
 from typing import Dict, List, Optional, Tuple, Any, Callable
 
@@ -72,6 +73,53 @@ def _mark_cudagraph_step_begin() -> None:
     mark_step = getattr(getattr(torch, "compiler", None), "cudagraph_mark_step_begin", None)
     if mark_step is not None:
         mark_step()
+
+
+def _write_vae_decode_profile(
+    profile_dir: str,
+    decode_idx: int,
+    profile: torch.profiler.profile,
+    debug: 'Debug',
+) -> None:
+    os.makedirs(profile_dir, exist_ok=True)
+    prefix = os.path.join(profile_dir, f"vae_decode_batch_{decode_idx + 1}")
+    trace_path = f"{prefix}.json"
+    table_path = f"{prefix}_cuda_table.txt"
+    ops_path = f"{prefix}_top_ops.json"
+
+    profile.export_chrome_trace(trace_path)
+    key_averages = profile.key_averages(group_by_input_shape=True)
+    with open(table_path, "w", encoding="utf-8") as f:
+        f.write(key_averages.table(sort_by="cuda_time_total", row_limit=80))
+        f.write("\n")
+
+    top_ops = []
+    def _event_cuda_time(evt: Any) -> float:
+        return float(getattr(evt, "cuda_time_total", getattr(evt, "device_time_total", 0.0)))
+
+    def _event_self_cuda_time(evt: Any) -> float:
+        return float(getattr(evt, "self_cuda_time_total", getattr(evt, "self_device_time_total", 0.0)))
+
+    for evt in sorted(key_averages, key=_event_cuda_time, reverse=True)[:80]:
+        cuda_time_total = _event_cuda_time(evt)
+        top_ops.append({
+            "key": evt.key,
+            "count": evt.count,
+            "cuda_time_total_us": cuda_time_total,
+            "cuda_time_avg_us": cuda_time_total / evt.count if evt.count else 0,
+            "self_cuda_time_total_us": _event_self_cuda_time(evt),
+            "cpu_time_total_us": evt.cpu_time_total,
+            "self_cpu_time_total_us": evt.self_cpu_time_total,
+            "input_shapes": getattr(evt, "input_shapes", None),
+        })
+    with open(ops_path, "w", encoding="utf-8") as f:
+        json.dump(top_ops, f, indent=2)
+
+    debug.log(
+        f"VAE decode profiler wrote {trace_path}, {table_path}, {ops_path}",
+        category="profile",
+        force=True,
+    )
 
 
 def _prepare_video_batch(
@@ -954,7 +1002,25 @@ def decode_all_batches(
             # Decode latent
             debug.start_timer("vae_decode")
             _mark_cudagraph_step_begin()
-            samples = runner.vae_decode([upscaled_latent])
+            profile_dir = ctx.get('profile_vae_decode_dir')
+            profile_batches = int(ctx.get('profile_vae_decode_batches') or 0)
+            if profile_dir and decode_idx < profile_batches:
+                activities = [torch.profiler.ProfilerActivity.CPU]
+                if torch.cuda.is_available() and ctx['vae_device'].type == 'cuda':
+                    activities.append(torch.profiler.ProfilerActivity.CUDA)
+                with torch.profiler.profile(
+                    activities=activities,
+                    record_shapes=True,
+                    profile_memory=True,
+                    with_stack=False,
+                    with_flops=True,
+                ) as prof:
+                    samples = runner.vae_decode([upscaled_latent])
+                if ctx['vae_device'].type == 'cuda':
+                    torch.cuda.synchronize(ctx['vae_device'])
+                _write_vae_decode_profile(profile_dir, decode_idx, prof, debug)
+            else:
+                samples = runner.vae_decode([upscaled_latent])
             debug.end_timer("vae_decode", "VAE decode")
             
             # Process samples - get the single decoded sample
