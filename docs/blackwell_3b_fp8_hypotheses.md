@@ -31,7 +31,7 @@ Keeping tensors on GPU by setting `--tensor_offload_device none` also does not h
 
 ## Recommended Next Optimization Paths
 
-1. Promote an adaptive batch-size heuristic for 3B FP8 Blackwell inference. For this benchmark, `--batch_size 81 --uniform_batch_size` is the best measured setting.
+1. Promote an adaptive batch-size heuristic for 3B FP8 Blackwell inference. Implemented in `--blackwell_pro6000_preset`; for this benchmark, it resolves to `--batch_size 81 --uniform_batch_size`.
 2. Test the same SDPA batch-size sweep on longer clips. If the benefit scales, this is the lowest-risk production optimization.
 3. Investigate VAE encode/decode separately. Once DiT batching is improved, VAE work becomes a larger share of total runtime.
 4. Deprioritize SageAttention 3 and `torch.compile` for the 3B FP8 short-clip path unless a longer-clip benchmark shows a different tradeoff.

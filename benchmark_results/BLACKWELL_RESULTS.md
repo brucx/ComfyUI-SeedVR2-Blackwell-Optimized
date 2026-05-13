@@ -12,6 +12,7 @@ Input: requested `test.mov`, first 81 frames, 480x274 source, 720p short-side ou
 | 3B ModelOpt fallback | 3B FP16 source -> NVFP4 W4A16 `.modelopt.pt`, SageAttention 3, DiT eager, VAE `torch.compile max-autotune`, batch 81 | 81 | 129.7714 | 0.6242 | 46.60 GB |
 | 3B integrated W4A4 TRT MLP | 3B FP8, SageAttention 3, batch 81, first DiT video MLP routed through W4A4 TensorRT `DeviceModel` | 81 | 73.4719 | 1.1025 | 28.13 GB |
 | 3B FP8 hypothesis winner | 3B FP8, SDPA, batch 81, uniform batch, no compile | 81 | 31.2787 | 2.5896 | 20.22 GB |
+| 3B FP8 fast preset | `--blackwell_pro6000_preset`: 3B FP8, SDPA, adaptive batch 81, uniform batch, no compile | 81 | 31.2140 | 2.5950 | 20.22 GB |
 
 Phase timings:
 
@@ -30,6 +31,7 @@ Artifacts:
 - ModelOpt W4A16: `benchmark_results/blackwell_3b_fp8_81f_720p_modelopt/`
 - W4A4 TRT/QAT and integrated inference: `benchmark_results/blackwell_3b_fp8_81f_720p_trt/`
 - 3B FP8 optimization hypotheses: `benchmark_results/blackwell_3b_fp8_hypotheses/`
+- 3B FP8 fast preset validation: `benchmark_results/blackwell_3b_fp8_preset_fast/`
 
 Engineering stage status:
 
@@ -48,3 +50,4 @@ Conclusion:
 - Under the requested 3B FP8 comparison, the fastest measured end-to-end path for this short 81-frame clip is now the simple SDPA batch-size optimization: batch 81 with uniform batching, no SageAttention, and no compile. In the focused hypothesis run it measured 31.2787s / 2.5896 FPS, 1.096x faster than the same-run batch 5 reference.
 - The previous integrated W4A4 TRT MLP route improves substantially over the 3B OOB warm compile path (166.3370s / 0.4870 FPS) and the 3B ModelOpt fallback (129.7714s / 0.6242 FPS), but it does not beat the lean 3B FP8 SDPA path.
 - Focused hypothesis testing found that SageAttention 3, DiT-only `torch.compile`, and disabling tensor offload do not improve the 3B FP8 short-clip path. Details are in `docs/blackwell_3b_fp8_hypotheses.md`.
+- `--blackwell_pro6000_preset` now maps to the measured fast path: 3B FP8, SDPA, no compile, adaptive 4n+1 batch sizing capped at 81, and uniform batches. The validation run measured 31.2140s / 2.5950 FPS.

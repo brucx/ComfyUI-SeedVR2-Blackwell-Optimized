@@ -87,7 +87,7 @@ else:
     # cudaMallocAsync is fast for eager inference but currently conflicts with
     # torch.compile cudagraph tree pool checks. Keep PyTorch's native allocator
     # when compile is requested before torch is imported.
-    _compile_requested = _pre_args.compile_dit or _pre_args.compile_vae or _pre_args.blackwell_pro6000_preset
+    _compile_requested = _pre_args.compile_dit or _pre_args.compile_vae
     if not _compile_requested:
         os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "backend:cudaMallocAsync")
     
@@ -145,6 +145,7 @@ from src.optimization.memory_manager import clear_memory, get_gpu_backend, is_cu
 debug = Debug(enabled=False)  # Will be enabled via --debug CLI flag
 
 BLACKWELL_PRO6000_DIT = "seedvr2_ema_3b_fp8_e4m3fn.safetensors"
+BLACKWELL_PRO6000_MAX_BATCH_SIZE = 81
 
 
 # =============================================================================
@@ -278,16 +279,48 @@ def _parse_offload_device(offload_arg: str, platform_type: str = None, cache_ena
 
 def _apply_blackwell_pro6000_preset(args: argparse.Namespace) -> None:
     """
-    Apply the RTX Pro 6000 Blackwell high-throughput preset used by the benchmark suite.
+    Apply the measured RTX Pro 6000 Blackwell 3B FP8 high-throughput preset.
     """
-    args.attention_mode = "sageattn_3"
-    args.strict_attention_mode = True
-    args.compile_dit = True
-    args.compile_vae = True
-    args.compile_backend = "inductor"
-    args.compile_mode = "max-autotune"
+    args.attention_mode = "sdpa"
+    args.strict_attention_mode = False
+    args.compile_dit = False
+    args.compile_vae = False
     args.dit_model = BLACKWELL_PRO6000_DIT
-    args.batch_size = 81
+    args.batch_size = BLACKWELL_PRO6000_MAX_BATCH_SIZE
+    args.uniform_batch_size = True
+    args._blackwell_pro6000_max_batch_size = BLACKWELL_PRO6000_MAX_BATCH_SIZE
+
+
+def _largest_4n_plus_1_at_most(value: int) -> int:
+    """
+    Return the largest positive batch size <= value matching SeedVR2's 4n+1 shape.
+    """
+    if value <= 1:
+        return 1
+    return max(1, value - ((value - 1) % 4))
+
+
+def _apply_runtime_blackwell_pro6000_batch(
+    args: argparse.Namespace,
+    frames_to_process: int,
+    debug: Debug,
+) -> None:
+    """
+    Reduce the preset batch size for short inputs while keeping the measured batch-81 cap.
+    """
+    if not getattr(args, "blackwell_pro6000_preset", False) or frames_to_process <= 0:
+        return
+
+    max_batch = getattr(args, "_blackwell_pro6000_max_batch_size", BLACKWELL_PRO6000_MAX_BATCH_SIZE)
+    target_batch = _largest_4n_plus_1_at_most(min(frames_to_process, max_batch))
+    if target_batch != args.batch_size:
+        debug.log(
+            f"Blackwell preset adaptive batch: {args.batch_size} -> {target_batch} "
+            f"for {frames_to_process} frame(s)",
+            category="setup",
+            force=True,
+        )
+    args.batch_size = target_batch
     args.uniform_batch_size = True
 
 
@@ -966,7 +999,9 @@ def _process_frames_core(
     
     Returns:
         Upscaled frames tensor [T', H', W', C], Float32, range [0,1]
-    """    
+    """
+    _apply_runtime_blackwell_pro6000_batch(args, int(frames_tensor.shape[0]), debug)
+
     # Determine platform and convert device IDs to full names
     platform_type = get_gpu_backend()
     inference_device = _device_id_to_name(device_id, platform_type)
@@ -1572,8 +1607,8 @@ Examples:
     perf_group.add_argument("--strict_attention_mode", action="store_true",
                         help="Fail instead of falling back when the requested attention backend is unavailable")
     perf_group.add_argument("--blackwell_pro6000_preset", action="store_true",
-                        help="Apply RTX Pro 6000 Blackwell preset: SageAttention 3, torch.compile max-autotune, "
-                             "3B FP8 model, batch_size=81, and uniform batches")
+                        help="Apply measured RTX Pro 6000 Blackwell 3B FP8 fast preset: SDPA attention, no compile, "
+                             "adaptive 4n+1 batch size capped at 81, and uniform batches")
     perf_group.add_argument("--compile_dit", action="store_true", 
                         help="Enable torch.compile for DiT model (20-40%% speedup, requires PyTorch 2.0+ and Triton)")
     perf_group.add_argument("--compile_vae", action="store_true",

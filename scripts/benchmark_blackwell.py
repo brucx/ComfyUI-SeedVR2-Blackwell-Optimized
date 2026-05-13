@@ -99,11 +99,11 @@ def main() -> int:
         ], output_dir))
 
     if not args.skip_oob:
-        records.append(run_case("blackwell_oob_sage3_compile_fp8_b81", base_cli + [
+        records.append(run_case("blackwell_oob_sdpa_fp8_b81", base_cli + [
             "--blackwell_pro6000_preset",
-            "--benchmark_label", "blackwell_oob_sage3_compile_fp8_b81",
-            "--benchmark_json", str(output_dir / "blackwell_oob_sage3_compile_fp8_b81.json"),
-            "--output", str(output_dir / "outputs" / "blackwell_oob_sage3_compile_fp8_b81.mp4"),
+            "--benchmark_label", "blackwell_oob_sdpa_fp8_b81",
+            "--benchmark_json", str(output_dir / "blackwell_oob_sdpa_fp8_b81.json"),
+            "--output", str(output_dir / "outputs" / "blackwell_oob_sdpa_fp8_b81.mp4"),
         ], output_dir))
 
     if args.include_modelopt:

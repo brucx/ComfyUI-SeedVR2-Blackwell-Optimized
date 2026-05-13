@@ -2,7 +2,7 @@
 
 This branch now benchmarks the RTX Pro 6000 Blackwell path with the 3B model family only. The primary inference checkpoint is `seedvr2_ema_3b_fp8_e4m3fn.safetensors`.
 
-## Out-of-box preset
+## Fast preset
 
 Use:
 
@@ -10,13 +10,15 @@ Use:
 python inference_cli.py input.mov --blackwell_pro6000_preset --benchmark_json benchmark.json --debug
 ```
 
-The preset applies:
+The preset now applies the fastest measured 3B FP8 path from the focused hypothesis sweep:
 
-- `attention_mode=sageattn_3` with `strict_attention_mode=True`
-- DiT and VAE `torch.compile` using `backend=inductor`, `mode=max-autotune`
+- `attention_mode=sdpa`
+- no DiT or VAE `torch.compile`
 - `seedvr2_ema_3b_fp8_e4m3fn.safetensors`
-- `batch_size=81`
+- adaptive 4n+1 batch sizing capped at `batch_size=81`
 - `uniform_batch_size=True`
+
+For the 81-frame 720p benchmark, this resolves to `batch_size=81 --uniform_batch_size` and measured 31.2140s / 2.5950 FPS in `benchmark_results/blackwell_3b_fp8_preset_fast/`. The previous SageAttention 3 + `torch.compile max-autotune` preset was slower on this short 3B FP8 workload, so it remains available only through explicit flags.
 
 ## Benchmark harness
 
@@ -39,7 +41,7 @@ python scripts/benchmark_blackwell.py --include_modelopt
 
 The PTQ script uses NVIDIA Model Optimizer with NVFP4 weight quantizers and activation quantizers disabled, producing `seedvr2_ema_3b_nvfp4_w4a16.modelopt.pt`. The model loader restores `.modelopt.pt` files with `modelopt.torch.opt.restore`.
 
-The conversion source defaults to `seedvr2_ema_3b_fp16.safetensors`. The 3B FP8 checkpoint is used for the main inference baseline and OOB preset, but ModelOpt PTQ still needs the FP16 source because ModelOpt max calibration cannot directly reduce FP8 CUDA tensors in this environment.
+The conversion source defaults to `seedvr2_ema_3b_fp16.safetensors`. The 3B FP8 checkpoint is used for the main inference baseline and fast preset, but ModelOpt PTQ still needs the FP16 source because ModelOpt max calibration cannot directly reduce FP8 CUDA tensors in this environment.
 
 `torch.compile` on the ModelOpt-quantized 3B DiT currently fails in TorchDynamo inside ModelOpt's dynamic callback wrapper. The benchmark harness records that failure, then runs the measured fallback with the ModelOpt DiT eager and VAE compiled with `max-autotune`.
 
