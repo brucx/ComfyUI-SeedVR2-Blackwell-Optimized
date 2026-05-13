@@ -1,0 +1,1963 @@
+📊 Initial CUDA memory: 94.42GB free / 94.97GB total
+/usr/local/lib/python3.12/dist-packages/torch/library.py:357: UserWarning: Warning only once for all operators,  other operators may also be overridden.
+  Overriding a previously registered kernel for the same operator and the same dispatch key
+  operator: flash_attn::_flash_attn_backward(Tensor dout, Tensor q, Tensor k, Tensor v, Tensor out, Tensor softmax_lse, Tensor(a6!)? dq, Tensor(a7!)? dk, Tensor(a8!)? dv, float dropout_p, float softmax_scale, bool causal, SymInt window_size_left, SymInt window_size_right, float softcap, Tensor? alibi_slopes, bool deterministic, Tensor? rng_state=None) -> Tensor
+    registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926
+  dispatch key: ADInplaceOrView
+  previous kernel: no debug info
+       new kernel: registered at /usr/local/lib/python3.12/dist-packages/torch/_library/custom_ops.py:926 (Triggered internally at /opt/pytorch/pytorch/aten/src/ATen/core/dispatch/OperatorEntry.cpp:208.)
+  self.m.impl(
+⚡ SeedVR2 optimizations check: SageAttention ✅ | Flash Attention ✅ | Triton ✅
+🔧 Conv3d workaround active: PyTorch 2.10.0a0, cuDNN 91701 (fixing VAE 3x memory bug)
+ 
+ 
+   ███████╗███████╗███████╗██████╗ ██╗   ██╗██████╗     ██████╗       ███████╗
+   ██╔════╝██╔════╝██╔════╝██╔══██╗██║   ██║██╔══██╗    ╚════██╗      ██╔════╝
+   ███████╗█████╗  █████╗  ██║  ██║██║   ██║██████╔╝     █████╔╝      ███████╗
+   ╚════██║██╔══╝  ██╔══╝  ██║  ██║╚██╗ ██╔╝██╔══██╗    ██╔═══╝       ╚════██║
+   ███████║███████╗███████╗██████╔╝ ╚████╔╝ ██║  ██║    ███████╗  ██╗ ███████║
+   ╚══════╝╚══════╝╚══════╝╚═════╝   ╚═══╝  ╚═╝  ╚═╝    ╚══════╝  ╚═╝ ╚══════╝
+   💻 CLI · v2.5.24                           © ByteDance Seed · NumZ · AInVFX
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ 
+[13:18:54.716] ℹ️ OS: Ubuntu 24.04 | GPU: NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition (95GB)
+[13:18:54.716] ℹ️ Python: 3.12.3 | PyTorch: 2.10.0a0+a36e1d39eb.nv26.01.42222806 | FlashAttn: v2 ✓ | SageAttn: v3,2 ✓ | Triton: ✓
+[13:18:54.716] ℹ️ CUDA: 13.1 | cuDNN: 91701
+[13:18:54.716]  
+[13:18:54.716] 🔧 Arguments:
+[13:18:54.716]    input: /root/seedvr_bench/inputs/test.mov
+[13:18:54.716]    output: /root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_batch_sweep_300f/outputs/sdpa_b5.mp4
+[13:18:54.716]    output_format: None
+[13:18:54.716]    video_backend: opencv
+[13:18:54.716]    use_10bit: False
+[13:18:54.716]    model_dir: None
+[13:18:54.716]    dit_model: seedvr2_ema_3b_fp8_e4m3fn.safetensors
+[13:18:54.716]    resolution: 720
+[13:18:54.716]    max_resolution: 0
+[13:18:54.716]    batch_size: 5
+[13:18:54.716]    uniform_batch_size: True
+[13:18:54.716]    seed: 42
+[13:18:54.716]    skip_first_frames: 0
+[13:18:54.716]    load_cap: 300
+[13:18:54.716]    chunk_size: 0
+[13:18:54.716]    prepend_frames: 0
+[13:18:54.716]    temporal_overlap: 0
+[13:18:54.716]    color_correction: lab
+[13:18:54.716]    input_noise_scale: 0.0
+[13:18:54.716]    latent_noise_scale: 0.0
+[13:18:54.716]    cuda_device: None
+[13:18:54.716]    dit_offload_device: none
+[13:18:54.716]    vae_offload_device: none
+[13:18:54.716]    tensor_offload_device: cpu
+[13:18:54.716]    blocks_to_swap: 0
+[13:18:54.716]    swap_io_components: False
+[13:18:54.716]    vae_encode_tiled: False
+[13:18:54.716]    vae_encode_tile_size: 1024
+[13:18:54.716]    vae_encode_tile_overlap: 128
+[13:18:54.716]    vae_decode_tiled: False
+[13:18:54.716]    vae_decode_tile_size: 1024
+[13:18:54.716]    vae_decode_tile_overlap: 128
+[13:18:54.717]    tile_debug: false
+[13:18:54.717]    attention_mode: sdpa
+[13:18:54.717]    strict_attention_mode: False
+[13:18:54.717]    blackwell_pro6000_preset: False
+[13:18:54.717]    compile_dit: False
+[13:18:54.717]    compile_vae: False
+[13:18:54.717]    compile_backend: inductor
+[13:18:54.717]    compile_mode: default
+[13:18:54.717]    compile_fullgraph: False
+[13:18:54.717]    compile_dynamic: False
+[13:18:54.717]    compile_dynamo_cache_size_limit: 64
+[13:18:54.717]    compile_dynamo_recompile_limit: 128
+[13:18:54.717]    trt_w4a4_mlp: False
+[13:18:54.717]    trt_w4a4_mlp_block_index: 0
+[13:18:54.717]    trt_w4a4_mlp_qat_steps: 1
+[13:18:54.717]    trt_w4a4_mlp_qat_lr: 1e-08
+[13:18:54.717]    trt_w4a4_mlp_json: None
+[13:18:54.717]    cache_dit: False
+[13:18:54.717]    cache_vae: False
+[13:18:54.717]    debug: True
+[13:18:54.717]    benchmark_json: /root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_batch_sweep_300f/sdpa_b5.json
+[13:18:54.717]    benchmark_label: sdpa_b5
+[13:18:54.717] 🖥️ CUDA_VISIBLE_DEVICES: Not set (all)
+[13:18:54.717] 🖥️ torch.cuda.device_count(): 1
+[13:18:54.717] 🖥️ Using device index 0 inside script (mapped to selected GPU)
+[13:18:54.717] 🖥️ Using devices: ['0']
+[13:18:54.717] 🔧 DiT model found: ./models/SEEDVR2/seedvr2_ema_3b_fp8_e4m3fn.safetensors
+[13:18:54.717] 🔧 DiT model already validated (cache): ./models/SEEDVR2/seedvr2_ema_3b_fp8_e4m3fn.safetensors
+[13:18:54.717] 🔧 VAE model found: ./models/SEEDVR2/ema_vae_fp16.safetensors
+[13:18:54.717] 🔧 VAE model already validated (cache): ./models/SEEDVR2/ema_vae_fp16.safetensors
+[13:18:54.717] 🎬 Processing video: test.mov
+[13:18:54.717] ℹ️   Auto-detected output format: mp4
+[13:18:54.726] ℹ️ Video info: 300 frames, 480x274, 29.97 FPS
+[13:18:55.112] 🔧 Generation context initialized: DiT=cuda:0, VAE=cuda:0, Offload=[Tensor offload=cpu], LOCAL_RANK=0
+[13:18:55.112] 🎯 Unified compute dtype: torch.bfloat16 across entire pipeline for maximum performance
+[13:18:55.112] 🏃 Configuring inference runner...
+[13:18:55.112] 🏃 Creating new runner: DiT=seedvr2_ema_3b_fp8_e4m3fn.safetensors, VAE=ema_vae_fp16.safetensors
+[13:18:55.141] 🚀 Creating DiT model structure on meta device
+[13:18:55.245] 🎨 Creating VAE model structure on meta device
+[13:18:55.311] 🎨 VAE downsample factors configured (spatial: 8x, temporal: 4x)
+[13:18:55.313] 🔄 Moving text_pos_embeds from CPU to CUDA:0 (DiT inference)
+[13:18:55.313] 🔄 Moving text_neg_embeds from CPU to CUDA:0 (DiT inference)
+[13:18:55.313] 🚀 Loaded text embeddings for DiT
+[13:18:55.313] 🔧   Initializing video transformation pipeline for 720px (shortest edge)
+[13:18:55.401] 🔧   Target dimensions: 1260x720 (padded to 1264x720 for processing)
+[13:18:55.402]  
+[13:18:55.402] 🎬 Starting upscaling generation...
+[13:18:55.402] 🎬   Input: 299 frames, 480x274px → Padded: 1264x720px → Output: 1260x720px (shortest edge: 720px)
+[13:18:55.402] 🎬   Batch size: 5 (uniform), Seed: 42, Channels: RGB
+[13:18:55.402]  
+[13:18:55.402]  ━━━━━━━━ Phase 1: VAE encoding ━━━━━━━━
+[13:18:55.402] ♻️ Reusing pre-initialized video transformation pipeline
+[13:18:55.402]  
+[13:18:55.403] 💡 Tip: For 299 frames, batch_size=297 matches video length optimally
+[13:18:55.403] 💡   Matching batch_size to shot length improves temporal coherence
+[13:18:55.403]  
+[13:18:55.403] 🎨 Materializing VAE weights to CUDA:0: ./models/SEEDVR2/ema_vae_fp16.safetensors
+[13:18:55.515] 🎯 Converting VAE weights to torch.bfloat16 during loading
+[13:18:55.534] 🎨 Materializing VAE: 250 parameters, 478.07MB total
+[13:18:55.539] 🎨 VAE materialized directly from meta with loaded weights
+[13:18:55.539] 🎨 VAE model set to eval mode (gradients disabled)
+[13:18:55.540] 🎨 Configuring VAE causal slicing for temporal processing
+[13:18:55.540] 🎨 Configuring VAE memory limits for causal convolutions
+[13:18:55.541] 🎯 Model precision: VAE=torch.bfloat16, compute=torch.bfloat16
+[13:18:55.542] 🎨 Using seed: 1000042 (VAE uses seed+1000000 for deterministic sampling)
+[13:18:55.542] 🔄 VAE already on CUDA:0, skipping movement
+[13:18:55.543] 📊 After VAE loading for encoding:
+[13:18:55.543] 📊   [VRAM] 0.48GB allocated / 0.50GB reserved / Peak: 0.49GB / 93.67GB free / 94.97GB total
+[13:18:55.543] 📊   [RAM] 1.96GB process / 39.60GB others / 134.38GB free / 175.94GB total
+[13:18:55.543] 📊 Resetting VRAM peak memory statistics
+[13:18:55.543] 🎨 Encoding batch 1/60
+[13:18:55.543] 🔄   Moving video_batch_1 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:18:55.556] 📹   Sequence of 5 frames
+[13:18:56.767] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:18:56.767] 🔄   Moving latent_1 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:18:56.767] 🎨 Encoding batch 2/60
+[13:18:56.767] 🔄   Moving video_batch_2 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:18:56.780] 📹   Sequence of 5 frames
+[13:18:56.808] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:18:56.808] 🔄   Moving latent_2 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:18:57.187] 🎨 Encoding batch 3/60
+[13:18:57.187] 🔄   Moving video_batch_3 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:18:57.200] 📹   Sequence of 5 frames
+[13:18:57.226] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:18:57.226] 🔄   Moving latent_3 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:18:57.610] 🎨 Encoding batch 4/60
+[13:18:57.610] 🔄   Moving video_batch_4 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:18:57.623] 📹   Sequence of 5 frames
+[13:18:57.648] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:18:57.648] 🔄   Moving latent_4 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:18:58.033] 🎨 Encoding batch 5/60
+[13:18:58.033] 🔄   Moving video_batch_5 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:18:58.040] 📹   Sequence of 5 frames
+[13:18:58.066] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:18:58.066] 🔄   Moving latent_5 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:18:58.452] 🎨 Encoding batch 6/60
+[13:18:58.453] 🔄   Moving video_batch_6 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:18:58.466] 📹   Sequence of 5 frames
+[13:18:58.491] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:18:58.491] 🔄   Moving latent_6 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:18:58.877] 🎨 Encoding batch 7/60
+[13:18:58.877] 🔄   Moving video_batch_7 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:18:58.887] 📹   Sequence of 5 frames
+[13:18:58.913] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:18:58.913] 🔄   Moving latent_7 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:18:59.299] 🎨 Encoding batch 8/60
+[13:18:59.299] 🔄   Moving video_batch_8 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:18:59.312] 📹   Sequence of 5 frames
+[13:18:59.338] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:18:59.338] 🔄   Moving latent_8 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:18:59.723] 🎨 Encoding batch 9/60
+[13:18:59.723] 🔄   Moving video_batch_9 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:18:59.733] 📹   Sequence of 5 frames
+[13:18:59.759] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:18:59.760] 🔄   Moving latent_9 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:00.144] 🎨 Encoding batch 10/60
+[13:19:00.144] 🔄   Moving video_batch_10 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:00.186] 📹   Sequence of 5 frames
+[13:19:00.230] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:00.230] 🔄   Moving latent_10 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:00.601] 🎨 Encoding batch 11/60
+[13:19:00.601] 🔄   Moving video_batch_11 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:00.614] 📹   Sequence of 5 frames
+[13:19:00.641] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:00.641] 🔄   Moving latent_11 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:01.024] 🎨 Encoding batch 12/60
+[13:19:01.024] 🔄   Moving video_batch_12 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:01.039] 📹   Sequence of 5 frames
+[13:19:01.065] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:01.065] 🔄   Moving latent_12 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:01.449] 🎨 Encoding batch 13/60
+[13:19:01.449] 🔄   Moving video_batch_13 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:01.462] 📹   Sequence of 5 frames
+[13:19:01.488] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:01.488] 🔄   Moving latent_13 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:01.872] 🎨 Encoding batch 14/60
+[13:19:01.873] 🔄   Moving video_batch_14 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:01.888] 📹   Sequence of 5 frames
+[13:19:01.913] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:01.913] 🔄   Moving latent_14 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:02.298] 🎨 Encoding batch 15/60
+[13:19:02.298] 🔄   Moving video_batch_15 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:02.311] 📹   Sequence of 5 frames
+[13:19:02.337] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:02.337] 🔄   Moving latent_15 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:02.721] 🎨 Encoding batch 16/60
+[13:19:02.721] 🔄   Moving video_batch_16 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:02.736] 📹   Sequence of 5 frames
+[13:19:02.761] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:02.761] 🔄   Moving latent_16 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:03.146] 🎨 Encoding batch 17/60
+[13:19:03.146] 🔄   Moving video_batch_17 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:03.160] 📹   Sequence of 5 frames
+[13:19:03.185] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:03.185] 🔄   Moving latent_17 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:03.570] 🎨 Encoding batch 18/60
+[13:19:03.570] 🔄   Moving video_batch_18 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:03.581] 📹   Sequence of 5 frames
+[13:19:03.606] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:03.606] 🔄   Moving latent_18 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:03.992] 🎨 Encoding batch 19/60
+[13:19:03.992] 🔄   Moving video_batch_19 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:04.005] 📹   Sequence of 5 frames
+[13:19:04.030] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:04.030] 🔄   Moving latent_19 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:04.416] 🎨 Encoding batch 20/60
+[13:19:04.416] 🔄   Moving video_batch_20 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:04.430] 📹   Sequence of 5 frames
+[13:19:04.455] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:04.455] 🔄   Moving latent_20 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:04.841] 🎨 Encoding batch 21/60
+[13:19:04.841] 🔄   Moving video_batch_21 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:04.849] 📹   Sequence of 5 frames
+[13:19:04.875] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:04.875] 🔄   Moving latent_21 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:05.262] 🎨 Encoding batch 22/60
+[13:19:05.262] 🔄   Moving video_batch_22 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:05.275] 📹   Sequence of 5 frames
+[13:19:05.301] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:05.301] 🔄   Moving latent_22 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:05.687] 🎨 Encoding batch 23/60
+[13:19:05.687] 🔄   Moving video_batch_23 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:05.700] 📹   Sequence of 5 frames
+[13:19:05.726] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:05.726] 🔄   Moving latent_23 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:06.111] 🎨 Encoding batch 24/60
+[13:19:06.111] 🔄   Moving video_batch_24 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:06.122] 📹   Sequence of 5 frames
+[13:19:06.148] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:06.148] 🔄   Moving latent_24 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:06.534] 🎨 Encoding batch 25/60
+[13:19:06.534] 🔄   Moving video_batch_25 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:06.547] 📹   Sequence of 5 frames
+[13:19:06.574] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:06.574] 🔄   Moving latent_25 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:06.960] 🎨 Encoding batch 26/60
+[13:19:06.960] 🔄   Moving video_batch_26 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:06.973] 📹   Sequence of 5 frames
+[13:19:07.000] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:07.000] 🔄   Moving latent_26 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:07.385] 🎨 Encoding batch 27/60
+[13:19:07.386] 🔄   Moving video_batch_27 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:07.399] 📹   Sequence of 5 frames
+[13:19:07.426] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:07.426] 🔄   Moving latent_27 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:07.811] 🎨 Encoding batch 28/60
+[13:19:07.811] 🔄   Moving video_batch_28 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:07.824] 📹   Sequence of 5 frames
+[13:19:07.852] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:07.852] 🔄   Moving latent_28 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:08.236] 🎨 Encoding batch 29/60
+[13:19:08.236] 🔄   Moving video_batch_29 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:08.246] 📹   Sequence of 5 frames
+[13:19:08.271] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:08.271] 🔄   Moving latent_29 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:08.659] 🎨 Encoding batch 30/60
+[13:19:08.659] 🔄   Moving video_batch_30 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:08.671] 📹   Sequence of 5 frames
+[13:19:08.698] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:08.698] 🔄   Moving latent_30 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:09.084] 🎨 Encoding batch 31/60
+[13:19:09.084] 🔄   Moving video_batch_31 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:09.097] 📹   Sequence of 5 frames
+[13:19:09.122] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:09.123] 🔄   Moving latent_31 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:09.509] 🎨 Encoding batch 32/60
+[13:19:09.509] 🔄   Moving video_batch_32 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:09.525] 📹   Sequence of 5 frames
+[13:19:09.553] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:09.553] 🔄   Moving latent_32 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:09.937] 🎨 Encoding batch 33/60
+[13:19:09.937] 🔄   Moving video_batch_33 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:09.948] 📹   Sequence of 5 frames
+[13:19:09.973] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:09.973] 🔄   Moving latent_33 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:10.361] 🎨 Encoding batch 34/60
+[13:19:10.361] 🔄   Moving video_batch_34 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:10.374] 📹   Sequence of 5 frames
+[13:19:10.400] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:10.401] 🔄   Moving latent_34 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:10.787] 🎨 Encoding batch 35/60
+[13:19:10.787] 🔄   Moving video_batch_35 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:10.800] 📹   Sequence of 5 frames
+[13:19:10.827] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:10.827] 🔄   Moving latent_35 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:11.214] 🎨 Encoding batch 36/60
+[13:19:11.214] 🔄   Moving video_batch_36 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:11.227] 📹   Sequence of 5 frames
+[13:19:11.254] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:11.254] 🔄   Moving latent_36 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:11.641] 🎨 Encoding batch 37/60
+[13:19:11.641] 🔄   Moving video_batch_37 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:11.654] 📹   Sequence of 5 frames
+[13:19:11.681] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:11.681] 🔄   Moving latent_37 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:12.067] 🎨 Encoding batch 38/60
+[13:19:12.067] 🔄   Moving video_batch_38 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:12.074] 📹   Sequence of 5 frames
+[13:19:12.101] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:12.101] 🔄   Moving latent_38 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:12.490] 🎨 Encoding batch 39/60
+[13:19:12.490] 🔄   Moving video_batch_39 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:12.503] 📹   Sequence of 5 frames
+[13:19:12.529] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:12.529] 🔄   Moving latent_39 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:12.916] 🎨 Encoding batch 40/60
+[13:19:12.917] 🔄   Moving video_batch_40 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:12.926] 📹   Sequence of 5 frames
+[13:19:12.953] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:12.953] 🔄   Moving latent_40 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:13.341] 🎨 Encoding batch 41/60
+[13:19:13.341] 🔄   Moving video_batch_41 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:13.348] 📹   Sequence of 5 frames
+[13:19:13.374] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:13.375] 🔄   Moving latent_41 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:13.763] 🎨 Encoding batch 42/60
+[13:19:13.764] 🔄   Moving video_batch_42 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:13.777] 📹   Sequence of 5 frames
+[13:19:13.804] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:13.804] 🔄   Moving latent_42 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:14.191] 🎨 Encoding batch 43/60
+[13:19:14.192] 🔄   Moving video_batch_43 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:14.201] 📹   Sequence of 5 frames
+[13:19:14.228] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:14.228] 🔄   Moving latent_43 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:14.616] 🎨 Encoding batch 44/60
+[13:19:14.616] 🔄   Moving video_batch_44 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:14.629] 📹   Sequence of 5 frames
+[13:19:14.656] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:14.656] 🔄   Moving latent_44 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:15.043] 🎨 Encoding batch 45/60
+[13:19:15.043] 🔄   Moving video_batch_45 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:15.050] 📹   Sequence of 5 frames
+[13:19:15.078] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:15.078] 🔄   Moving latent_45 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:15.466] 🎨 Encoding batch 46/60
+[13:19:15.466] 🔄   Moving video_batch_46 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:15.479] 📹   Sequence of 5 frames
+[13:19:15.504] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:15.504] 🔄   Moving latent_46 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:15.893] 🎨 Encoding batch 47/60
+[13:19:15.893] 🔄   Moving video_batch_47 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:15.906] 📹   Sequence of 5 frames
+[13:19:15.933] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:15.933] 🔄   Moving latent_47 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:16.321] 🎨 Encoding batch 48/60
+[13:19:16.321] 🔄   Moving video_batch_48 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:16.334] 📹   Sequence of 5 frames
+[13:19:16.361] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:16.361] 🔄   Moving latent_48 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:16.748] 🎨 Encoding batch 49/60
+[13:19:16.749] 🔄   Moving video_batch_49 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:16.758] 📹   Sequence of 5 frames
+[13:19:16.784] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:16.784] 🔄   Moving latent_49 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:17.173] 🎨 Encoding batch 50/60
+[13:19:17.173] 🔄   Moving video_batch_50 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:17.186] 📹   Sequence of 5 frames
+[13:19:17.212] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:17.212] 🔄   Moving latent_50 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:17.601] 🎨 Encoding batch 51/60
+[13:19:17.601] 🔄   Moving video_batch_51 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:17.614] 📹   Sequence of 5 frames
+[13:19:17.640] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:17.640] 🔄   Moving latent_51 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:18.029] 🎨 Encoding batch 52/60
+[13:19:18.029] 🔄   Moving video_batch_52 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:18.036] 📹   Sequence of 5 frames
+[13:19:18.061] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:18.061] 🔄   Moving latent_52 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:18.452] 🎨 Encoding batch 53/60
+[13:19:18.452] 🔄   Moving video_batch_53 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:18.472] 📹   Sequence of 5 frames
+[13:19:18.497] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:18.497] 🔄   Moving latent_53 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:18.885] 🎨 Encoding batch 54/60
+[13:19:18.885] 🔄   Moving video_batch_54 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:18.895] 📹   Sequence of 5 frames
+[13:19:18.920] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:18.920] 🔄   Moving latent_54 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:19.310] 🎨 Encoding batch 55/60
+[13:19:19.311] 🔄   Moving video_batch_55 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:19.320] 📹   Sequence of 5 frames
+[13:19:19.346] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:19.346] 🔄   Moving latent_55 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:19.736] 🎨 Encoding batch 56/60
+[13:19:19.736] 🔄   Moving video_batch_56 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:19.755] 📹   Sequence of 5 frames
+[13:19:19.781] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:19.781] 🔄   Moving latent_56 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:20.168] 🎨 Encoding batch 57/60
+[13:19:20.168] 🔄   Moving video_batch_57 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:20.181] 📹   Sequence of 5 frames
+[13:19:20.207] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:20.207] 🔄   Moving latent_57 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:20.596] 🎨 Encoding batch 58/60
+[13:19:20.596] 🔄   Moving video_batch_58 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:20.609] 📹   Sequence of 5 frames
+[13:19:20.635] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:20.635] 🔄   Moving latent_58 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:21.023] 🎨 Encoding batch 59/60
+[13:19:21.023] 🔄   Moving video_batch_59 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:21.039] 📹   Sequence of 5 frames
+[13:19:21.064] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:21.064] 🔄   Moving latent_59 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:21.453] 🎨 Encoding batch 60/60
+[13:19:21.453] 📹   Sequence of 4 frames
+[13:19:21.453] 📹   Padding batch: 1 frame added (4 → 5) for uniform batches
+[13:19:21.473] 🔄   Moving video_batch_60 from CPU to CUDA:0, torch.float16 → torch.bfloat16 (VAE encoding)
+[13:19:21.510] ℹ️   Latents shape: torch.Size([2, 90, 158, 16])
+[13:19:21.510] 🔄   Moving latent_60 from CUDA:0 to CPU (storing encoded latents for upscaling)
+[13:19:21.896] ⚡ Phase 1: VAE encoding complete: 26.49s
+[13:19:21.896] ⚡   └─ Encoded batch 1: 1.22s
+[13:19:21.896] ⚡   └─ Encoded batch 10: 0.46s
+[13:19:21.896] ⚡   └─ Encoded batch 60: 0.44s
+[13:19:21.896] ⚡   └─ Encoded batch 53: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 56: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 59: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 50: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 57: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 47: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 42: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 51: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 48: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 58: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 32: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 39: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 44: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 36: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 35: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 46: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 37: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 34: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 26: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 25: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 27: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 14: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 55: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 31: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 28: 0.43s
+[13:19:21.896] ⚡   └─ Encoded batch 54: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 30: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 22: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 17: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 43: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 23: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 20: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 40: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 12: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 6: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 49: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 8: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 16: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 33: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 19: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 13: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 52: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 15: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 11: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 4: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 45: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 29: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 24: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 41: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 3: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 38: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 7: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 18: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 9: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 21: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 2: 0.42s
+[13:19:21.896] ⚡   └─ Encoded batch 5: 0.42s
+[13:19:21.896] ⚡   └─ VAE materialized: 0.14s
+[13:19:21.896] ⚡     └─ VAE weights loaded from file: 0.11s
+[13:19:21.896] ⚡     └─ VAE weights converted to torch.bfloat16: 0.02s
+[13:19:21.897] 📊 After phase 1 (VAE encoding):
+[13:19:21.897] 📊   [VRAM] 0.48GB allocated / 9.72GB reserved / Peak: 7.47GB / 84.45GB free / 94.97GB total
+[13:19:21.897] 📊   [RAM] 2.35GB process / 39.46GB others / 134.13GB free / 175.94GB total
+[13:19:21.897] 📊   Memory changes: RAM +0.39GB
+[13:19:21.897] 📊 Resetting VRAM peak memory statistics
+[13:19:21.897]  
+[13:19:21.897]  ━━━━━━━━ Phase 2: DiT upscaling ━━━━━━━━
+[13:19:21.898] 🚀 Materializing DiT weights to CUDA:0: ./models/SEEDVR2/seedvr2_ema_3b_fp8_e4m3fn.safetensors
+[13:19:22.282] 🚀 Materializing DiT: 635 parameters, 3234.36MB total
+[13:19:22.295] 🚀 DiT materialized directly from meta with loaded weights
+[13:19:22.300] ✅ Initialized 64 non-persistent buffers
+[13:19:22.300] 🔧 Applying DiT compatibility wrapper
+[13:19:22.300] 🎯 Detected NaDiT 3B FP8 - Converting RoPE freqs for FP8 compatibility
+[13:19:22.302] ✅ Converted 32 RoPE frequency buffers from FP8 to torch.bfloat16 for compatibility
+[13:19:22.302] 🔧 Stabilizing RoPE computations for numerical stability
+[13:19:22.303] ✅ Stabilized 64 RoPE modules
+[13:19:22.303] 🔧 Applying sdpa attention mode and torch.bfloat16 compute dtype to model
+[13:19:22.303] ✅ Applied sdpa and compute_dtype=torch.bfloat16 to 32 modules
+[13:19:22.303] 🎯 Model precision: DiT=torch.float8_e4m3fn, VAE=torch.bfloat16, compute=torch.bfloat16
+[13:19:22.303] 🔄 DiT already on CUDA:0, skipping movement
+[13:19:22.304] 📊 After DiT loading for upscaling:
+[13:19:22.304] 📊   [VRAM] 3.68GB allocated / 9.72GB reserved / Peak: 3.68GB / 84.45GB free / 94.97GB total
+[13:19:22.304] 📊   [RAM] 2.35GB process / 39.47GB others / 134.12GB free / 175.94GB total
+[13:19:22.304] 📊   Memory changes: VRAM +3.20GB
+[13:19:22.304] 📊 Resetting VRAM peak memory statistics
+[13:19:22.304] 🎬 Upscaling batch 1/60
+[13:19:22.305] 🚀 Using seed: 42 for deterministic generation
+[13:19:22.305] 🔄   Moving latent_1 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  1.84it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  1.84it/s]
+[13:19:22.852] 🔄   Moving upscaled_latent_1 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:22.852] 🎬 Upscaling batch 2/60
+[13:19:22.852] 🚀 Using seed: 42 for deterministic generation
+[13:19:22.852] 🔄   Moving latent_2 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]
+[13:19:23.267] 🔄   Moving upscaled_latent_2 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:23.267] 🎬 Upscaling batch 3/60
+[13:19:23.268] 🚀 Using seed: 42 for deterministic generation
+[13:19:23.268] 🔄   Moving latent_3 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]
+[13:19:23.682] 🔄   Moving upscaled_latent_3 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:23.683] 🎬 Upscaling batch 4/60
+[13:19:23.683] 🚀 Using seed: 42 for deterministic generation
+[13:19:23.683] 🔄   Moving latent_4 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]
+[13:19:24.098] 🔄   Moving upscaled_latent_4 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:24.099] 🎬 Upscaling batch 5/60
+[13:19:24.099] 🚀 Using seed: 42 for deterministic generation
+[13:19:24.099] 🔄   Moving latent_5 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]
+[13:19:24.513] 🔄   Moving upscaled_latent_5 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:24.514] 🎬 Upscaling batch 6/60
+[13:19:24.514] 🚀 Using seed: 42 for deterministic generation
+[13:19:24.514] 🔄   Moving latent_6 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:24.930] 🔄   Moving upscaled_latent_6 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:24.930] 🎬 Upscaling batch 7/60
+[13:19:24.930] 🚀 Using seed: 42 for deterministic generation
+[13:19:24.930] 🔄   Moving latent_7 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:25.346] 🔄   Moving upscaled_latent_7 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:25.346] 🎬 Upscaling batch 8/60
+[13:19:25.347] 🚀 Using seed: 42 for deterministic generation
+[13:19:25.347] 🔄   Moving latent_8 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]
+[13:19:25.761] 🔄   Moving upscaled_latent_8 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:25.762] 🎬 Upscaling batch 9/60
+[13:19:25.762] 🚀 Using seed: 42 for deterministic generation
+[13:19:25.762] 🔄   Moving latent_9 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:26.178] 🔄   Moving upscaled_latent_9 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:26.178] 🎬 Upscaling batch 10/60
+[13:19:26.178] 🚀 Using seed: 42 for deterministic generation
+[13:19:26.179] 🔄   Moving latent_10 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:26.594] 🔄   Moving upscaled_latent_10 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:26.595] 🎬 Upscaling batch 11/60
+[13:19:26.595] 🚀 Using seed: 42 for deterministic generation
+[13:19:26.595] 🔄   Moving latent_11 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.42it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:27.010] 🔄   Moving upscaled_latent_11 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:27.011] 🎬 Upscaling batch 12/60
+[13:19:27.011] 🚀 Using seed: 42 for deterministic generation
+[13:19:27.011] 🔄   Moving latent_12 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:27.427] 🔄   Moving upscaled_latent_12 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:27.428] 🎬 Upscaling batch 13/60
+[13:19:27.428] 🚀 Using seed: 42 for deterministic generation
+[13:19:27.428] 🔄   Moving latent_13 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:27.844] 🔄   Moving upscaled_latent_13 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:27.844] 🎬 Upscaling batch 14/60
+[13:19:27.845] 🚀 Using seed: 42 for deterministic generation
+[13:19:27.845] 🔄   Moving latent_14 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:28.260] 🔄   Moving upscaled_latent_14 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:28.261] 🎬 Upscaling batch 15/60
+[13:19:28.261] 🚀 Using seed: 42 for deterministic generation
+[13:19:28.261] 🔄   Moving latent_15 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:28.678] 🔄   Moving upscaled_latent_15 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:28.678] 🎬 Upscaling batch 16/60
+[13:19:28.679] 🚀 Using seed: 42 for deterministic generation
+[13:19:28.679] 🔄   Moving latent_16 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:29.095] 🔄   Moving upscaled_latent_16 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:29.095] 🎬 Upscaling batch 17/60
+[13:19:29.096] 🚀 Using seed: 42 for deterministic generation
+[13:19:29.096] 🔄   Moving latent_17 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:29.512] 🔄   Moving upscaled_latent_17 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:29.512] 🎬 Upscaling batch 18/60
+[13:19:29.513] 🚀 Using seed: 42 for deterministic generation
+[13:19:29.513] 🔄   Moving latent_18 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:29.930] 🔄   Moving upscaled_latent_18 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:29.930] 🎬 Upscaling batch 19/60
+[13:19:29.931] 🚀 Using seed: 42 for deterministic generation
+[13:19:29.931] 🔄   Moving latent_19 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:30.347] 🔄   Moving upscaled_latent_19 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:30.348] 🎬 Upscaling batch 20/60
+[13:19:30.348] 🚀 Using seed: 42 for deterministic generation
+[13:19:30.348] 🔄   Moving latent_20 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:30.765] 🔄   Moving upscaled_latent_20 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:30.766] 🎬 Upscaling batch 21/60
+[13:19:30.766] 🚀 Using seed: 42 for deterministic generation
+[13:19:30.766] 🔄   Moving latent_21 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:31.183] 🔄   Moving upscaled_latent_21 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:31.184] 🎬 Upscaling batch 22/60
+[13:19:31.184] 🚀 Using seed: 42 for deterministic generation
+[13:19:31.184] 🔄   Moving latent_22 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:31.601] 🔄   Moving upscaled_latent_22 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:31.601] 🎬 Upscaling batch 23/60
+[13:19:31.602] 🚀 Using seed: 42 for deterministic generation
+[13:19:31.602] 🔄   Moving latent_23 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:32.018] 🔄   Moving upscaled_latent_23 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:32.019] 🎬 Upscaling batch 24/60
+[13:19:32.019] 🚀 Using seed: 42 for deterministic generation
+[13:19:32.019] 🔄   Moving latent_24 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:32.437] 🔄   Moving upscaled_latent_24 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:32.437] 🎬 Upscaling batch 25/60
+[13:19:32.437] 🚀 Using seed: 42 for deterministic generation
+[13:19:32.437] 🔄   Moving latent_25 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.41it/s]
+[13:19:32.854] 🔄   Moving upscaled_latent_25 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:32.854] 🎬 Upscaling batch 26/60
+[13:19:32.855] 🚀 Using seed: 42 for deterministic generation
+[13:19:32.855] 🔄   Moving latent_26 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:33.272] 🔄   Moving upscaled_latent_26 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:33.272] 🎬 Upscaling batch 27/60
+[13:19:33.273] 🚀 Using seed: 42 for deterministic generation
+[13:19:33.273] 🔄   Moving latent_27 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:33.691] 🔄   Moving upscaled_latent_27 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:33.692] 🎬 Upscaling batch 28/60
+[13:19:33.692] 🚀 Using seed: 42 for deterministic generation
+[13:19:33.692] 🔄   Moving latent_28 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:34.110] 🔄   Moving upscaled_latent_28 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:34.110] 🎬 Upscaling batch 29/60
+[13:19:34.111] 🚀 Using seed: 42 for deterministic generation
+[13:19:34.111] 🔄   Moving latent_29 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:34.528] 🔄   Moving upscaled_latent_29 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:34.529] 🎬 Upscaling batch 30/60
+[13:19:34.529] 🚀 Using seed: 42 for deterministic generation
+[13:19:34.529] 🔄   Moving latent_30 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:34.946] 🔄   Moving upscaled_latent_30 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:34.946] 🎬 Upscaling batch 31/60
+[13:19:34.947] 🚀 Using seed: 42 for deterministic generation
+[13:19:34.947] 🔄   Moving latent_31 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:35.365] 🔄   Moving upscaled_latent_31 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:35.365] 🎬 Upscaling batch 32/60
+[13:19:35.365] 🚀 Using seed: 42 for deterministic generation
+[13:19:35.365] 🔄   Moving latent_32 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:35.784] 🔄   Moving upscaled_latent_32 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:35.785] 🎬 Upscaling batch 33/60
+[13:19:35.785] 🚀 Using seed: 42 for deterministic generation
+[13:19:35.785] 🔄   Moving latent_33 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:36.203] 🔄   Moving upscaled_latent_33 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:36.203] 🎬 Upscaling batch 34/60
+[13:19:36.204] 🚀 Using seed: 42 for deterministic generation
+[13:19:36.204] 🔄   Moving latent_34 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:36.622] 🔄   Moving upscaled_latent_34 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:36.622] 🎬 Upscaling batch 35/60
+[13:19:36.623] 🚀 Using seed: 42 for deterministic generation
+[13:19:36.623] 🔄   Moving latent_35 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:37.040] 🔄   Moving upscaled_latent_35 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:37.041] 🎬 Upscaling batch 36/60
+[13:19:37.041] 🚀 Using seed: 42 for deterministic generation
+[13:19:37.041] 🔄   Moving latent_36 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:37.458] 🔄   Moving upscaled_latent_36 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:37.459] 🎬 Upscaling batch 37/60
+[13:19:37.459] 🚀 Using seed: 42 for deterministic generation
+[13:19:37.459] 🔄   Moving latent_37 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:37.877] 🔄   Moving upscaled_latent_37 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:37.877] 🎬 Upscaling batch 38/60
+[13:19:37.877] 🚀 Using seed: 42 for deterministic generation
+[13:19:37.877] 🔄   Moving latent_38 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:38.295] 🔄   Moving upscaled_latent_38 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:38.296] 🎬 Upscaling batch 39/60
+[13:19:38.296] 🚀 Using seed: 42 for deterministic generation
+[13:19:38.296] 🔄   Moving latent_39 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:38.714] 🔄   Moving upscaled_latent_39 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:38.714] 🎬 Upscaling batch 40/60
+[13:19:38.714] 🚀 Using seed: 42 for deterministic generation
+[13:19:38.715] 🔄   Moving latent_40 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:39.132] 🔄   Moving upscaled_latent_40 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:39.133] 🎬 Upscaling batch 41/60
+[13:19:39.133] 🚀 Using seed: 42 for deterministic generation
+[13:19:39.133] 🔄   Moving latent_41 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:39.551] 🔄   Moving upscaled_latent_41 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:39.551] 🎬 Upscaling batch 42/60
+[13:19:39.551] 🚀 Using seed: 42 for deterministic generation
+[13:19:39.551] 🔄   Moving latent_42 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:39.969] 🔄   Moving upscaled_latent_42 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:39.969] 🎬 Upscaling batch 43/60
+[13:19:39.969] 🚀 Using seed: 42 for deterministic generation
+[13:19:39.969] 🔄   Moving latent_43 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:40.387] 🔄   Moving upscaled_latent_43 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:40.388] 🎬 Upscaling batch 44/60
+[13:19:40.388] 🚀 Using seed: 42 for deterministic generation
+[13:19:40.388] 🔄   Moving latent_44 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:40.806] 🔄   Moving upscaled_latent_44 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:40.806] 🎬 Upscaling batch 45/60
+[13:19:40.806] 🚀 Using seed: 42 for deterministic generation
+[13:19:40.807] 🔄   Moving latent_45 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+[13:19:41.225] 🔄   Moving upscaled_latent_45 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:41.226] 🎬 Upscaling batch 46/60
+[13:19:41.226] 🚀 Using seed: 42 for deterministic generation
+[13:19:41.226] 🔄   Moving latent_46 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.38it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.38it/s]
+[13:19:41.648] 🔄   Moving upscaled_latent_46 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:41.649] 🎬 Upscaling batch 47/60
+[13:19:41.649] 🚀 Using seed: 42 for deterministic generation
+[13:19:41.649] 🔄   Moving latent_47 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:42.069] 🔄   Moving upscaled_latent_47 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:42.069] 🎬 Upscaling batch 48/60
+[13:19:42.070] 🚀 Using seed: 42 for deterministic generation
+[13:19:42.070] 🔄   Moving latent_48 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:42.489] 🔄   Moving upscaled_latent_48 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:42.490] 🎬 Upscaling batch 49/60
+[13:19:42.490] 🚀 Using seed: 42 for deterministic generation
+[13:19:42.490] 🔄   Moving latent_49 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.38it/s]
+[13:19:42.910] 🔄   Moving upscaled_latent_49 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:42.911] 🎬 Upscaling batch 50/60
+[13:19:42.911] 🚀 Using seed: 42 for deterministic generation
+[13:19:42.911] 🔄   Moving latent_50 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.40it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:43.330] 🔄   Moving upscaled_latent_50 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:43.331] 🎬 Upscaling batch 51/60
+[13:19:43.331] 🚀 Using seed: 42 for deterministic generation
+[13:19:43.331] 🔄   Moving latent_51 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:43.751] 🔄   Moving upscaled_latent_51 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:43.752] 🎬 Upscaling batch 52/60
+[13:19:43.752] 🚀 Using seed: 42 for deterministic generation
+[13:19:43.752] 🔄   Moving latent_52 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:44.172] 🔄   Moving upscaled_latent_52 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:44.173] 🎬 Upscaling batch 53/60
+[13:19:44.173] 🚀 Using seed: 42 for deterministic generation
+[13:19:44.173] 🔄   Moving latent_53 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:44.592] 🔄   Moving upscaled_latent_53 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:44.593] 🎬 Upscaling batch 54/60
+[13:19:44.593] 🚀 Using seed: 42 for deterministic generation
+[13:19:44.593] 🔄   Moving latent_54 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:45.013] 🔄   Moving upscaled_latent_54 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:45.014] 🎬 Upscaling batch 55/60
+[13:19:45.014] 🚀 Using seed: 42 for deterministic generation
+[13:19:45.014] 🔄   Moving latent_55 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:45.434] 🔄   Moving upscaled_latent_55 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:45.435] 🎬 Upscaling batch 56/60
+[13:19:45.435] 🚀 Using seed: 42 for deterministic generation
+[13:19:45.435] 🔄   Moving latent_56 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:45.855] 🔄   Moving upscaled_latent_56 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:45.856] 🎬 Upscaling batch 57/60
+[13:19:45.856] 🚀 Using seed: 42 for deterministic generation
+[13:19:45.856] 🔄   Moving latent_57 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:46.276] 🔄   Moving upscaled_latent_57 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:46.277] 🎬 Upscaling batch 58/60
+[13:19:46.277] 🚀 Using seed: 42 for deterministic generation
+[13:19:46.277] 🔄   Moving latent_58 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:46.697] 🔄   Moving upscaled_latent_58 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:46.697] 🎬 Upscaling batch 59/60
+[13:19:46.698] 🚀 Using seed: 42 for deterministic generation
+[13:19:46.698] 🔄   Moving latent_59 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:47.117] 🔄   Moving upscaled_latent_59 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:47.118] 🎬 Upscaling batch 60/60
+[13:19:47.118] 🚀 Using seed: 42 for deterministic generation
+[13:19:47.118] 🔄   Moving latent_60 from CPU to CUDA:0 (DiT upscaling)
+EulerSampler:   0%|          | 0/1 [00:00<?, ?it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]EulerSampler: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+[13:19:47.538] 🔄   Moving upscaled_latent_60 from CUDA:0 to CPU (storing upscaled latents for decoding)
+[13:19:47.538] 🧹 Cleaning up DiT components
+[13:19:47.540] 🔄 Moving DiT from CUDA:0 to CPU (releasing GPU memory)
+[13:19:48.740] 🧹 Starting BlockSwap cleanup
+[13:19:48.740] ✅ BlockSwap cleanup complete
+[13:19:48.743] 🧹 DiT model deleted
+[13:19:48.743] 🧹 Cleaned up text embeddings: texts_pos, texts_neg
+[13:19:48.743] ⚡ Phase 2: DiT upscaling complete: 26.85s
+[13:19:48.743] ⚡   └─ DiT moved to CPU: 1.20s
+[13:19:48.743] ⚡   └─ Upscaled batch 1: 0.55s
+[13:19:48.743] ⚡     └─ DiT inference 1: 0.55s
+[13:19:48.743] ⚡   └─ Upscaled batch 46: 0.42s
+[13:19:48.743] ⚡     └─ DiT inference 46: 0.42s
+[13:19:48.743] ⚡   └─ Upscaled batch 49: 0.42s
+[13:19:48.743] ⚡     └─ DiT inference 49: 0.42s
+[13:19:48.743] ⚡   └─ Upscaled batch 54: 0.42s
+[13:19:48.743] ⚡     └─ DiT inference 54: 0.42s
+[13:19:48.743] ⚡   └─ Upscaled batch 55: 0.42s
+[13:19:48.743] ⚡     └─ DiT inference 55: 0.42s
+[13:19:48.743] ⚡   └─ Upscaled batch 52: 0.42s
+[13:19:48.743] ⚡     └─ DiT inference 52: 0.42s
+[13:19:48.743] ⚡   └─ Upscaled batch 47: 0.42s
+[13:19:48.743] ⚡     └─ DiT inference 47: 0.42s
+[13:19:48.743] ⚡   └─ Upscaled batch 51: 0.42s
+[13:19:48.743] ⚡     └─ DiT inference 51: 0.42s
+[13:19:48.743] ⚡   └─ Upscaled batch 56: 0.42s
+[13:19:48.743] ⚡     └─ DiT inference 56: 0.42s
+[13:19:48.743] ⚡   └─ Upscaled batch 58: 0.42s
+[13:19:48.743] ⚡     └─ DiT inference 58: 0.42s
+[13:19:48.743] ⚡   └─ Upscaled batch 57: 0.42s
+[13:19:48.743] ⚡     └─ DiT inference 57: 0.42s
+[13:19:48.743] ⚡   └─ Upscaled batch 59: 0.42s
+[13:19:48.743] ⚡     └─ DiT inference 59: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 53: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 53: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 60: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 60: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 48: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 48: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 50: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 50: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 45: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 45: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 27: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 27: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 32: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 32: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 34: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 34: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 33: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 33: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 40: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 40: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 43: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 43: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 31: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 31: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 39: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 39: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 38: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 38: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 36: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 36: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 28: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 28: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 44: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 44: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 29: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 29: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 26: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 26: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 42: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 42: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 37: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 37: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 35: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 35: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 24: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 24: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 21: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 21: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 41: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 41: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 30: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 30: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 18: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 18: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 22: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 22: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 19: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 19: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 20: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 20: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 23: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 23: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 15: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 15: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 25: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 25: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 17: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 17: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 16: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 16: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 13: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 13: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 12: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 12: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 14: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 14: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 11: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 11: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 10: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 10: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 9: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 9: 0.42s
+[13:19:48.744] ⚡   └─ Upscaled batch 7: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 7: 0.41s
+[13:19:48.744] ⚡   └─ Upscaled batch 6: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 6: 0.41s
+[13:19:48.744] ⚡   └─ Upscaled batch 4: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 4: 0.41s
+[13:19:48.744] ⚡   └─ Upscaled batch 8: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 8: 0.41s
+[13:19:48.744] ⚡   └─ Upscaled batch 3: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 3: 0.41s
+[13:19:48.744] ⚡   └─ Upscaled batch 5: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 5: 0.41s
+[13:19:48.744] ⚡   └─ Upscaled batch 2: 0.42s
+[13:19:48.744] ⚡     └─ DiT inference 2: 0.41s
+[13:19:48.744] ⚡   └─ DiT materialized: 0.41s
+[13:19:48.744] ⚡     └─ DiT weights loaded from file: 0.38s
+[13:19:48.744] ⚡     └─ DiT weights materialized: 0.01s
+[13:19:48.744] ⚡   └─ (other operations): 0.03s
+[13:19:48.745] 📊 After phase 2 (DiT upscaling):
+[13:19:48.745] 📊   [VRAM] 0.48GB allocated / 9.72GB reserved / Peak: 4.80GB / 84.44GB free / 94.97GB total
+[13:19:48.745] 📊   [RAM] 5.86GB process / 39.42GB others / 130.65GB free / 175.94GB total
+[13:19:48.745] 📊   Memory changes: VRAM -3.20GB, RAM +3.51GB
+[13:19:48.745] 📊 Resetting VRAM peak memory statistics
+[13:19:48.850]  
+[13:19:48.850]  ━━━━━━━━ Phase 3: VAE decoding ━━━━━━━━
+[13:19:48.850] 🔧 Pre-allocating output tensor: 299 frames, 1260x720px, RGB (1.52GB)
+[13:19:48.851] 🎯 Model precision: VAE=torch.bfloat16, compute=torch.bfloat16
+[13:19:48.851] 🔄 VAE already on CUDA:0, skipping movement
+[13:19:48.851] 📊 After VAE loading for decoding:
+[13:19:48.851] 📊   [VRAM] 0.48GB allocated / 9.72GB reserved / Peak: 0.48GB / 84.44GB free / 94.97GB total
+[13:19:48.852] 📊   [RAM] 2.97GB process / 39.68GB others / 133.29GB free / 175.94GB total
+[13:19:48.852] 📊   Memory changes: RAM -2.89GB
+[13:19:48.852] 📊 Resetting VRAM peak memory statistics
+[13:19:48.852] 🎨 Decoding batch 1/60
+[13:19:48.852] 🔄   Moving upscaled_latent_1 from CPU to CUDA:0 (VAE decoding)
+[13:19:48.852] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:49.778] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:49.779] 🔄   Moving sample_1 from CUDA:0 to CPU (writing to final_video)
+[13:19:49.812] 📹   Wrote 5 frames to positions 0-5
+[13:19:49.815] 🎨 Decoding batch 2/60
+[13:19:49.815] 🔄   Moving upscaled_latent_2 from CPU to CUDA:0 (VAE decoding)
+[13:19:49.816] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:49.896] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:49.896] 🔄   Moving sample_2 from CUDA:0 to CPU (writing to final_video)
+[13:19:50.775] 📹   Wrote 5 frames to positions 5-10
+[13:19:50.781] 🎨 Decoding batch 3/60
+[13:19:50.781] 🔄   Moving upscaled_latent_3 from CPU to CUDA:0 (VAE decoding)
+[13:19:50.782] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:50.863] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:50.863] 🔄   Moving sample_3 from CUDA:0 to CPU (writing to final_video)
+[13:19:51.741] 📹   Wrote 5 frames to positions 10-15
+[13:19:51.745] 🎨 Decoding batch 4/60
+[13:19:51.745] 🔄   Moving upscaled_latent_4 from CPU to CUDA:0 (VAE decoding)
+[13:19:51.746] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:51.826] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:51.826] 🔄   Moving sample_4 from CUDA:0 to CPU (writing to final_video)
+[13:19:52.709] 📹   Wrote 5 frames to positions 15-20
+[13:19:52.713] 🎨 Decoding batch 5/60
+[13:19:52.713] 🔄   Moving upscaled_latent_5 from CPU to CUDA:0 (VAE decoding)
+[13:19:52.714] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:52.794] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:52.794] 🔄   Moving sample_5 from CUDA:0 to CPU (writing to final_video)
+[13:19:53.675] 📹   Wrote 5 frames to positions 20-25
+[13:19:53.679] 🎨 Decoding batch 6/60
+[13:19:53.679] 🔄   Moving upscaled_latent_6 from CPU to CUDA:0 (VAE decoding)
+[13:19:53.680] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:53.760] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:53.760] 🔄   Moving sample_6 from CUDA:0 to CPU (writing to final_video)
+[13:19:54.642] 📹   Wrote 5 frames to positions 25-30
+[13:19:54.645] 🎨 Decoding batch 7/60
+[13:19:54.645] 🔄   Moving upscaled_latent_7 from CPU to CUDA:0 (VAE decoding)
+[13:19:54.646] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:54.726] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:54.726] 🔄   Moving sample_7 from CUDA:0 to CPU (writing to final_video)
+[13:19:55.606] 📹   Wrote 5 frames to positions 30-35
+[13:19:55.610] 🎨 Decoding batch 8/60
+[13:19:55.610] 🔄   Moving upscaled_latent_8 from CPU to CUDA:0 (VAE decoding)
+[13:19:55.610] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:55.691] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:55.691] 🔄   Moving sample_8 from CUDA:0 to CPU (writing to final_video)
+[13:19:56.575] 📹   Wrote 5 frames to positions 35-40
+[13:19:56.579] 🎨 Decoding batch 9/60
+[13:19:56.579] 🔄   Moving upscaled_latent_9 from CPU to CUDA:0 (VAE decoding)
+[13:19:56.579] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:56.660] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:56.660] 🔄   Moving sample_9 from CUDA:0 to CPU (writing to final_video)
+[13:19:57.543] 📹   Wrote 5 frames to positions 40-45
+[13:19:57.547] 🎨 Decoding batch 10/60
+[13:19:57.547] 🔄   Moving upscaled_latent_10 from CPU to CUDA:0 (VAE decoding)
+[13:19:57.547] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:57.628] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:57.628] 🔄   Moving sample_10 from CUDA:0 to CPU (writing to final_video)
+[13:19:58.511] 📹   Wrote 5 frames to positions 45-50
+[13:19:58.515] 🎨 Decoding batch 11/60
+[13:19:58.515] 🔄   Moving upscaled_latent_11 from CPU to CUDA:0 (VAE decoding)
+[13:19:58.515] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:58.596] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:58.596] 🔄   Moving sample_11 from CUDA:0 to CPU (writing to final_video)
+[13:19:59.480] 📹   Wrote 5 frames to positions 50-55
+[13:19:59.484] 🎨 Decoding batch 12/60
+[13:19:59.484] 🔄   Moving upscaled_latent_12 from CPU to CUDA:0 (VAE decoding)
+[13:19:59.484] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:19:59.565] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:19:59.565] 🔄   Moving sample_12 from CUDA:0 to CPU (writing to final_video)
+[13:20:00.449] 📹   Wrote 5 frames to positions 55-60
+[13:20:00.454] 🎨 Decoding batch 13/60
+[13:20:00.454] 🔄   Moving upscaled_latent_13 from CPU to CUDA:0 (VAE decoding)
+[13:20:00.454] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:00.535] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:00.535] 🔄   Moving sample_13 from CUDA:0 to CPU (writing to final_video)
+[13:20:01.421] 📹   Wrote 5 frames to positions 60-65
+[13:20:01.426] 🎨 Decoding batch 14/60
+[13:20:01.426] 🔄   Moving upscaled_latent_14 from CPU to CUDA:0 (VAE decoding)
+[13:20:01.427] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:01.507] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:01.507] 🔄   Moving sample_14 from CUDA:0 to CPU (writing to final_video)
+[13:20:02.389] 📹   Wrote 5 frames to positions 65-70
+[13:20:02.394] 🎨 Decoding batch 15/60
+[13:20:02.395] 🔄   Moving upscaled_latent_15 from CPU to CUDA:0 (VAE decoding)
+[13:20:02.395] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:02.476] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:02.476] 🔄   Moving sample_15 from CUDA:0 to CPU (writing to final_video)
+[13:20:03.361] 📹   Wrote 5 frames to positions 70-75
+[13:20:03.366] 🎨 Decoding batch 16/60
+[13:20:03.366] 🔄   Moving upscaled_latent_16 from CPU to CUDA:0 (VAE decoding)
+[13:20:03.366] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:03.447] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:03.447] 🔄   Moving sample_16 from CUDA:0 to CPU (writing to final_video)
+[13:20:04.341] 📹   Wrote 5 frames to positions 75-80
+[13:20:04.347] 🎨 Decoding batch 17/60
+[13:20:04.347] 🔄   Moving upscaled_latent_17 from CPU to CUDA:0 (VAE decoding)
+[13:20:04.347] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:04.428] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:04.428] 🔄   Moving sample_17 from CUDA:0 to CPU (writing to final_video)
+[13:20:05.314] 📹   Wrote 5 frames to positions 80-85
+[13:20:05.320] 🎨 Decoding batch 18/60
+[13:20:05.320] 🔄   Moving upscaled_latent_18 from CPU to CUDA:0 (VAE decoding)
+[13:20:05.321] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:05.401] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:05.402] 🔄   Moving sample_18 from CUDA:0 to CPU (writing to final_video)
+[13:20:06.285] 📹   Wrote 5 frames to positions 85-90
+[13:20:06.290] 🎨 Decoding batch 19/60
+[13:20:06.290] 🔄   Moving upscaled_latent_19 from CPU to CUDA:0 (VAE decoding)
+[13:20:06.290] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:06.371] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:06.371] 🔄   Moving sample_19 from CUDA:0 to CPU (writing to final_video)
+[13:20:07.258] 📹   Wrote 5 frames to positions 90-95
+[13:20:07.263] 🎨 Decoding batch 20/60
+[13:20:07.263] 🔄   Moving upscaled_latent_20 from CPU to CUDA:0 (VAE decoding)
+[13:20:07.263] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:07.344] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:07.345] 🔄   Moving sample_20 from CUDA:0 to CPU (writing to final_video)
+[13:20:08.232] 📹   Wrote 5 frames to positions 95-100
+[13:20:08.237] 🎨 Decoding batch 21/60
+[13:20:08.237] 🔄   Moving upscaled_latent_21 from CPU to CUDA:0 (VAE decoding)
+[13:20:08.237] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:08.318] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:08.318] 🔄   Moving sample_21 from CUDA:0 to CPU (writing to final_video)
+[13:20:09.210] 📹   Wrote 5 frames to positions 100-105
+[13:20:09.215] 🎨 Decoding batch 22/60
+[13:20:09.215] 🔄   Moving upscaled_latent_22 from CPU to CUDA:0 (VAE decoding)
+[13:20:09.216] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:09.297] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:09.297] 🔄   Moving sample_22 from CUDA:0 to CPU (writing to final_video)
+[13:20:10.184] 📹   Wrote 5 frames to positions 105-110
+[13:20:10.187] 🎨 Decoding batch 23/60
+[13:20:10.187] 🔄   Moving upscaled_latent_23 from CPU to CUDA:0 (VAE decoding)
+[13:20:10.188] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:10.268] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:10.268] 🔄   Moving sample_23 from CUDA:0 to CPU (writing to final_video)
+[13:20:11.153] 📹   Wrote 5 frames to positions 110-115
+[13:20:11.157] 🎨 Decoding batch 24/60
+[13:20:11.157] 🔄   Moving upscaled_latent_24 from CPU to CUDA:0 (VAE decoding)
+[13:20:11.158] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:11.239] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:11.239] 🔄   Moving sample_24 from CUDA:0 to CPU (writing to final_video)
+[13:20:12.129] 📹   Wrote 5 frames to positions 115-120
+[13:20:12.134] 🎨 Decoding batch 25/60
+[13:20:12.134] 🔄   Moving upscaled_latent_25 from CPU to CUDA:0 (VAE decoding)
+[13:20:12.134] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:12.215] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:12.215] 🔄   Moving sample_25 from CUDA:0 to CPU (writing to final_video)
+[13:20:13.103] 📹   Wrote 5 frames to positions 120-125
+[13:20:13.107] 🎨 Decoding batch 26/60
+[13:20:13.107] 🔄   Moving upscaled_latent_26 from CPU to CUDA:0 (VAE decoding)
+[13:20:13.107] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:13.188] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:13.188] 🔄   Moving sample_26 from CUDA:0 to CPU (writing to final_video)
+[13:20:14.073] 📹   Wrote 5 frames to positions 125-130
+[13:20:14.076] 🎨 Decoding batch 27/60
+[13:20:14.077] 🔄   Moving upscaled_latent_27 from CPU to CUDA:0 (VAE decoding)
+[13:20:14.077] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:14.158] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:14.158] 🔄   Moving sample_27 from CUDA:0 to CPU (writing to final_video)
+[13:20:15.045] 📹   Wrote 5 frames to positions 130-135
+[13:20:15.048] 🎨 Decoding batch 28/60
+[13:20:15.049] 🔄   Moving upscaled_latent_28 from CPU to CUDA:0 (VAE decoding)
+[13:20:15.049] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:15.130] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:15.130] 🔄   Moving sample_28 from CUDA:0 to CPU (writing to final_video)
+[13:20:16.017] 📹   Wrote 5 frames to positions 135-140
+[13:20:16.020] 🎨 Decoding batch 29/60
+[13:20:16.020] 🔄   Moving upscaled_latent_29 from CPU to CUDA:0 (VAE decoding)
+[13:20:16.021] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:16.101] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:16.102] 🔄   Moving sample_29 from CUDA:0 to CPU (writing to final_video)
+[13:20:16.992] 📹   Wrote 5 frames to positions 140-145
+[13:20:16.996] 🎨 Decoding batch 30/60
+[13:20:16.996] 🔄   Moving upscaled_latent_30 from CPU to CUDA:0 (VAE decoding)
+[13:20:16.997] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:17.077] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:17.078] 🔄   Moving sample_30 from CUDA:0 to CPU (writing to final_video)
+[13:20:17.965] 📹   Wrote 5 frames to positions 145-150
+[13:20:17.969] 🎨 Decoding batch 31/60
+[13:20:17.969] 🔄   Moving upscaled_latent_31 from CPU to CUDA:0 (VAE decoding)
+[13:20:17.970] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:18.050] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:18.051] 🔄   Moving sample_31 from CUDA:0 to CPU (writing to final_video)
+[13:20:18.938] 📹   Wrote 5 frames to positions 150-155
+[13:20:18.941] 🎨 Decoding batch 32/60
+[13:20:18.941] 🔄   Moving upscaled_latent_32 from CPU to CUDA:0 (VAE decoding)
+[13:20:18.942] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:19.023] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:19.023] 🔄   Moving sample_32 from CUDA:0 to CPU (writing to final_video)
+[13:20:19.906] 📹   Wrote 5 frames to positions 155-160
+[13:20:19.909] 🎨 Decoding batch 33/60
+[13:20:19.909] 🔄   Moving upscaled_latent_33 from CPU to CUDA:0 (VAE decoding)
+[13:20:19.910] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:19.991] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:19.991] 🔄   Moving sample_33 from CUDA:0 to CPU (writing to final_video)
+[13:20:20.881] 📹   Wrote 5 frames to positions 160-165
+[13:20:20.884] 🎨 Decoding batch 34/60
+[13:20:20.885] 🔄   Moving upscaled_latent_34 from CPU to CUDA:0 (VAE decoding)
+[13:20:20.885] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:20.966] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:20.966] 🔄   Moving sample_34 from CUDA:0 to CPU (writing to final_video)
+[13:20:21.854] 📹   Wrote 5 frames to positions 165-170
+[13:20:21.857] 🎨 Decoding batch 35/60
+[13:20:21.857] 🔄   Moving upscaled_latent_35 from CPU to CUDA:0 (VAE decoding)
+[13:20:21.858] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:21.939] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:21.939] 🔄   Moving sample_35 from CUDA:0 to CPU (writing to final_video)
+[13:20:22.831] 📹   Wrote 5 frames to positions 170-175
+[13:20:22.834] 🎨 Decoding batch 36/60
+[13:20:22.834] 🔄   Moving upscaled_latent_36 from CPU to CUDA:0 (VAE decoding)
+[13:20:22.835] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:22.916] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:22.916] 🔄   Moving sample_36 from CUDA:0 to CPU (writing to final_video)
+[13:20:23.808] 📹   Wrote 5 frames to positions 175-180
+[13:20:23.811] 🎨 Decoding batch 37/60
+[13:20:23.811] 🔄   Moving upscaled_latent_37 from CPU to CUDA:0 (VAE decoding)
+[13:20:23.812] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:23.893] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:23.893] 🔄   Moving sample_37 from CUDA:0 to CPU (writing to final_video)
+[13:20:24.784] 📹   Wrote 5 frames to positions 180-185
+[13:20:24.787] 🎨 Decoding batch 38/60
+[13:20:24.788] 🔄   Moving upscaled_latent_38 from CPU to CUDA:0 (VAE decoding)
+[13:20:24.788] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:24.869] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:24.869] 🔄   Moving sample_38 from CUDA:0 to CPU (writing to final_video)
+[13:20:25.758] 📹   Wrote 5 frames to positions 185-190
+[13:20:25.761] 🎨 Decoding batch 39/60
+[13:20:25.762] 🔄   Moving upscaled_latent_39 from CPU to CUDA:0 (VAE decoding)
+[13:20:25.762] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:25.843] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:25.843] 🔄   Moving sample_39 from CUDA:0 to CPU (writing to final_video)
+[13:20:26.736] 📹   Wrote 5 frames to positions 190-195
+[13:20:26.740] 🎨 Decoding batch 40/60
+[13:20:26.740] 🔄   Moving upscaled_latent_40 from CPU to CUDA:0 (VAE decoding)
+[13:20:26.741] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:26.822] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:26.822] 🔄   Moving sample_40 from CUDA:0 to CPU (writing to final_video)
+[13:20:27.712] 📹   Wrote 5 frames to positions 195-200
+[13:20:27.715] 🎨 Decoding batch 41/60
+[13:20:27.716] 🔄   Moving upscaled_latent_41 from CPU to CUDA:0 (VAE decoding)
+[13:20:27.716] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:27.797] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:27.797] 🔄   Moving sample_41 from CUDA:0 to CPU (writing to final_video)
+[13:20:28.686] 📹   Wrote 5 frames to positions 200-205
+[13:20:28.690] 🎨 Decoding batch 42/60
+[13:20:28.690] 🔄   Moving upscaled_latent_42 from CPU to CUDA:0 (VAE decoding)
+[13:20:28.691] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:28.772] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:28.772] 🔄   Moving sample_42 from CUDA:0 to CPU (writing to final_video)
+[13:20:29.666] 📹   Wrote 5 frames to positions 205-210
+[13:20:29.670] 🎨 Decoding batch 43/60
+[13:20:29.670] 🔄   Moving upscaled_latent_43 from CPU to CUDA:0 (VAE decoding)
+[13:20:29.671] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:29.752] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:29.752] 🔄   Moving sample_43 from CUDA:0 to CPU (writing to final_video)
+[13:20:30.645] 📹   Wrote 5 frames to positions 210-215
+[13:20:30.649] 🎨 Decoding batch 44/60
+[13:20:30.649] 🔄   Moving upscaled_latent_44 from CPU to CUDA:0 (VAE decoding)
+[13:20:30.650] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:30.731] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:30.731] 🔄   Moving sample_44 from CUDA:0 to CPU (writing to final_video)
+[13:20:31.624] 📹   Wrote 5 frames to positions 215-220
+[13:20:31.627] 🎨 Decoding batch 45/60
+[13:20:31.627] 🔄   Moving upscaled_latent_45 from CPU to CUDA:0 (VAE decoding)
+[13:20:31.628] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:31.709] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:31.709] 🔄   Moving sample_45 from CUDA:0 to CPU (writing to final_video)
+[13:20:32.602] 📹   Wrote 5 frames to positions 220-225
+[13:20:32.606] 🎨 Decoding batch 46/60
+[13:20:32.606] 🔄   Moving upscaled_latent_46 from CPU to CUDA:0 (VAE decoding)
+[13:20:32.606] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:32.687] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:32.687] 🔄   Moving sample_46 from CUDA:0 to CPU (writing to final_video)
+[13:20:33.577] 📹   Wrote 5 frames to positions 225-230
+[13:20:33.580] 🎨 Decoding batch 47/60
+[13:20:33.580] 🔄   Moving upscaled_latent_47 from CPU to CUDA:0 (VAE decoding)
+[13:20:33.581] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:33.662] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:33.662] 🔄   Moving sample_47 from CUDA:0 to CPU (writing to final_video)
+[13:20:34.553] 📹   Wrote 5 frames to positions 230-235
+[13:20:34.557] 🎨 Decoding batch 48/60
+[13:20:34.557] 🔄   Moving upscaled_latent_48 from CPU to CUDA:0 (VAE decoding)
+[13:20:34.558] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:34.639] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:34.639] 🔄   Moving sample_48 from CUDA:0 to CPU (writing to final_video)
+[13:20:35.532] 📹   Wrote 5 frames to positions 235-240
+[13:20:35.536] 🎨 Decoding batch 49/60
+[13:20:35.536] 🔄   Moving upscaled_latent_49 from CPU to CUDA:0 (VAE decoding)
+[13:20:35.537] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:35.618] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:35.618] 🔄   Moving sample_49 from CUDA:0 to CPU (writing to final_video)
+[13:20:36.513] 📹   Wrote 5 frames to positions 240-245
+[13:20:36.516] 🎨 Decoding batch 50/60
+[13:20:36.516] 🔄   Moving upscaled_latent_50 from CPU to CUDA:0 (VAE decoding)
+[13:20:36.517] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:36.598] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:36.598] 🔄   Moving sample_50 from CUDA:0 to CPU (writing to final_video)
+[13:20:37.488] 📹   Wrote 5 frames to positions 245-250
+[13:20:37.491] 🎨 Decoding batch 51/60
+[13:20:37.491] 🔄   Moving upscaled_latent_51 from CPU to CUDA:0 (VAE decoding)
+[13:20:37.492] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:37.573] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:37.573] 🔄   Moving sample_51 from CUDA:0 to CPU (writing to final_video)
+[13:20:38.467] 📹   Wrote 5 frames to positions 250-255
+[13:20:38.470] 🎨 Decoding batch 52/60
+[13:20:38.470] 🔄   Moving upscaled_latent_52 from CPU to CUDA:0 (VAE decoding)
+[13:20:38.471] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:38.552] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:38.552] 🔄   Moving sample_52 from CUDA:0 to CPU (writing to final_video)
+[13:20:39.444] 📹   Wrote 5 frames to positions 255-260
+[13:20:39.448] 🎨 Decoding batch 53/60
+[13:20:39.448] 🔄   Moving upscaled_latent_53 from CPU to CUDA:0 (VAE decoding)
+[13:20:39.449] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:39.530] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:39.530] 🔄   Moving sample_53 from CUDA:0 to CPU (writing to final_video)
+[13:20:40.423] 📹   Wrote 5 frames to positions 260-265
+[13:20:40.427] 🎨 Decoding batch 54/60
+[13:20:40.427] 🔄   Moving upscaled_latent_54 from CPU to CUDA:0 (VAE decoding)
+[13:20:40.428] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:40.509] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:40.509] 🔄   Moving sample_54 from CUDA:0 to CPU (writing to final_video)
+[13:20:41.399] 📹   Wrote 5 frames to positions 265-270
+[13:20:41.402] 🎨 Decoding batch 55/60
+[13:20:41.402] 🔄   Moving upscaled_latent_55 from CPU to CUDA:0 (VAE decoding)
+[13:20:41.403] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:41.484] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:41.484] 🔄   Moving sample_55 from CUDA:0 to CPU (writing to final_video)
+[13:20:42.379] 📹   Wrote 5 frames to positions 270-275
+[13:20:42.382] 🎨 Decoding batch 56/60
+[13:20:42.382] 🔄   Moving upscaled_latent_56 from CPU to CUDA:0 (VAE decoding)
+[13:20:42.383] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:42.464] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:42.464] 🔄   Moving sample_56 from CUDA:0 to CPU (writing to final_video)
+[13:20:43.354] 📹   Wrote 5 frames to positions 275-280
+[13:20:43.357] 🎨 Decoding batch 57/60
+[13:20:43.357] 🔄   Moving upscaled_latent_57 from CPU to CUDA:0 (VAE decoding)
+[13:20:43.358] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:43.439] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:43.439] 🔄   Moving sample_57 from CUDA:0 to CPU (writing to final_video)
+[13:20:44.331] 📹   Wrote 5 frames to positions 280-285
+[13:20:44.334] 🎨 Decoding batch 58/60
+[13:20:44.334] 🔄   Moving upscaled_latent_58 from CPU to CUDA:0 (VAE decoding)
+[13:20:44.335] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:44.416] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:44.416] 🔄   Moving sample_58 from CUDA:0 to CPU (writing to final_video)
+[13:20:45.307] 📹   Wrote 5 frames to positions 285-290
+[13:20:45.311] 🎨 Decoding batch 59/60
+[13:20:45.311] 🔄   Moving upscaled_latent_59 from CPU to CUDA:0 (VAE decoding)
+[13:20:45.311] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:45.392] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:45.392] 🔄   Moving sample_59 from CUDA:0 to CPU (writing to final_video)
+[13:20:46.286] 📹   Wrote 5 frames to positions 290-295
+[13:20:46.289] 🎨 Decoding batch 60/60
+[13:20:46.289] 🔄   Moving upscaled_latent_60 from CPU to CUDA:0 (VAE decoding)
+[13:20:46.290] ℹ️   Latents shape: torch.Size([1, 2, 90, 158, 16])
+[13:20:46.371] 📹   Trimming temporal padding: 1 frames removed (5 → 4)
+[13:20:46.371] 📹   Trimming spatial padding: 1264x720 → 1260x720
+[13:20:46.371] 🔄   Moving sample_60 from CUDA:0 to CPU (writing to final_video)
+[13:20:47.258] 📹   Wrote 4 frames to positions 295-299
+[13:20:47.258] 🧹 Cleaning up VAE components
+[13:20:47.258] 🔄 Moving VAE from CUDA:0 to CPU (releasing GPU memory)
+[13:20:47.412] 🧹 VAE model deleted
+[13:20:47.412] ⚡ Phase 3: VAE decoding complete: 58.56s
+[13:20:47.413] ⚡   └─ Decoded batch 16: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 49: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 55: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 42: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 51: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 53: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 43: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 48: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 39: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 59: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 21: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 44: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 45: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 52: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 57: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 35: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 36: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 47: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 24: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 58: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 37: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 29: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 40: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 33: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 54: 0.98s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 56: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 50: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 46: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 41: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 38: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 20: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 17: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 19: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 30: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 25: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 34: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 13: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 31: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 22: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 27: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 28: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 15: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 23: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 26: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 12: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 18: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 11: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 8: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 60: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 14: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 9: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 32: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 4: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 10: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.413] ⚡   └─ Decoded batch 6: 0.97s
+[13:20:47.413] ⚡     └─ VAE decode: 0.07s
+[13:20:47.414] ⚡   └─ Decoded batch 5: 0.97s
+[13:20:47.414] ⚡     └─ VAE decode: 0.07s
+[13:20:47.414] ⚡   └─ Decoded batch 2: 0.97s
+[13:20:47.414] ⚡     └─ VAE decode: 0.07s
+[13:20:47.414] ⚡   └─ Decoded batch 7: 0.96s
+[13:20:47.414] ⚡     └─ VAE decode: 0.07s
+[13:20:47.414] ⚡   └─ Decoded batch 3: 0.96s
+[13:20:47.414] ⚡     └─ VAE decode: 0.07s
+[13:20:47.414] ⚡   └─ Decoded batch 1: 0.96s
+[13:20:47.414] ⚡     └─ VAE decode: 0.07s
+[13:20:47.414] ⚡   └─ VAE moved to CPU: 0.14s
+[13:20:47.414] ⚡   └─ (other operations): 0.02s
+[13:20:47.414] 📊 After phase 3 (VAE decoding):
+[13:20:47.415] 📊   [VRAM] 0.01GB allocated / 13.31GB reserved / Peak: 9.94GB / 80.85GB free / 94.97GB total
+[13:20:47.415] 📊   [RAM] 4.54GB process / 39.54GB others / 131.86GB free / 175.94GB total
+[13:20:47.415] 📊   Memory changes: VRAM -0.47GB, RAM +1.57GB
+[13:20:47.415] 📊 Resetting VRAM peak memory statistics
+[13:20:47.415]  
+[13:20:47.415]  ━━━━━━━━ Phase 4: Post-processing ━━━━━━━━
+[13:20:47.415] 📹 Post-processing batch 1/60
+[13:20:47.415] 🔄   Moving sample_1 from CPU to CUDA:0 (post-processing)
+[13:20:47.479] 🔄   Moving input_video_1 from CPU to CUDA:0 (color correction)
+[13:20:47.489] 📹   Applying LAB perceptual color transfer
+[13:20:47.545] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:47.545] 🔄   Moving sample_1_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:47.563] 📹 Post-processing batch 2/60
+[13:20:47.563] 🔄   Moving sample_2 from CPU to CUDA:0 (post-processing)
+[13:20:47.672] 🔄   Moving input_video_2 from CPU to CUDA:0 (color correction)
+[13:20:47.681] 📹   Applying LAB perceptual color transfer
+[13:20:47.689] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:47.689] 🔄   Moving sample_2_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:47.706] 📹 Post-processing batch 3/60
+[13:20:47.706] 🔄   Moving sample_3 from CPU to CUDA:0 (post-processing)
+[13:20:47.863] 🔄   Moving input_video_3 from CPU to CUDA:0 (color correction)
+[13:20:47.875] 📹   Applying LAB perceptual color transfer
+[13:20:47.882] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:47.882] 🔄   Moving sample_3_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:47.899] 📹 Post-processing batch 4/60
+[13:20:47.899] 🔄   Moving sample_4 from CPU to CUDA:0 (post-processing)
+[13:20:47.998] 🔄   Moving input_video_4 from CPU to CUDA:0 (color correction)
+[13:20:48.059] 📹   Applying LAB perceptual color transfer
+[13:20:48.066] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:48.066] 🔄   Moving sample_4_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:48.083] 📹 Post-processing batch 5/60
+[13:20:48.083] 🔄   Moving sample_5 from CPU to CUDA:0 (post-processing)
+[13:20:48.180] 🔄   Moving input_video_5 from CPU to CUDA:0 (color correction)
+[13:20:48.189] 📹   Applying LAB perceptual color transfer
+[13:20:48.196] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:48.196] 🔄   Moving sample_5_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:48.213] 📹 Post-processing batch 6/60
+[13:20:48.213] 🔄   Moving sample_6 from CPU to CUDA:0 (post-processing)
+[13:20:48.368] 🔄   Moving input_video_6 from CPU to CUDA:0 (color correction)
+[13:20:48.377] 📹   Applying LAB perceptual color transfer
+[13:20:48.384] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:48.384] 🔄   Moving sample_6_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:48.401] 📹 Post-processing batch 7/60
+[13:20:48.401] 🔄   Moving sample_7 from CPU to CUDA:0 (post-processing)
+[13:20:48.556] 🔄   Moving input_video_7 from CPU to CUDA:0 (color correction)
+[13:20:48.568] 📹   Applying LAB perceptual color transfer
+[13:20:48.575] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:48.575] 🔄   Moving sample_7_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:48.592] 📹 Post-processing batch 8/60
+[13:20:48.592] 🔄   Moving sample_8 from CPU to CUDA:0 (post-processing)
+[13:20:48.695] 🔄   Moving input_video_8 from CPU to CUDA:0 (color correction)
+[13:20:48.760] 📹   Applying LAB perceptual color transfer
+[13:20:48.767] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:48.767] 🔄   Moving sample_8_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:48.784] 📹 Post-processing batch 9/60
+[13:20:48.784] 🔄   Moving sample_9 from CPU to CUDA:0 (post-processing)
+[13:20:48.882] 🔄   Moving input_video_9 from CPU to CUDA:0 (color correction)
+[13:20:48.893] 📹   Applying LAB perceptual color transfer
+[13:20:48.899] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:48.899] 🔄   Moving sample_9_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:48.953] 📹 Post-processing batch 10/60
+[13:20:48.953] 🔄   Moving sample_10 from CPU to CUDA:0 (post-processing)
+[13:20:49.070] 🔄   Moving input_video_10 from CPU to CUDA:0 (color correction)
+[13:20:49.082] 📹   Applying LAB perceptual color transfer
+[13:20:49.088] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:49.088] 🔄   Moving sample_10_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:49.106] 📹 Post-processing batch 11/60
+[13:20:49.106] 🔄   Moving sample_11 from CPU to CUDA:0 (post-processing)
+[13:20:49.261] 🔄   Moving input_video_11 from CPU to CUDA:0 (color correction)
+[13:20:49.271] 📹   Applying LAB perceptual color transfer
+[13:20:49.278] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:49.279] 🔄   Moving sample_11_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:49.297] 📹 Post-processing batch 12/60
+[13:20:49.297] 🔄   Moving sample_12 from CPU to CUDA:0 (post-processing)
+[13:20:49.453] 🔄   Moving input_video_12 from CPU to CUDA:0 (color correction)
+[13:20:49.463] 📹   Applying LAB perceptual color transfer
+[13:20:49.469] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:49.469] 🔄   Moving sample_12_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:49.487] 📹 Post-processing batch 13/60
+[13:20:49.487] 🔄   Moving sample_13 from CPU to CUDA:0 (post-processing)
+[13:20:49.590] 🔄   Moving input_video_13 from CPU to CUDA:0 (color correction)
+[13:20:49.656] 📹   Applying LAB perceptual color transfer
+[13:20:49.663] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:49.663] 🔄   Moving sample_13_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:49.680] 📹 Post-processing batch 14/60
+[13:20:49.680] 🔄   Moving sample_14 from CPU to CUDA:0 (post-processing)
+[13:20:49.780] 🔄   Moving input_video_14 from CPU to CUDA:0 (color correction)
+[13:20:49.792] 📹   Applying LAB perceptual color transfer
+[13:20:49.799] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:49.799] 🔄   Moving sample_14_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:49.853] 📹 Post-processing batch 15/60
+[13:20:49.853] 🔄   Moving sample_15 from CPU to CUDA:0 (post-processing)
+[13:20:49.970] 🔄   Moving input_video_15 from CPU to CUDA:0 (color correction)
+[13:20:49.982] 📹   Applying LAB perceptual color transfer
+[13:20:49.989] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:49.989] 🔄   Moving sample_15_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:50.007] 📹 Post-processing batch 16/60
+[13:20:50.007] 🔄   Moving sample_16 from CPU to CUDA:0 (post-processing)
+[13:20:50.156] 🔄   Moving input_video_16 from CPU to CUDA:0 (color correction)
+[13:20:50.167] 📹   Applying LAB perceptual color transfer
+[13:20:50.174] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:50.174] 🔄   Moving sample_16_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:50.191] 📹 Post-processing batch 17/60
+[13:20:50.191] 🔄   Moving sample_17 from CPU to CUDA:0 (post-processing)
+[13:20:50.295] 🔄   Moving input_video_17 from CPU to CUDA:0 (color correction)
+[13:20:50.353] 📹   Applying LAB perceptual color transfer
+[13:20:50.359] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:50.359] 🔄   Moving sample_17_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:50.376] 📹 Post-processing batch 18/60
+[13:20:50.376] 🔄   Moving sample_18 from CPU to CUDA:0 (post-processing)
+[13:20:50.480] 🔄   Moving input_video_18 from CPU to CUDA:0 (color correction)
+[13:20:50.492] 📹   Applying LAB perceptual color transfer
+[13:20:50.499] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:50.499] 🔄   Moving sample_18_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:50.553] 📹 Post-processing batch 19/60
+[13:20:50.553] 🔄   Moving sample_19 from CPU to CUDA:0 (post-processing)
+[13:20:50.667] 🔄   Moving input_video_19 from CPU to CUDA:0 (color correction)
+[13:20:50.679] 📹   Applying LAB perceptual color transfer
+[13:20:50.686] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:50.686] 🔄   Moving sample_19_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:50.703] 📹 Post-processing batch 20/60
+[13:20:50.703] 🔄   Moving sample_20 from CPU to CUDA:0 (post-processing)
+[13:20:50.855] 🔄   Moving input_video_20 from CPU to CUDA:0 (color correction)
+[13:20:50.869] 📹   Applying LAB perceptual color transfer
+[13:20:50.876] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:50.876] 🔄   Moving sample_20_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:50.891] 📹 Post-processing batch 21/60
+[13:20:50.891] 🔄   Moving sample_21 from CPU to CUDA:0 (post-processing)
+[13:20:50.993] 🔄   Moving input_video_21 from CPU to CUDA:0 (color correction)
+[13:20:51.062] 📹   Applying LAB perceptual color transfer
+[13:20:51.068] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:51.068] 🔄   Moving sample_21_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:51.086] 📹 Post-processing batch 22/60
+[13:20:51.086] 🔄   Moving sample_22 from CPU to CUDA:0 (post-processing)
+[13:20:51.187] 🔄   Moving input_video_22 from CPU to CUDA:0 (color correction)
+[13:20:51.201] 📹   Applying LAB perceptual color transfer
+[13:20:51.257] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:51.257] 🔄   Moving sample_22_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:51.278] 📹 Post-processing batch 23/60
+[13:20:51.278] 🔄   Moving sample_23 from CPU to CUDA:0 (post-processing)
+[13:20:51.390] 🔄   Moving input_video_23 from CPU to CUDA:0 (color correction)
+[13:20:51.402] 📹   Applying LAB perceptual color transfer
+[13:20:51.458] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:51.458] 🔄   Moving sample_23_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:51.475] 📹 Post-processing batch 24/60
+[13:20:51.475] 🔄   Moving sample_24 from CPU to CUDA:0 (post-processing)
+[13:20:51.579] 🔄   Moving input_video_24 from CPU to CUDA:0 (color correction)
+[13:20:51.589] 📹   Applying LAB perceptual color transfer
+[13:20:51.596] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:51.596] 🔄   Moving sample_24_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:51.613] 📹 Post-processing batch 25/60
+[13:20:51.613] 🔄   Moving sample_25 from CPU to CUDA:0 (post-processing)
+[13:20:51.760] 🔄   Moving input_video_25 from CPU to CUDA:0 (color correction)
+[13:20:51.773] 📹   Applying LAB perceptual color transfer
+[13:20:51.780] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:51.780] 🔄   Moving sample_25_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:51.797] 📹 Post-processing batch 26/60
+[13:20:51.797] 🔄   Moving sample_26 from CPU to CUDA:0 (post-processing)
+[13:20:51.953] 🔄   Moving input_video_26 from CPU to CUDA:0 (color correction)
+[13:20:51.963] 📹   Applying LAB perceptual color transfer
+[13:20:51.970] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:51.970] 🔄   Moving sample_26_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:51.987] 📹 Post-processing batch 27/60
+[13:20:51.987] 🔄   Moving sample_27 from CPU to CUDA:0 (post-processing)
+[13:20:52.162] 🔄   Moving input_video_27 from CPU to CUDA:0 (color correction)
+[13:20:52.175] 📹   Applying LAB perceptual color transfer
+[13:20:52.182] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:52.182] 🔄   Moving sample_27_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:52.199] 📹 Post-processing batch 28/60
+[13:20:52.199] 🔄   Moving sample_28 from CPU to CUDA:0 (post-processing)
+[13:20:52.299] 🔄   Moving input_video_28 from CPU to CUDA:0 (color correction)
+[13:20:52.362] 📹   Applying LAB perceptual color transfer
+[13:20:52.370] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:52.370] 🔄   Moving sample_28_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:52.387] 📹 Post-processing batch 29/60
+[13:20:52.387] 🔄   Moving sample_29 from CPU to CUDA:0 (post-processing)
+[13:20:52.491] 🔄   Moving input_video_29 from CPU to CUDA:0 (color correction)
+[13:20:52.556] 📹   Applying LAB perceptual color transfer
+[13:20:52.563] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:52.563] 🔄   Moving sample_29_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:52.580] 📹 Post-processing batch 30/60
+[13:20:52.580] 🔄   Moving sample_30 from CPU to CUDA:0 (post-processing)
+[13:20:52.685] 🔄   Moving input_video_30 from CPU to CUDA:0 (color correction)
+[13:20:52.698] 📹   Applying LAB perceptual color transfer
+[13:20:52.754] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:52.754] 🔄   Moving sample_30_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:52.771] 📹 Post-processing batch 31/60
+[13:20:52.771] 🔄   Moving sample_31 from CPU to CUDA:0 (post-processing)
+[13:20:52.877] 🔄   Moving input_video_31 from CPU to CUDA:0 (color correction)
+[13:20:52.889] 📹   Applying LAB perceptual color transfer
+[13:20:52.897] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:52.897] 🔄   Moving sample_31_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:52.913] 📹 Post-processing batch 32/60
+[13:20:52.913] 🔄   Moving sample_32 from CPU to CUDA:0 (post-processing)
+[13:20:53.068] 🔄   Moving input_video_32 from CPU to CUDA:0 (color correction)
+[13:20:53.080] 📹   Applying LAB perceptual color transfer
+[13:20:53.087] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:53.088] 🔄   Moving sample_32_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:53.104] 📹 Post-processing batch 33/60
+[13:20:53.104] 🔄   Moving sample_33 from CPU to CUDA:0 (post-processing)
+[13:20:53.257] 🔄   Moving input_video_33 from CPU to CUDA:0 (color correction)
+[13:20:53.267] 📹   Applying LAB perceptual color transfer
+[13:20:53.275] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:53.275] 🔄   Moving sample_33_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:53.291] 📹 Post-processing batch 34/60
+[13:20:53.291] 🔄   Moving sample_34 from CPU to CUDA:0 (post-processing)
+[13:20:53.394] 🔄   Moving input_video_34 from CPU to CUDA:0 (color correction)
+[13:20:53.459] 📹   Applying LAB perceptual color transfer
+[13:20:53.466] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:53.466] 🔄   Moving sample_34_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:53.483] 📹 Post-processing batch 35/60
+[13:20:53.483] 🔄   Moving sample_35 from CPU to CUDA:0 (post-processing)
+[13:20:53.581] 🔄   Moving input_video_35 from CPU to CUDA:0 (color correction)
+[13:20:53.594] 📹   Applying LAB perceptual color transfer
+[13:20:53.601] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:53.601] 🔄   Moving sample_35_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:53.653] 📹 Post-processing batch 36/60
+[13:20:53.653] 🔄   Moving sample_36 from CPU to CUDA:0 (post-processing)
+[13:20:53.766] 🔄   Moving input_video_36 from CPU to CUDA:0 (color correction)
+[13:20:53.779] 📹   Applying LAB perceptual color transfer
+[13:20:53.787] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:53.787] 🔄   Moving sample_36_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:53.804] 📹 Post-processing batch 37/60
+[13:20:53.804] 🔄   Moving sample_37 from CPU to CUDA:0 (post-processing)
+[13:20:53.958] 🔄   Moving input_video_37 from CPU to CUDA:0 (color correction)
+[13:20:53.970] 📹   Applying LAB perceptual color transfer
+[13:20:53.977] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:53.977] 🔄   Moving sample_37_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:53.995] 📹 Post-processing batch 38/60
+[13:20:53.995] 🔄   Moving sample_38 from CPU to CUDA:0 (post-processing)
+[13:20:54.099] 🔄   Moving input_video_38 from CPU to CUDA:0 (color correction)
+[13:20:54.165] 📹   Applying LAB perceptual color transfer
+[13:20:54.172] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:54.172] 🔄   Moving sample_38_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:54.190] 📹 Post-processing batch 39/60
+[13:20:54.190] 🔄   Moving sample_39 from CPU to CUDA:0 (post-processing)
+[13:20:54.361] 🔄   Moving input_video_39 from CPU to CUDA:0 (color correction)
+[13:20:54.372] 📹   Applying LAB perceptual color transfer
+[13:20:54.379] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:54.379] 🔄   Moving sample_39_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:54.396] 📹 Post-processing batch 40/60
+[13:20:54.396] 🔄   Moving sample_40 from CPU to CUDA:0 (post-processing)
+[13:20:54.499] 🔄   Moving input_video_40 from CPU to CUDA:0 (color correction)
+[13:20:54.561] 📹   Applying LAB perceptual color transfer
+[13:20:54.568] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:54.568] 🔄   Moving sample_40_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:54.585] 📹 Post-processing batch 41/60
+[13:20:54.585] 🔄   Moving sample_41 from CPU to CUDA:0 (post-processing)
+[13:20:54.689] 🔄   Moving input_video_41 from CPU to CUDA:0 (color correction)
+[13:20:54.753] 📹   Applying LAB perceptual color transfer
+[13:20:54.759] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:54.759] 🔄   Moving sample_41_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:54.776] 📹 Post-processing batch 42/60
+[13:20:54.776] 🔄   Moving sample_42 from CPU to CUDA:0 (post-processing)
+[13:20:54.877] 🔄   Moving input_video_42 from CPU to CUDA:0 (color correction)
+[13:20:54.889] 📹   Applying LAB perceptual color transfer
+[13:20:54.896] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:54.896] 🔄   Moving sample_42_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:54.953] 📹 Post-processing batch 43/60
+[13:20:54.953] 🔄   Moving sample_43 from CPU to CUDA:0 (post-processing)
+[13:20:55.072] 🔄   Moving input_video_43 from CPU to CUDA:0 (color correction)
+[13:20:55.085] 📹   Applying LAB perceptual color transfer
+[13:20:55.092] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:55.092] 🔄   Moving sample_43_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:55.109] 📹 Post-processing batch 44/60
+[13:20:55.109] 🔄   Moving sample_44 from CPU to CUDA:0 (post-processing)
+[13:20:55.270] 🔄   Moving input_video_44 from CPU to CUDA:0 (color correction)
+[13:20:55.283] 📹   Applying LAB perceptual color transfer
+[13:20:55.290] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:55.290] 🔄   Moving sample_44_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:55.308] 📹 Post-processing batch 45/60
+[13:20:55.308] 🔄   Moving sample_45 from CPU to CUDA:0 (post-processing)
+[13:20:55.469] 🔄   Moving input_video_45 from CPU to CUDA:0 (color correction)
+[13:20:55.482] 📹   Applying LAB perceptual color transfer
+[13:20:55.489] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:55.490] 🔄   Moving sample_45_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:55.505] 📹 Post-processing batch 46/60
+[13:20:55.505] 🔄   Moving sample_46 from CPU to CUDA:0 (post-processing)
+[13:20:55.657] 🔄   Moving input_video_46 from CPU to CUDA:0 (color correction)
+[13:20:55.667] 📹   Applying LAB perceptual color transfer
+[13:20:55.674] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:55.674] 🔄   Moving sample_46_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:55.691] 📹 Post-processing batch 47/60
+[13:20:55.691] 🔄   Moving sample_47 from CPU to CUDA:0 (post-processing)
+[13:20:55.795] 🔄   Moving input_video_47 from CPU to CUDA:0 (color correction)
+[13:20:55.861] 📹   Applying LAB perceptual color transfer
+[13:20:55.869] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:55.869] 🔄   Moving sample_47_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:55.887] 📹 Post-processing batch 48/60
+[13:20:55.887] 🔄   Moving sample_48 from CPU to CUDA:0 (post-processing)
+[13:20:55.985] 🔄   Moving input_video_48 from CPU to CUDA:0 (color correction)
+[13:20:55.997] 📹   Applying LAB perceptual color transfer
+[13:20:56.054] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:56.054] 🔄   Moving sample_48_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:56.070] 📹 Post-processing batch 49/60
+[13:20:56.070] 🔄   Moving sample_49 from CPU to CUDA:0 (post-processing)
+[13:20:56.175] 🔄   Moving input_video_49 from CPU to CUDA:0 (color correction)
+[13:20:56.187] 📹   Applying LAB perceptual color transfer
+[13:20:56.194] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:56.194] 🔄   Moving sample_49_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:56.211] 📹 Post-processing batch 50/60
+[13:20:56.211] 🔄   Moving sample_50 from CPU to CUDA:0 (post-processing)
+[13:20:56.365] 🔄   Moving input_video_50 from CPU to CUDA:0 (color correction)
+[13:20:56.377] 📹   Applying LAB perceptual color transfer
+[13:20:56.384] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:56.384] 🔄   Moving sample_50_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:56.400] 📹 Post-processing batch 51/60
+[13:20:56.400] 🔄   Moving sample_51 from CPU to CUDA:0 (post-processing)
+[13:20:56.504] 🔄   Moving input_video_51 from CPU to CUDA:0 (color correction)
+[13:20:56.564] 📹   Applying LAB perceptual color transfer
+[13:20:56.572] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:56.572] 🔄   Moving sample_51_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:56.589] 📹 Post-processing batch 52/60
+[13:20:56.589] 🔄   Moving sample_52 from CPU to CUDA:0 (post-processing)
+[13:20:56.691] 🔄   Moving input_video_52 from CPU to CUDA:0 (color correction)
+[13:20:56.758] 📹   Applying LAB perceptual color transfer
+[13:20:56.765] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:56.765] 🔄   Moving sample_52_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:56.782] 📹 Post-processing batch 53/60
+[13:20:56.782] 🔄   Moving sample_53 from CPU to CUDA:0 (post-processing)
+[13:20:56.876] 🔄   Moving input_video_53 from CPU to CUDA:0 (color correction)
+[13:20:56.888] 📹   Applying LAB perceptual color transfer
+[13:20:56.897] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:56.897] 🔄   Moving sample_53_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:56.914] 📹 Post-processing batch 54/60
+[13:20:56.914] 🔄   Moving sample_54 from CPU to CUDA:0 (post-processing)
+[13:20:57.060] 🔄   Moving input_video_54 from CPU to CUDA:0 (color correction)
+[13:20:57.073] 📹   Applying LAB perceptual color transfer
+[13:20:57.081] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:57.081] 🔄   Moving sample_54_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:57.098] 📹 Post-processing batch 55/60
+[13:20:57.098] 🔄   Moving sample_55 from CPU to CUDA:0 (post-processing)
+[13:20:57.201] 🔄   Moving input_video_55 from CPU to CUDA:0 (color correction)
+[13:20:57.265] 📹   Applying LAB perceptual color transfer
+[13:20:57.272] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:57.273] 🔄   Moving sample_55_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:57.290] 📹 Post-processing batch 56/60
+[13:20:57.290] 🔄   Moving sample_56 from CPU to CUDA:0 (post-processing)
+[13:20:57.397] 🔄   Moving input_video_56 from CPU to CUDA:0 (color correction)
+[13:20:57.465] 📹   Applying LAB perceptual color transfer
+[13:20:57.473] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:57.473] 🔄   Moving sample_56_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:57.490] 📹 Post-processing batch 57/60
+[13:20:57.490] 🔄   Moving sample_57 from CPU to CUDA:0 (post-processing)
+[13:20:57.590] 🔄   Moving input_video_57 from CPU to CUDA:0 (color correction)
+[13:20:57.656] 📹   Applying LAB perceptual color transfer
+[13:20:57.663] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:57.663] 🔄   Moving sample_57_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:57.681] 📹 Post-processing batch 58/60
+[13:20:57.681] 🔄   Moving sample_58 from CPU to CUDA:0 (post-processing)
+[13:20:57.787] 🔄   Moving input_video_58 from CPU to CUDA:0 (color correction)
+[13:20:57.854] 📹   Applying LAB perceptual color transfer
+[13:20:57.861] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:57.861] 🔄   Moving sample_58_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:57.880] 📹 Post-processing batch 59/60
+[13:20:57.880] 🔄   Moving sample_59 from CPU to CUDA:0 (post-processing)
+[13:20:57.987] 🔄   Moving input_video_59 from CPU to CUDA:0 (color correction)
+[13:20:58.055] 📹   Applying LAB perceptual color transfer
+[13:20:58.061] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:58.061] 🔄   Moving sample_59_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:58.079] 📹 Post-processing batch 60/60
+[13:20:58.079] 🔄   Moving sample_60 from CPU to CUDA:0 (post-processing)
+[13:20:58.194] 🔄   Moving input_video_60 from CPU to CUDA:0 (color correction)
+[13:20:58.200] 📹   Applying LAB perceptual color transfer
+[13:20:58.256] 📹   LAB color transfer completed (luminance_weight=0.8)
+[13:20:58.257] 🔄   Moving sample_60_final from CUDA:0 to CPU (writing processed result to final_video)
+[13:20:58.266] 🎬 Output assembled: 299 frames (300 computed with 1 padding removed), Resolution: 1260x720px, Channels: RGB
+[13:20:58.266] ⚡ Phase 4: Post-processing complete: 10.85s
+[13:20:58.266] ⚡   └─ Post-processed batch 27: 0.21s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 39: 0.21s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 56: 0.20s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 59: 0.20s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 44: 0.20s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 58: 0.20s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 23: 0.20s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 45: 0.20s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 47: 0.20s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 38: 0.20s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 21: 0.19s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 29: 0.19s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 3: 0.19s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 13: 0.19s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 52: 0.19s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 34: 0.19s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 8: 0.19s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 22: 0.19s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 55: 0.19s
+[13:20:58.266] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.266] ⚡   └─ Post-processed batch 7: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 41: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 37: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 11: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 32: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 30: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 57: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 26: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 12: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 51: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 40: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 50: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 20: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 6: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 28: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 33: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 60: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 46: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 17: 0.19s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 25: 0.18s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 54: 0.18s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 16: 0.18s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 4: 0.18s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 48: 0.18s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 42: 0.18s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 18: 0.18s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 14: 0.17s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 35: 0.17s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 9: 0.17s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 43: 0.16s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 15: 0.15s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 10: 0.15s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 36: 0.15s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 19: 0.15s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 1: 0.15s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 2: 0.14s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 31: 0.14s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 49: 0.14s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.267] ⚡   └─ Post-processed batch 24: 0.14s
+[13:20:58.267] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.268] ⚡   └─ Post-processed batch 53: 0.13s
+[13:20:58.268] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.268] ⚡   └─ Post-processed batch 5: 0.13s
+[13:20:58.268] ⚡     └─ Color correction (lab): 0.06s
+[13:20:58.272] 📊 After phase 4 (Post-processing):
+[13:20:58.272] 📊   [VRAM] 0.01GB allocated / 13.31GB reserved / Peak: 0.45GB / 80.85GB free / 94.97GB total
+[13:20:58.272] 📊   [RAM] 4.63GB process / 39.34GB others / 131.96GB free / 175.94GB total
+[13:20:58.272] 📊   Memory changes: RAM +0.09GB
+[13:20:58.272] 📊 Resetting VRAM peak memory statistics
+[13:21:00.637] 📂 Saving 299 frames to video: /root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_batch_sweep_300f/outputs/sdpa_b5.mp4 (backend=opencv)
+[13:21:01.175] 📂 Written 100/299 frames
+[13:21:01.713] 📂 Written 200/299 frames
+[13:21:02.374] 📂 Output saved to: /root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_batch_sweep_300f/outputs/sdpa_b5.mp4
+[13:21:02.374]  
+[13:21:02.374] ✅ All upscaling processes completed successfully in 127.66s
+[13:21:02.374] ⚡ Average FPS: 2.34 frames/sec
+/root/ComfyUI-SeedVR2_VideoUpscaler/inference_cli.py:344: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "timestamp_utc": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+[13:21:02.429] 📂 Benchmark JSON written to: /root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_3b_fp8_batch_sweep_300f/sdpa_b5.json
+[13:21:02.429] 🧹 Process 50764 terminating - VRAM will be automatically freed
+[13:21:02.429]  
+[13:21:02.429]  ────────────────────────
+[13:21:02.429] 💬 Questions? Updates? Watch, star & sponsor if you can!
+[13:21:02.429] 🎬 https://www.youtube.com/@AInVFX
+[13:21:02.429] ⭐💝 https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler

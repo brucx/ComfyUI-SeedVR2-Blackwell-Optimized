@@ -20,6 +20,10 @@ The preset now applies the fastest measured 3B FP8 path from the focused hypothe
 
 For the 81-frame 720p benchmark, this resolves to `batch_size=81 --uniform_batch_size` and measured 31.2140s / 2.5950 FPS in `benchmark_results/blackwell_3b_fp8_preset_fast/`. The previous SageAttention 3 + `torch.compile max-autotune` preset was slower on this short 3B FP8 workload, so it remains available only through explicit flags.
 
+A 300-frame SDPA sweep also supports the cap: batch 81 measured 117.0327s / 2.5548 FPS, while batch 149 regressed to 158.9516s / 1.8811 FPS.
+
+VAE-only `torch.compile reduce-overhead` was tested as a follow-up because VAE encode/decode dominate the fast preset runtime. It regressed to 150.9339s / 0.5367 FPS and raised peak reserved VRAM to 36.41 GB, so the fast preset intentionally keeps VAE eager.
+
 ## Benchmark harness
 
 Use:
