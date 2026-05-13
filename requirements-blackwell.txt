@@ -1,0 +1,4 @@
+-r requirements.txt
+sageattention>=1.0.6
+nvidia-modelopt>=0.40
+tensorrt>=10.14

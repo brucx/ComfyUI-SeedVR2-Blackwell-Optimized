@@ -1,0 +1,158 @@
+{
+  "arguments": {
+    "attention_mode": "sageattn_3",
+    "batch_size": 81,
+    "benchmark_label": "blackwell_oob_sage3_compile_fp8_b81",
+    "blackwell_pro6000_preset": true,
+    "blocks_to_swap": 0,
+    "cache_dit": false,
+    "cache_vae": false,
+    "chunk_size": 0,
+    "color_correction": "lab",
+    "compile_backend": "inductor",
+    "compile_dit": true,
+    "compile_dynamic": false,
+    "compile_dynamo_cache_size_limit": 64,
+    "compile_dynamo_recompile_limit": 128,
+    "compile_fullgraph": false,
+    "compile_mode": "max-autotune",
+    "compile_vae": true,
+    "cuda_device": null,
+    "debug": true,
+    "dit_model": "seedvr2_ema_7b_fp8_e4m3fn_mixed_block35_fp16.safetensors",
+    "dit_offload_device": "none",
+    "input": "/root/seedvr_bench/inputs/test.mov",
+    "input_noise_scale": 0.0,
+    "latent_noise_scale": 0.0,
+    "load_cap": 81,
+    "max_resolution": 0,
+    "model_dir": null,
+    "output": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_81f_720p_warm_oob/outputs/blackwell_oob_sage3_compile_fp8_b81.mp4",
+    "output_format": "mp4",
+    "prepend_frames": 0,
+    "resolution": 720,
+    "seed": 42,
+    "skip_first_frames": 0,
+    "strict_attention_mode": true,
+    "swap_io_components": false,
+    "temporal_overlap": 0,
+    "tensor_offload_device": "cpu",
+    "tile_debug": "false",
+    "uniform_batch_size": true,
+    "use_10bit": false,
+    "vae_decode_tile_overlap": 128,
+    "vae_decode_tile_size": 1024,
+    "vae_decode_tiled": false,
+    "vae_encode_tile_overlap": 128,
+    "vae_encode_tile_size": 1024,
+    "vae_encode_tiled": false,
+    "vae_offload_device": "none",
+    "video_backend": "opencv"
+  },
+  "benchmark": {
+    "average_fps": 0.4541,
+    "frames_processed": 81,
+    "input": "/root/seedvr_bench/inputs/test.mov",
+    "total_time_sec": 178.3763
+  },
+  "environment": {
+    "cuda": "13.1",
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "cuda_devices": [
+      {
+        "capability": "12.0",
+        "index": 0,
+        "name": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+        "total_memory_gb": 94.97
+      }
+    ],
+    "modelopt": {
+      "available": true,
+      "file": "/usr/local/lib/python3.12/dist-packages/modelopt/__init__.py",
+      "version": "0.40.0"
+    },
+    "nvidia_smi": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition, 97887 MiB, 595.71.05",
+    "platform": "Linux-6.8.0-111-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "sageattention": {
+      "available": true,
+      "file": "/usr/local/lib/python3.12/dist-packages/sageattention/__init__.py",
+      "version": null
+    },
+    "sageattn3": {
+      "available": true,
+      "file": "/usr/local/lib/python3.12/dist-packages/sageattn3/__init__.py",
+      "version": null
+    },
+    "tensorrt": {
+      "available": true,
+      "file": "/usr/local/lib/python3.12/dist-packages/tensorrt/__init__.py",
+      "version": "10.14.1.48"
+    },
+    "timestamp_utc": "2026-05-13T10:21:59Z",
+    "torch": "2.10.0a0+a36e1d39eb.nv26.01.42222806",
+    "triton": {
+      "available": true,
+      "file": "/usr/local/lib/python3.12/dist-packages/triton/__init__.py",
+      "version": "3.6.0"
+    }
+  },
+  "label": "blackwell_oob_sage3_compile_fp8_b81",
+  "phase_ram_peak_gb": {
+    "phase1": 2.296436309814453,
+    "phase2": 12.738422393798828,
+    "phase3": 5.936775207519531,
+    "phase4": 5.9441070556640625
+  },
+  "phase_vram_peak_alloc_gb": {
+    "phase1": 11.516942977905273,
+    "phase2": 20.646326065063477,
+    "phase3": 16.580328941345215,
+    "phase4": 7.140565872192383
+  },
+  "phase_vram_peak_reserved_gb": {
+    "phase1": 18.955078125,
+    "phase2": 31.50390625,
+    "phase3": 39.96875,
+    "phase4": 39.96875
+  },
+  "status": "ok",
+  "timers_sec": {
+    "CompatibleDiT": 0.0031,
+    "_convert_rope_freqs": 0.0016,
+    "_stabilize_rope_computations": 0.0014,
+    "buffer_init": 0.0077,
+    "color_correction_lab": 0.1811,
+    "config_load": 0.0284,
+    "decode_batch_1": 57.091,
+    "dit_compile": 0.003,
+    "dit_inference_1": 51.8176,
+    "dit_materialize": 1.0043,
+    "dit_state_apply": 0.0236,
+    "dit_structure": 0.1843,
+    "dit_to_cpu": 3.0018,
+    "dit_weights_load": 0.9645,
+    "encode_batch_1": 61.8642,
+    "model_requires_grad": 0.0011,
+    "model_structures": 0.26,
+    "optimized_video_rearrange": 0.0001,
+    "phase1_encoding": 62.6533,
+    "phase2_upscaling": 55.8378,
+    "phase3_decoding": 57.1879,
+    "phase4_postprocessing": 1.2237,
+    "postprocess_batch_1": 1.2234,
+    "runner_video_infer": 0.0,
+    "upscale_batch_1": 51.8223,
+    "vae_decode": 56.7984,
+    "vae_dtype_convert": 0.0197,
+    "vae_materialize": 0.7867,
+    "vae_set_causal_slicing": 0.0004,
+    "vae_set_memory_limit": 0.0003,
+    "vae_state_apply": 0.0048,
+    "vae_structure": 0.0687,
+    "vae_submodule_compile": 0.6877,
+    "vae_to_cpu": 0.0865,
+    "vae_weights_load": 0.0711
+  }
+}

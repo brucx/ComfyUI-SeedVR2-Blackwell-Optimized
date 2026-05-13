@@ -66,6 +66,13 @@ from ..utils.color_fix import (
 )
 
 
+def _mark_cudagraph_step_begin() -> None:
+    """Separate repeated compiled model invocations for torch.compile cudagraphs."""
+    mark_step = getattr(getattr(torch, "compiler", None), "cudagraph_mark_step_begin", None)
+    if mark_step is not None:
+        mark_step()
+
+
 def _prepare_video_batch(
     images: torch.Tensor,
     start_idx: int,
@@ -486,6 +493,7 @@ def encode_all_batches(
             )
             
             # Encode to latents
+            _mark_cudagraph_step_begin()
             cond_latents = runner.vae_encode([transformed_video])
 
             # Don't store transformed_video - will reconstruct on-demand in Phase 4
@@ -714,6 +722,7 @@ def upscale_all_batches(
             # Use autocast if DiT dtype differs from compute dtype
             # Skip autocast on MPS (CompatibleDiT already handles dtype conversion)
             debug.start_timer(f"dit_inference_{upscale_idx+1}")
+            _mark_cudagraph_step_begin()
             with torch.no_grad():
                 if dit_dtype != ctx['compute_dtype'] and ctx['dit_device'].type != 'mps':
                     with torch.autocast(ctx['dit_device'].type, ctx['compute_dtype'], enabled=True):
@@ -934,6 +943,7 @@ def decode_all_batches(
             
             # Decode latent
             debug.start_timer("vae_decode")
+            _mark_cudagraph_step_begin()
             samples = runner.vae_decode([upscaled_latent])
             debug.end_timer("vae_decode", "VAE decode")
             

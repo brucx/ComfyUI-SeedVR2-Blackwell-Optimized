@@ -573,6 +573,30 @@ def _load_model_weights(model: torch.nn.Module, checkpoint_path: str, target_dev
     target_device_str = str(target_device).upper()
     debug.log(f"{action} {model_type} weights to {target_device_str}{cpu_reason}: {checkpoint_path}", 
              category=model_type_lower, force=True)
+
+    if checkpoint_path.endswith(".modelopt.pt"):
+        debug.start_timer(f"{model_type_lower}_modelopt_restore")
+        try:
+            import modelopt.torch.opt as mto
+        except Exception as exc:
+            raise ImportError(
+                "NVIDIA Model Optimizer is required to load .modelopt.pt checkpoints. "
+                "Install nvidia-modelopt in this environment."
+            ) from exc
+
+        if used_meta:
+            model = model.to_empty(device=target_device)
+        else:
+            model = model.to(target_device)
+        model = mto.restore(model, checkpoint_path)
+        debug.end_timer(
+            f"{model_type_lower}_modelopt_restore",
+            f"{model_type} ModelOpt checkpoint restored",
+            force=True,
+        )
+        if used_meta:
+            initialize_meta_buffers(model, target_device, debug)
+        return model
     
     # Load state dict from file
     debug.start_timer(f"{model_type_lower}_weights_load")

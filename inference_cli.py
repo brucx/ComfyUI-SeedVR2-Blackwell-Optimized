@@ -50,6 +50,8 @@ import argparse
 import time
 import platform
 import multiprocessing as mp
+import json
+import subprocess as sp
 from typing import Dict, Any, List, Optional, Tuple, Literal, Generator
 from datetime import datetime
 from pathlib import Path
@@ -74,12 +76,20 @@ if platform.system() == "Darwin":
     os.environ.setdefault("PYTORCH_MPS_HIGH_WATERMARK_RATIO", "0.0")
     os.environ.setdefault("PYTORCH_MPS_LOW_WATERMARK_RATIO", "0.0")
 else:
-    os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "backend:cudaMallocAsync")
-
     # Pre-parse arguments that must be handled before torch import
     _pre_parser = argparse.ArgumentParser(add_help=False)
     _pre_parser.add_argument("--cuda_device", type=str, default=None)
+    _pre_parser.add_argument("--compile_dit", action="store_true")
+    _pre_parser.add_argument("--compile_vae", action="store_true")
+    _pre_parser.add_argument("--blackwell_pro6000_preset", action="store_true")
     _pre_args, _ = _pre_parser.parse_known_args()
+
+    # cudaMallocAsync is fast for eager inference but currently conflicts with
+    # torch.compile cudagraph tree pool checks. Keep PyTorch's native allocator
+    # when compile is requested before torch is imported.
+    _compile_requested = _pre_args.compile_dit or _pre_args.compile_vae or _pre_args.blackwell_pro6000_preset
+    if not _compile_requested:
+        os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "backend:cudaMallocAsync")
     
     if _pre_args.cuda_device is not None:
         device_list_env = [x.strip() for x in _pre_args.cuda_device.split(',') if x.strip()!='']
@@ -133,6 +143,8 @@ from src.core.generation_phases import (
 from src.utils.debug import Debug
 from src.optimization.memory_manager import clear_memory, get_gpu_backend, is_cuda_available
 debug = Debug(enabled=False)  # Will be enabled via --debug CLI flag
+
+BLACKWELL_PRO6000_DIT = "seedvr2_ema_7b_fp8_e4m3fn_mixed_block35_fp16.safetensors"
 
 
 # =============================================================================
@@ -262,6 +274,110 @@ def _parse_offload_device(offload_arg: str, platform_type: str = None, cache_ena
     
     # Otherwise treat as device ID
     return _device_id_to_name(offload_arg, platform_type)
+
+
+def _apply_blackwell_pro6000_preset(args: argparse.Namespace) -> None:
+    """
+    Apply the RTX Pro 6000 Blackwell high-throughput preset used by the benchmark suite.
+    """
+    args.attention_mode = "sageattn_3"
+    args.strict_attention_mode = True
+    args.compile_dit = True
+    args.compile_vae = True
+    args.compile_backend = "inductor"
+    args.compile_mode = "max-autotune"
+    args.dit_model = BLACKWELL_PRO6000_DIT
+    args.batch_size = 81
+    args.uniform_batch_size = True
+
+
+def _validate_strict_attention_mode(args: argparse.Namespace) -> None:
+    if not getattr(args, "strict_attention_mode", False):
+        return
+
+    from src.optimization.compatibility import validate_attention_mode
+
+    selected = validate_attention_mode(args.attention_mode, debug)
+    if selected != args.attention_mode:
+        raise RuntimeError(
+            f"Strict attention mode requested {args.attention_mode!r}, "
+            f"but runtime selected {selected!r}. Install the required attention backend "
+            "or disable --strict_attention_mode."
+        )
+
+
+def _collect_environment_metadata() -> Dict[str, Any]:
+    env: Dict[str, Any] = {
+        "timestamp_utc": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "platform": platform.platform(),
+        "python": sys.version.split()[0],
+        "torch": torch.__version__,
+        "cuda": getattr(torch.version, "cuda", None),
+        "cuda_available": torch.cuda.is_available(),
+    }
+
+    if torch.cuda.is_available():
+        env["cuda_device_count"] = torch.cuda.device_count()
+        env["cuda_devices"] = []
+        for idx in range(torch.cuda.device_count()):
+            props = torch.cuda.get_device_properties(idx)
+            env["cuda_devices"].append({
+                "index": idx,
+                "name": props.name,
+                "capability": f"{props.major}.{props.minor}",
+                "total_memory_gb": round(props.total_memory / (1024 ** 3), 2),
+            })
+
+    for mod_name in ("sageattention", "sageattn3", "modelopt", "tensorrt", "triton"):
+        try:
+            mod = __import__(mod_name)
+            env[mod_name] = {
+                "available": True,
+                "version": getattr(mod, "__version__", None),
+                "file": getattr(mod, "__file__", None),
+            }
+        except Exception as exc:
+            env[mod_name] = {"available": False, "error": str(exc)}
+
+    try:
+        result = sp.run(
+            ["nvidia-smi", "--query-gpu=name,memory.total,driver_version", "--format=csv,noheader"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        env["nvidia_smi"] = result.stdout.strip()
+    except Exception as exc:
+        env["nvidia_smi_error"] = str(exc)
+
+    return env
+
+
+def _write_benchmark_json(args: argparse.Namespace, benchmark: Dict[str, Any]) -> None:
+    path = getattr(args, "benchmark_json", None)
+    if not path:
+        return
+
+    record = {
+        "label": getattr(args, "benchmark_label", None) or "seedvr2_cli",
+        "status": "ok",
+        "environment": _collect_environment_metadata(),
+        "arguments": {
+            key: value for key, value in vars(args).items()
+            if key not in {"benchmark_json"}
+        },
+        "benchmark": benchmark,
+        "timers_sec": {key: round(value, 4) for key, value in debug.timer_durations.items()},
+        "phase_vram_peak_alloc_gb": debug.phase_vram_peaks_alloc,
+        "phase_vram_peak_reserved_gb": debug.phase_vram_peaks_rsv,
+        "phase_ram_peak_gb": debug.phase_ram_peaks,
+    }
+
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(record, indent=2, sort_keys=True), encoding="utf-8")
+    debug.log(f"Benchmark JSON written to: {output_path}", category="file", force=True)
 
 
 # =============================================================================
@@ -1448,6 +1564,11 @@ Examples:
     perf_group.add_argument("--attention_mode", type=str, default="sdpa",
                         choices=["sdpa", "flash_attn_2", "flash_attn_3", "sageattn_2", "sageattn_3"],
                         help="Attention backend: 'sdpa' (default), 'flash_attn_2', 'flash_attn_3', 'sageattn_2', or 'sageattn_3' (Blackwell GPUs)")
+    perf_group.add_argument("--strict_attention_mode", action="store_true",
+                        help="Fail instead of falling back when the requested attention backend is unavailable")
+    perf_group.add_argument("--blackwell_pro6000_preset", action="store_true",
+                        help="Apply RTX Pro 6000 Blackwell preset: SageAttention 3, torch.compile max-autotune, "
+                             "7B FP8 mixed block35 model, batch_size=81, and uniform batches")
     perf_group.add_argument("--compile_dit", action="store_true", 
                         help="Enable torch.compile for DiT model (20-40%% speedup, requires PyTorch 2.0+ and Triton)")
     perf_group.add_argument("--compile_vae", action="store_true",
@@ -1479,12 +1600,19 @@ Examples:
     debug_group = parser.add_argument_group('Debugging')
     debug_group.add_argument("--debug", action="store_true",
                         help="Enable verbose debug logging")
+    debug_group.add_argument("--benchmark_json", type=str, default=None,
+                        help="Write machine-readable benchmark metadata and timings to this JSON path")
+    debug_group.add_argument("--benchmark_label", type=str, default=None,
+                        help="Label stored in --benchmark_json output")
     
     # Auto-show help if no arguments provided
     if len(sys.argv) == 1:
         sys.argv.append('--help')
 
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.blackwell_pro6000_preset:
+        _apply_blackwell_pro6000_preset(args)
+    return args
 
 
 # =============================================================================
@@ -1523,6 +1651,8 @@ def main() -> None:
     debug.log("Arguments:", category="setup")
     for key, value in vars(args).items():
         debug.log(f"{key}: {value}", category="none", indent_level=1)
+
+    _validate_strict_attention_mode(args)
 
     if args.vae_encode_tiled and args.vae_encode_tile_overlap >= args.vae_encode_tile_size:
         debug.log(f"VAE encode tile overlap ({args.vae_encode_tile_overlap}) must be smaller than tile size ({args.vae_encode_tile_size})", level="ERROR", category="vae", force=True)
@@ -1687,14 +1817,21 @@ def main() -> None:
         
         # Calculate total execution time
         total_time = time.time() - start_time
+        average_fps = total_frames_processed / total_time if total_time > 0 and total_frames_processed > 0 else 0.0
         
         debug.log("", category="none", force=True)
         debug.log(f"All upscaling processes completed successfully in {total_time:.2f}s", category="success", force=True)
         
         # Calculate and display FPS based on overall wall-clock time
-        if total_time > 0 and total_frames_processed > 0:
-            fps = total_frames_processed / total_time
-            debug.log(f"Average FPS: {fps:.2f} frames/sec", category="timing", force=True)
+        if average_fps > 0:
+            debug.log(f"Average FPS: {average_fps:.2f} frames/sec", category="timing", force=True)
+
+        _write_benchmark_json(args, {
+            "input": args.input,
+            "frames_processed": total_frames_processed,
+            "total_time_sec": round(total_time, 4),
+            "average_fps": round(average_fps, 4),
+        })
         
     except Exception as e:
         debug.log(f"Error during processing: {e}", level="ERROR", category="generation", force=True)

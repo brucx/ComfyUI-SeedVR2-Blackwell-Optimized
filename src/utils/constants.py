@@ -16,7 +16,7 @@ SEEDVR2_FOLDER_NAME = "SEEDVR2" # Physical folder name on disk
 SEEDVR2_MODEL_TYPE = "seedvr2" # Model type identifier for ComfyUI
 
 # Supported model file formats
-SUPPORTED_MODEL_EXTENSIONS = {'.safetensors', '.gguf'}
+SUPPORTED_MODEL_EXTENSIONS = {'.safetensors', '.gguf', '.modelopt.pt'}
 
 # GGUF Quantization Constants
 QK_K = 256
