@@ -59,12 +59,16 @@ The probe:
 - builds and profiles the W4A4 TensorRT path through ModelOpt ONNX deploy and `trtexec`,
 - records the direct Torch-TensorRT frontend failures if Torch export cannot lower ModelOpt activation quantizers.
 
-Current RTX Pro 6000 harness result for `seq_len=4096`: FP16 eager 2.3945ms, FP16 Torch-TensorRT 2.2885ms, FP16 ModelOpt deploy/TRT 2.55824ms, W4A4 eager 2.1847ms, and W4A4 ModelOpt deploy/TRT 1.47226ms. The one-step QAT teacher loss was 2.118263. The W4A4 `trtexec` profile reports 678.529 inferences/s for the isolated MLP subgraph.
+Current RTX Pro 6000 harness result for `seq_len=4096`: FP16 eager 2.3900ms, FP16 Torch-TensorRT 2.2937ms, FP16 ModelOpt deploy/TRT 2.55839ms, W4A4 eager 2.5223ms, W4A4 ModelOpt deploy/TRT profile 1.71290ms, and W4A4 ModelOpt `DeviceModel` forward 1.6587ms. The one-step QAT teacher loss was 2.156582 with SGD. The W4A4 `trtexec` profile reports 583.256 inferences/s for the isolated MLP subgraph, and the finite TensorRT output had max absolute error 50.75 against the FP16 teacher for the random 4096-token probe batch.
 
-Two ModelOpt 0.40 export workarounds are applied inside the probe:
+Several ModelOpt 0.40 export workarounds are applied inside the probe:
 
 - disable the empty FP8 ONNX exporter for this NVFP4 W4A4 path, because ModelOpt's FP8 detector also matches NVFP4 quantizer metadata;
+- disable ONNX shape inference and optimization for this path, because the deploy stack can corrupt FP16 initializers in the quantized graph;
+- restore original FP16 initializers from a pre-export state backup after NVFP4 post-processing;
 - sanitize NVFP4 ONNX scale tensors to finite positive values before TensorRT parsing, because the default exporter can emit NaN/negative DQ scales for this subgraph.
+
+The v5 artifact records no NaN/Inf initializers before or after ONNX save.
 
 Direct Torch-TensorRT Dynamo export still fails on a fake tensor from `proj_in.input_quantizer.lifted_tensor_0`; the TorchScript frontend also fails because ModelOpt NVFP4 uses non-integer quantization without a `step_size`. The working W4A4 TRT path is therefore ModelOpt ONNX deploy through `trtexec`.
 

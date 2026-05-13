@@ -99,6 +99,52 @@ def _patch_modelopt_nvfp4_export_detection(result: dict[str, Any], out_path: Pat
     from modelopt.onnx.export.nvfp4_exporter import NVFP4QuantExporter
 
     original_cast_fp8 = nvfp4_exporter._cast_fp8
+    torch_onnx.infer_shapes = lambda onnx_model: onnx_model
+    torch_onnx.optimize = lambda model_name, onnx_model: onnx_model
+
+    def patch_nvfp4_scale_attrs(onnx_model):
+        import numpy as np
+        from modelopt.onnx import utils as onnx_utils
+
+        graph = onnx_model.graph
+        initializer_by_name = {initializer.name: initializer for initializer in graph.initializer}
+        patched = 0
+        for node in graph.node:
+            if node.op_type != "TRT_FP4QDQ":
+                continue
+            initializer = initializer_by_name.get(node.input[0])
+            if initializer is None:
+                continue
+
+            block_size = node.attribute[0].i
+            weight = onnx_utils.read_f16_tensor_as_fp32(initializer)
+            weight = np.nan_to_num(weight, nan=0.0, posinf=0.0, neginf=0.0)
+            amax = np.max(np.abs(weight))
+            per_tensor = np.float32(max(float(amax) / 6.0 / 448.0, np.finfo(np.float32).tiny))
+
+            n, k = weight.shape
+            weight_blocks = weight.reshape(n, k // block_size, block_size)
+            per_block = np.max(np.abs(weight_blocks), axis=-1) / 6.0 / per_tensor
+            per_block = np.nan_to_num(per_block, nan=1.0, posinf=448.0, neginf=1.0)
+            per_block = np.maximum(per_block, np.finfo(np.float32).tiny).astype(np.float32)
+
+            preserved_attrs = [copy.deepcopy(attr) for attr in node.attribute if not attr.name.startswith("_sw_")]
+            node.ClearField("attribute")
+            node.attribute.extend(preserved_attrs)
+
+            per_tensor_attr = node.attribute.add()
+            per_tensor_attr.name = "_sw_f32_per_tensor"
+            per_tensor_attr.floats.extend(np.array([per_tensor], dtype=np.float32).tolist())
+
+            per_block_attr = node.attribute.add()
+            per_block_attr.name = "_sw_f32_per_block"
+            per_block_attr.floats.extend(per_block.flatten().tolist())
+
+            shape_attr = node.attribute.add()
+            shape_attr.name = "_sw_f32_per_block_shape"
+            shape_attr.ints.extend(per_block.shape)
+            patched += 1
+        return onnx_model, patched
 
     def make_qdq_scales_positive(onnx_model):
         import numpy as np
@@ -126,6 +172,30 @@ def _patch_modelopt_nvfp4_export_detection(result: dict[str, Any], out_path: Pat
                 patched += 1
         return onnx_model, patched
 
+    def count_bad_initializers(onnx_model):
+        import numpy as np
+        from onnx import numpy_helper
+
+        bad = []
+        for initializer in onnx_model.graph.initializer:
+            try:
+                value = numpy_helper.to_array(initializer)
+            except Exception:
+                continue
+            if value.dtype.kind not in {"f", "c"}:
+                continue
+            nan_count = int(np.isnan(value).sum())
+            inf_count = int(np.isinf(value).sum())
+            if nan_count or inf_count:
+                bad.append(
+                    {
+                        "name": initializer.name,
+                        "nan": nan_count,
+                        "inf": inf_count,
+                    }
+                )
+        return bad
+
     torch_onnx.is_fp8_quantized = lambda model: False
 
     def cast_positive_fp8(array):
@@ -137,16 +207,51 @@ def _patch_modelopt_nvfp4_export_detection(result: dict[str, Any], out_path: Pat
     nvfp4_exporter._cast_fp8 = cast_positive_fp8
 
     def quantize_weights_nvfp4_only(model: torch.nn.Module, onnx_model):
-        del model
-        exported = NVFP4QuantExporter.process_model(onnx_model)
+        original_initializers = {
+            initializer.name: copy.deepcopy(initializer) for initializer in onnx_model.graph.initializer
+        }
+        model_state_source = getattr(model, "_seedvr_state_backup", None) or model.state_dict()
+        model_state = {
+            name: tensor.detach().cpu().numpy() if isinstance(tensor, torch.Tensor) else tensor
+            for name, tensor in model_state_source.items()
+        }
+        exported = NVFP4QuantExporter.pre_process(onnx_model)
+        exported = NVFP4QuantExporter.compute_scales(exported)
+        exported, patched_scale_attrs = patch_nvfp4_scale_attrs(exported)
+        exported = NVFP4QuantExporter.compress_weights(exported)
+        exported = NVFP4QuantExporter.post_process(exported)
         if exported is None:
             raise RuntimeError("NVFP4QuantExporter returned None")
+        result["steps"]["modelopt_nvfp4_export_detection_patch"]["patched_scale_attrs"] = patched_scale_attrs
+        restored_initializers = 0
+        for idx, initializer in enumerate(exported.graph.initializer):
+            original = original_initializers.get(initializer.name)
+            if original is not None:
+                exported.graph.initializer[idx].CopyFrom(original)
+                restored_initializers += 1
+            state_tensor = model_state.get(initializer.name)
+            if state_tensor is not None:
+                from onnx import numpy_helper
+
+                exported.graph.initializer[idx].CopyFrom(
+                    numpy_helper.from_array(state_tensor, initializer.name)
+                )
+                restored_initializers += 1
+        result["steps"]["modelopt_nvfp4_export_detection_patch"][
+            "restored_original_initializers"
+        ] = restored_initializers
         exported, patched_scales = make_qdq_scales_positive(exported)
         result["steps"]["modelopt_nvfp4_export_detection_patch"]["positive_qdq_scales"] = patched_scales
+        result["steps"]["modelopt_nvfp4_export_detection_patch"][
+            "bad_initializers_before_save"
+        ] = count_bad_initializers(exported)[:8]
         debug_onnx_path = out_path.with_suffix(".w4a4.onnx")
         import onnx
 
         onnx.save(exported, debug_onnx_path)
+        result["steps"]["modelopt_nvfp4_export_detection_patch"][
+            "bad_initializers_after_save"
+        ] = count_bad_initializers(onnx.load(debug_onnx_path))[:8]
         result["steps"]["modelopt_nvfp4_export_detection_patch"]["debug_onnx"] = str(debug_onnx_path)
         return exported
 
@@ -155,6 +260,8 @@ def _patch_modelopt_nvfp4_export_detection(result: dict[str, Any], out_path: Pat
         "status": "enabled",
         "reason": "This NVFP4 W4A4 probe must not run ModelOpt 0.40's empty FP8 exporter.",
         "quantize_weights": "NVFP4QuantExporter only",
+        "onnx_infer_shapes": "disabled",
+        "onnx_optimize": "disabled",
     }
 
 
@@ -250,6 +357,7 @@ def main() -> int:
 
         with torch.inference_mode():
             target = teacher(x).detach()
+        qat_source = copy.deepcopy(teacher)
         result["steps"]["teacher_eager_benchmark"] = _cuda_bench(
             teacher, x, args.warmup_iters, args.bench_iters
         )
@@ -284,7 +392,7 @@ def main() -> int:
 
                 started = time.time()
                 deploy_teacher = deploy.compile(
-                    teacher,
+                    copy.deepcopy(teacher),
                     x,
                     {
                         "runtime": "TRT",
@@ -308,7 +416,7 @@ def main() -> int:
                     "traceback_tail": traceback.format_exc().splitlines()[-40:],
                 }
 
-        qat_model = copy.deepcopy(teacher).train()
+        qat_model = copy.deepcopy(qat_source).train()
 
         def calib_loop(model):
             model(x)
@@ -320,7 +428,7 @@ def main() -> int:
             "seconds": round(time.time() - started, 4),
         }
 
-        optimizer = torch.optim.AdamW(qat_model.parameters(), lr=args.qat_lr)
+        optimizer = torch.optim.SGD(qat_model.parameters(), lr=args.qat_lr)
         losses: list[float] = []
         started = time.time()
         for _ in range(args.qat_steps):
@@ -339,6 +447,7 @@ def main() -> int:
             "status": "ok" if losses and all(torch.isfinite(torch.tensor(losses))) else "non_finite_loss",
             "seconds": round(time.time() - started, 4),
             "losses": losses,
+            "optimizer": "SGD",
         }
 
         result["steps"]["w4a4_eager_benchmark"] = _cuda_bench(
@@ -349,6 +458,11 @@ def main() -> int:
             started = time.time()
             w4a4_modelopt_deploy_ok = False
             try:
+                qat_model._seedvr_state_backup = {
+                    name: tensor.detach().cpu().clone().numpy()
+                    for name, tensor in qat_model.state_dict().items()
+                    if isinstance(tensor, torch.Tensor)
+                }
                 deploy_qat = deploy.compile(
                     qat_model,
                     x,
@@ -366,6 +480,19 @@ def main() -> int:
                     "latency_ms": latency_ms,
                     "throughput": details.get("performance_summary", {}).get("Throughput"),
                 }
+                result["steps"]["w4a4_modelopt_deploy_forward_benchmark"] = _cuda_bench(
+                    deploy_qat, x, args.warmup_iters, args.bench_iters
+                )
+                with torch.inference_mode():
+                    deploy_out = deploy_qat(x)
+                    if isinstance(deploy_out, (tuple, list)):
+                        deploy_out = deploy_out[0]
+                    max_abs_error = (deploy_out - target).abs().max()
+                    result["steps"]["w4a4_modelopt_deploy_max_abs_error"] = float(
+                        max_abs_error.detach().cpu()
+                    )
+                    if not torch.isfinite(max_abs_error):
+                        raise RuntimeError("W4A4 TensorRT forward produced non-finite output")
                 w4a4_modelopt_deploy_ok = True
                 result["status"] = "ok_modelopt_deploy"
             except Exception as deploy_exc:
