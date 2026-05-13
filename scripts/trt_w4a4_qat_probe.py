@@ -268,7 +268,31 @@ def main() -> int:
                 "error": _jsonable(exc),
                 "traceback_tail": traceback.format_exc().splitlines()[-40:],
             }
-            result["status"] = "trt_compile_failed"
+            ts_started = time.time()
+            try:
+                traced = torch.jit.trace(qat_model, x, strict=False)
+                trt_ts_model = torch_tensorrt.compile(
+                    traced,
+                    ir="ts",
+                    inputs=[torch_tensorrt.Input(x.shape, dtype=args.dtype)],
+                    enabled_precisions={args.dtype},
+                )
+                result["steps"]["torchscript_tensorrt_compile"] = {
+                    "status": "ok",
+                    "seconds": round(time.time() - ts_started, 4),
+                }
+                result["steps"]["torchscript_trt_benchmark"] = _cuda_bench(
+                    trt_ts_model, x, args.warmup_iters, args.bench_iters
+                )
+                result["status"] = "ok_torchscript_fallback"
+            except Exception as ts_exc:
+                result["steps"]["torchscript_tensorrt_compile"] = {
+                    "status": "failed",
+                    "seconds": round(time.time() - ts_started, 4),
+                    "error": _jsonable(ts_exc),
+                    "traceback_tail": traceback.format_exc().splitlines()[-40:],
+                }
+                result["status"] = "trt_compile_failed"
 
     except Exception as exc:
         result["status"] = "failed"
