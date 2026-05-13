@@ -9,6 +9,7 @@ Input: `test.mov` from the requested URL, first 81 frames, 480x274 source, 720p 
 | Baseline | 3B FP8, SDPA, batch 5, no compile | 81 | 73.346 | 1.1044 | 13.31 GB |
 | Blackwell preset cold | 7B FP8 mixed block35, SageAttention 3, `torch.compile max-autotune`, batch 81 | 81 | 501.3785 | 0.1616 | 47.41 GB |
 | Blackwell preset warm | Same as above, with Inductor cache reused | 81 | 178.3763 | 0.4541 | 39.97 GB |
+| ModelOpt NVFP4 fallback | 7B FP16 base -> NVFP4 W4A16 `.modelopt.pt`, SageAttention 3, DiT eager, VAE `torch.compile max-autotune`, batch 81 | 81 | 158.6656 | 0.5105 | 66.44 GB |
 
 Phase timings:
 
@@ -17,6 +18,7 @@ Phase timings:
 | Baseline | 7.0155s | 9.5952s | 15.6733s | 3.1735s |
 | Blackwell preset cold | 68.8646s | 247.2887s | 182.5027s | 1.2432s |
 | Blackwell preset warm | 62.6533s | 55.8378s | 57.1879s | 1.2237s |
+| ModelOpt NVFP4 fallback | 60.7157s | 34.7902s | 60.8164s | 1.2458s |
 
 Compatibility fixes made during benchmarking:
 
@@ -27,5 +29,8 @@ Compatibility fixes made during benchmarking:
 Engineering stage status:
 
 - ModelOpt NVFP4 W4A16 PTQ loader support was added for `.modelopt.pt` through `modelopt.torch.opt.restore`.
-- The PTQ creation attempt on this container segfaulted inside CUDA allocation during ModelOpt initialization; see `benchmark_results/modelopt_nvfp4/ptq.log`.
+- ModelOpt PTQ now succeeds from the 7B FP16 checkpoint; see `benchmark_results/modelopt_nvfp4/ptq_unbuffered4_fp16base.log`.
+- The already-FP8 mixed block35 checkpoint cannot be used as the PTQ source because ModelOpt's max calibration calls `torch.max` on FP8 weights, and PyTorch reports `max_all_cuda` is not implemented for `Float8_e4m3fn`.
+- `torch.compile` on the ModelOpt-quantized DiT currently fails in TorchDynamo inside ModelOpt's dynamic callback wrapper; see `benchmark_results/blackwell_81f_720p_modelopt/modelopt_nvfp4_w4a16.log`.
+- The measured engineering fallback keeps the ModelOpt DiT eager and compiles only the VAE; DiT inference for the single 81-frame batch was 6.8964s, while VAE encode/decode dominated runtime.
 - TRT subgraph + W4A4 QAT is documented as not completed because this repository lacks a stable exported DiT subgraph boundary and QAT training recipe.

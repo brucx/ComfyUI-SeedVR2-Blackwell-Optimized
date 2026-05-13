@@ -39,6 +39,10 @@ python scripts/benchmark_blackwell.py --include_modelopt
 
 The PTQ script uses NVIDIA Model Optimizer with NVFP4 weight quantizers and activation quantizers disabled, giving a W4A16 checkpoint saved as `.modelopt.pt`. The model loader has been extended to restore `.modelopt.pt` files with `modelopt.torch.opt.restore`.
 
+The conversion source defaults to `seedvr2_ema_7b_fp16.safetensors`. The already-FP8 mixed block35 checkpoint is not a viable PTQ source in this environment because ModelOpt's max calibration calls `torch.max` on FP8 weights, and PyTorch does not implement that CUDA reduction for `Float8_e4m3fn`.
+
+The compiled ModelOpt DiT path currently fails in TorchDynamo inside ModelOpt's dynamic callback wrapper. The benchmark harness records that failure, then runs a fallback engineering case with the ModelOpt DiT eager and the VAE still compiled with `max-autotune`.
+
 ## TRT subgraph + W4A4 QAT status
 
 TensorRT and ModelOpt are available in the target container, but the repository does not expose a static DiT subgraph boundary or a training/teacher-loss recipe for W4A4 QAT. The benchmark harness records this as an explicit incomplete experimental case instead of silently claiming a proxy result.

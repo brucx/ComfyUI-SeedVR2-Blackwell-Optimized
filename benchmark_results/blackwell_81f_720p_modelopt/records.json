@@ -1,0 +1,37 @@
+[
+  {
+    "label": "modelopt_nvfp4_w4a16",
+    "command": [
+      "/usr/bin/python3",
+      "inference_cli.py",
+      "/root/seedvr_bench/inputs/test.mov",
+      "--resolution",
+      "720",
+      "--debug",
+      "--load_cap",
+      "81",
+      "--attention_mode",
+      "sageattn_3",
+      "--strict_attention_mode",
+      "--compile_dit",
+      "--compile_vae",
+      "--compile_mode",
+      "max-autotune",
+      "--dit_model",
+      "seedvr2_ema_7b_nvfp4_w4a16.modelopt.pt",
+      "--batch_size",
+      "81",
+      "--uniform_batch_size",
+      "--benchmark_label",
+      "modelopt_nvfp4_w4a16",
+      "--benchmark_json",
+      "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_81f_720p_modelopt/modelopt_nvfp4_w4a16.json",
+      "--output",
+      "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_81f_720p_modelopt/outputs/modelopt_nvfp4_w4a16.mp4"
+    ],
+    "returncode": 1,
+    "elapsed_sec": 100.9112,
+    "log": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_81f_720p_modelopt/modelopt_nvfp4_w4a16.log",
+    "benchmark_json": "/root/ComfyUI-SeedVR2_VideoUpscaler/benchmark_results/blackwell_81f_720p_modelopt/modelopt_nvfp4_w4a16.json"
+  }
+]

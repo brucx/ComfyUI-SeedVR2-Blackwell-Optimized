@@ -98,7 +98,7 @@ def main() -> int:
         if not modelopt_model.exists():
             subprocess.run([sys.executable, "scripts/modelopt_nvfp4_ptq.py"], cwd=ROOT, check=False)
         if modelopt_model.exists():
-            records.append(run_case("modelopt_nvfp4_w4a16", base_cli + [
+            modelopt_compiled = run_case("modelopt_nvfp4_w4a16", base_cli + [
                 "--attention_mode", "sageattn_3",
                 "--strict_attention_mode",
                 "--compile_dit",
@@ -110,7 +110,21 @@ def main() -> int:
                 "--benchmark_label", "modelopt_nvfp4_w4a16",
                 "--benchmark_json", str(output_dir / "modelopt_nvfp4_w4a16.json"),
                 "--output", str(output_dir / "outputs" / "modelopt_nvfp4_w4a16.mp4"),
-            ], output_dir))
+            ], output_dir)
+            records.append(modelopt_compiled)
+            if modelopt_compiled["returncode"] != 0:
+                records.append(run_case("modelopt_nvfp4_w4a16_dit_eager_vae_compile", base_cli + [
+                    "--attention_mode", "sageattn_3",
+                    "--strict_attention_mode",
+                    "--compile_vae",
+                    "--compile_mode", "max-autotune",
+                    "--dit_model", modelopt_model.name,
+                    "--batch_size", "81",
+                    "--uniform_batch_size",
+                    "--benchmark_label", "modelopt_nvfp4_w4a16_dit_eager_vae_compile",
+                    "--benchmark_json", str(output_dir / "modelopt_nvfp4_w4a16_dit_eager_vae_compile.json"),
+                    "--output", str(output_dir / "outputs" / "modelopt_nvfp4_w4a16_dit_eager_vae_compile.mp4"),
+                ], output_dir))
         else:
             records.append({"label": "modelopt_nvfp4_w4a16", "returncode": 99, "elapsed_sec": 0, "log": "modelopt checkpoint was not created"})
 
